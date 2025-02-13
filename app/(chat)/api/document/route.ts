@@ -15,7 +15,6 @@ export async function GET(request: Request) {
   }
 
   const session = await auth();
-
   if (!session || !session.user) {
     return new Response('Unauthorized', { status: 401 });
   }

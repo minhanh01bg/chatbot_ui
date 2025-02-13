@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "1.0.19",
+    "@ai-sdk/openai-compatible": "^0.1.9",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
     "@codemirror/state": "^6.5.0",
@@ -56,6 +57,7 @@
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.3.0",
     "orderedmap": "^2.1.1",
+    "pnpm": "^10.2.0",
     "postgres": "^3.4.4",
     "prosemirror-example-setup": "^1.2.3",
     "prosemirror-inputrules": "^1.4.0",
