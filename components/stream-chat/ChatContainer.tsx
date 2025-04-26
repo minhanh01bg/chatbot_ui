@@ -154,7 +154,7 @@ const ChatContainer = () => {
     <SidebarProvider defaultOpen={false}>
       <div className="flex w-full">
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="w-full">
           <ChatContent 
             messages={messages} 
             messagesEndRef={messagesEndRef} 
@@ -182,7 +182,7 @@ const ChatContent = ({
   const { toggleSidebar } = useSidebar();
   
   return (
-    <div className="flex flex-col h-dvh bg-background">
+    <div className="flex flex-col h-dvh bg-background w-full">
       <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2 border-b z-10">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -199,11 +199,11 @@ const ChatContent = ({
       </header>
       
       <div
-        className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto pt-4"
+        className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto pt-4 w-full"
       >
         {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center space-y-4 px-4 max-w-3xl">
+          <div className="flex items-center justify-center h-full w-full">
+            <div className="text-center space-y-4 px-4">
               <h2 className="text-2xl font-bold">Welcome to Chat Stream</h2>
               <p className="text-muted-foreground">Start a conversation with the AI assistant by typing a message below.</p>
             </div>
@@ -212,7 +212,7 @@ const ChatContent = ({
           messages.map((msg, idx) => (
             <AnimatePresence key={msg.id || idx}>
               <motion.div
-                className="w-full mx-auto max-w-3xl px-4 group/message"
+                className="w-full px-4 group/message"
                 initial={{ y: 5, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 data-role={msg.isBot ? 'assistant' : 'user'}
@@ -257,7 +257,7 @@ const ChatContent = ({
         )}
         {isLoading && messages.length > 0 && !messages[messages.length - 1].isBot && (
           <motion.div
-            className="w-full mx-auto max-w-3xl px-4 group/message"
+            className="w-full px-4 group/message"
             initial={{ y: 5, opacity: 0 }}
             animate={{ y: 0, opacity: 1, transition: { delay: 0.3 } }}
             data-role="assistant"
@@ -278,7 +278,7 @@ const ChatContent = ({
         <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
       </div>
       
-      <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+      <form className="flex px-4 bg-background pb-4 md:pb-6 gap-2 w-full">
         <ChatInput onSend={onSendMessage} disabled={isLoading} />
       </form>
     </div>
