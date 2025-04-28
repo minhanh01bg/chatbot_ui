@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { sendChatMessage } from '@/services/chatService';
+import { getChatHistory, MessageData } from '@/services/sessionService';
 import ChatLayout from './ChatLayout';
 
 interface Message {
@@ -11,6 +12,7 @@ interface Message {
 const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeSessionId, setActiveSessionId] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -20,6 +22,35 @@ const ChatContainer = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Load chat history when a session is selected
+  const handleSelectSession = async (sessionId: string) => {
+    if (!sessionId) {
+      // Clear messages for new chat
+      setMessages([]);
+      setActiveSessionId('');
+      return;
+    }
+
+    setIsLoading(true);
+    setActiveSessionId(sessionId);
+
+    try {
+      const history = await getChatHistory(sessionId);
+      
+      // Convert API response format to our local message format
+      const convertedMessages = history.data.map((msg: MessageData) => ({
+        content: msg.content,
+        isBot: msg.role === 'assistant'
+      }));
+      
+      setMessages(convertedMessages);
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
@@ -33,7 +64,7 @@ const ChatContainer = () => {
           type: msg.isBot ? 'assistant' : 'user',
           content: msg.content
         })),
-        'test-session',
+        activeSessionId || 'test-session',
         (chunk) => {
           botMessage += chunk;
           setMessages(prev => {
@@ -61,6 +92,8 @@ const ChatContainer = () => {
         messagesEndRef={messagesEndRef}
         isLoading={isLoading}
         onSendMessage={handleSendMessage}
+        onSelectSession={handleSelectSession}
+        activeSessionId={activeSessionId}
       />
     </SidebarProvider>
   );

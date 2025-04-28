@@ -23,4 +23,4 @@ const SidebarToggle = () => {
   );
 };
 
-export default SidebarToggle; 
+export default SidebarToggle;

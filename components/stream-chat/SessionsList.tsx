@@ -17,7 +17,12 @@ type GroupedChats = {
   older: SessionData[];
 };
 
-const SessionsList = () => {
+interface SessionsListProps {
+  onSelectSession: (sessionId: string) => void;
+  activeSessionId?: string;
+}
+
+const SessionsList = ({ onSelectSession, activeSessionId }: SessionsListProps) => {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -100,8 +105,9 @@ const SessionsList = () => {
                       <ChatItem
                         key={`${session._id}-${group.key}`}
                         chat={session}
-                        isActive={false}
+                        isActive={activeSessionId === session.session_id}
                         setOpenMobile={setOpenMobile}
+                        onSelectSession={onSelectSession}
                       />
                     ))}
                   </div>

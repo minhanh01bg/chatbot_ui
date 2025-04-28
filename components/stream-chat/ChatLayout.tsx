@@ -15,20 +15,27 @@ interface ChatLayoutProps {
   messagesEndRef: React.RefObject<HTMLDivElement>;
   isLoading: boolean;
   onSendMessage: (message: string) => Promise<void>;
+  onSelectSession: (sessionId: string) => void;
+  activeSessionId?: string;
 }
 
 const ChatLayout = ({
   messages,
   messagesEndRef,
   isLoading,
-  onSendMessage
+  onSendMessage,
+  onSelectSession,
+  activeSessionId
 }: ChatLayoutProps) => {
   const { state: sidebarState } = useSidebar();
   const isSidebarOpen = sidebarState === 'expanded';
 
   return (
     <div className="flex h-full w-full">
-      <AppSidebar />
+      <AppSidebar 
+        onSelectSession={onSelectSession}
+        activeSessionId={activeSessionId}
+      />
       <div className={cn(
         "flex min-w-0 flex-col h-dvh bg-background",
         "transition-all duration-300 ease-in-out flex-1"

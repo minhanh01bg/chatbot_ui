@@ -11,8 +11,19 @@ import {
 } from '@/components/ui/sidebar';
 import SessionsList from './SessionsList';
 
-const AppSidebar = () => {
+interface AppSidebarProps {
+  onSelectSession: (sessionId: string) => void;
+  activeSessionId?: string;
+}
+
+const AppSidebar = ({ onSelectSession, activeSessionId }: AppSidebarProps) => {
   const { setOpenMobile } = useSidebar();
+
+  const handleNewChat = () => {
+    setOpenMobile(false);
+    // Clear active session by passing empty string
+    onSelectSession('');
+  };
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -36,9 +47,7 @@ const AppSidebar = () => {
                   variant="ghost"
                   type="button"
                   className="p-2 h-fit"
-                  onClick={() => {
-                    setOpenMobile(false);
-                  }}
+                  onClick={handleNewChat}
                 >
                   <PlusIcon />
                 </Button>
@@ -49,7 +58,10 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SessionsList />
+        <SessionsList 
+          onSelectSession={onSelectSession} 
+          activeSessionId={activeSessionId} 
+        />
       </SidebarContent>
     </Sidebar>
   );
