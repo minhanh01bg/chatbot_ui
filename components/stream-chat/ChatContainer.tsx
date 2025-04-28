@@ -21,32 +21,20 @@ import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { sendChatMessage } from '@/services/chatService';
-import { send } from 'process';
+import { getSessions, SessionData } from '@/services/sessionService';
 
 interface Message {
   content: string;
   isBot: boolean;
 }
 
-interface ChatSession {
-  id: string;
-  title: string;
-  createdAt: string; // ISO string date
-}
-
 type GroupedChats = {
-  today: ChatSession[];
-  yesterday: ChatSession[];
-  lastWeek: ChatSession[];
-  lastMonth: ChatSession[];
-  older: ChatSession[];
+  today: SessionData[];
+  yesterday: SessionData[];
+  lastWeek: SessionData[];
+  lastMonth: SessionData[];
+  older: SessionData[];
 };
-
-const MOCK_SESSIONS: ChatSession[] = Array.from({ length: 5 }).map((_, i) => ({
-  id: `session-${i + 1}`,
-  title: `Chat session ${i + 1}`,
-  createdAt: new Date().toISOString(),
-}));
 
 const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -160,7 +148,7 @@ const ChatLayout = ({
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4 px-4 max-w-3xl">
-                  <h2 className="text-2xl font-bold">Welcome to Chat Stream</h2>
+                  <h2 className="text-2xl font-bold">Welcome to chatbot for 12th grade biology</h2>
                   <p className="text-muted-foreground">Start a conversation with the AI assistant by typing a message below.</p>
                 </div>
               </div>
@@ -234,14 +222,33 @@ const AppSidebar = () => {
 };
 
 const SessionsList = () => {
-  const groupChatsByDate = (chats: ChatSession[]): GroupedChats => {
+  const [sessions, setSessions] = useState<SessionData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      setIsLoading(true);
+      try {
+        const response = await getSessions(1, 20);
+        setSessions(response.data);
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
+  const groupChatsByDate = (chats: SessionData[]): GroupedChats => {
     const now = new Date();
     const oneWeekAgo = subWeeks(now, 1);
     const oneMonthAgo = subMonths(now, 1);
 
     return chats.reduce(
       (groups, chat) => {
-        const chatDate = new Date(chat.createdAt);
+        const chatDate = new Date(chat.created_time);
 
         if (isToday(chatDate)) {
           groups.today.push(chat);
@@ -268,25 +275,45 @@ const SessionsList = () => {
   };
 
   const { setOpenMobile } = useSidebar();
-  const groupedChats = groupChatsByDate(MOCK_SESSIONS);
+  const groupedChats = groupChatsByDate(sessions);
+
+  // Create an array of group objects to render with proper keys
+  const sessionGroups = [
+    { key: 'today', title: 'Today', sessions: groupedChats.today },
+    { key: 'yesterday', title: 'Yesterday', sessions: groupedChats.yesterday },
+    { key: 'lastweek', title: 'Last Week', sessions: groupedChats.lastWeek },
+    { key: 'lastmonth', title: 'Last Month', sessions: groupedChats.lastMonth },
+    { key: 'older', title: 'Older', sessions: groupedChats.older }
+  ];
 
   return (
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {groupedChats.today.length > 0 && (
+          {isLoading ? (
+            <div className="px-2 py-1">Loading sessions...</div>
+          ) : (
             <>
-              <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-                Today
-              </div>
-              {groupedChats.today.map((chat) => (
-                <ChatItem
-                  key={chat.id}
-                  chat={chat}
-                  isActive={false}
-                  setOpenMobile={setOpenMobile}
-                />
-              ))}
+              {sessionGroups.map(group =>
+                group.sessions.length > 0 && (
+                  <div key={group.key}>
+                    <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                      {group.title}
+                    </div>
+                    {group.sessions.map((session) => (
+                      <ChatItem
+                        key={`${session._id}-${group.key}`}
+                        chat={session}
+                        isActive={false}
+                        setOpenMobile={setOpenMobile}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
+              {Object.values(groupedChats).every(group => group.length === 0) && (
+                <div className="px-2 py-1 text-sm">No sessions found</div>
+              )}
             </>
           )}
         </SidebarMenu>
@@ -300,15 +327,17 @@ const ChatItem = ({
   isActive,
   setOpenMobile,
 }: {
-  chat: ChatSession;
+  chat: SessionData;
   isActive: boolean;
   setOpenMobile: (open: boolean) => void;
 }) => {
+  const title = chat.first_question || `Session ${chat.session_id.substring(0, 8)}`;
+
   return (
-    <SidebarMenuItem>
+    <SidebarMenuItem key={chat._id}>
       <SidebarMenuButton asChild isActive={isActive}>
         <button onClick={() => setOpenMobile(false)}>
-          <span>{chat.title}</span>
+          <span>{title}</span>
         </button>
       </SidebarMenuButton>
     </SidebarMenuItem>

@@ -18,7 +18,7 @@ export interface SessionResponse {
 // import { SessionResponse } from '@/types/session';  // import interface mới nè
 
 export const getSessions = async (page = 1, pageSize = 10): Promise<SessionResponse> => {
-  const response = await fetch(`/api/sessions?page=${page}&pageSize=${pageSize}`, {
+  const response = await fetch(`/stream/api/sessions?page=${page}&pageSize=${pageSize}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

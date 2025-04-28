@@ -5,6 +5,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { getSessions } from '@/services/sessionService'
+import { useEffect, useState } from 'react'
+import {SessionResponse} from '@/services/sessionService'
 
 interface ChatSidebarProps {
   open: boolean
@@ -31,11 +34,38 @@ export function ChatSidebar({ open, onOpenChange }: ChatSidebarProps) {
 }
 
 function SessionsList() {
+  const [sessions, setSessions] = useState<SessionResponse | null>(null) // TODO: Replace 'any[]' with the correct type if known, e.g. SessionResponse[]
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const data = await getSessions();
+        console.log(data);
+        setSessions(data)
+      } catch (err) {
+        setError('Failed to load sessions')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadSessions()
+  }, [])
+
+  if (isLoading) {
+    return <div className="p-4 text-sm text-muted-foreground">Loading sessions...</div>
+  }
+
+  if (error) {
+    return <div className="p-4 text-sm text-red-500">{error}</div>
+  }
+
   return (
     <div className="space-y-2">
-      {Array.from({length: 5}).map((_, i) => (
+      {sessions?.data?.map((session) => (
         <button
-          key={i}
+          key={session._id}
           className={cn(
             'flex w-full items-center rounded-lg px-3 py-2 text-sm',
             'hover:bg-accent/50 transition-colors',
@@ -43,9 +73,9 @@ function SessionsList() {
           )}
         >
           <div className="flex flex-col flex-1 gap-1 overflow-hidden">
-            <div className="truncate">Chat session {i + 1}</div>
+            <div className="truncate">{session.first_question || `Chat ${session._id}`}</div>
             <div className="text-xs text-muted-foreground truncate">
-              {new Date().toLocaleDateString()}
+              {new Date(session.created_time).toLocaleDateString()}
             </div>
           </div>
         </button>
