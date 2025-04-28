@@ -9,11 +9,11 @@ export const sendChatMessage = async (
   sessionId: string,
   onChunkReceived: (chunk: string) => void
 ) => {
-  const response = await fetch('http://localhost:8001/api/v1/chat', {
+  const response = await fetch('/stream/api/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODA5YjM0MTc5Y2FhN2VkM2ZiOWQ0ZmQiLCJ1c2VybmFtZSI6ImFkbWluIn0.a9r_nESBoFT9N6eRlh1WbHhVWGuqBij7adx_6uIfqBs'
+    //   Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODA5YjM0MTc5Y2FhN2VkM2ZiOWQ0ZmQiLCJ1c2VybmFtZSI6ImFkbWluIn0.a9r_nESBoFT9N6eRlh1WbHhVWGuqBij7adx_6uIfqBs'
     },
     body: JSON.stringify({
       question: message,
@@ -35,3 +35,4 @@ export const sendChatMessage = async (
     onChunkReceived(text);
   }
 };
+
