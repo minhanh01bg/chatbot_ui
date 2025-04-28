@@ -1,4 +1,4 @@
-import { SessionData } from '@/services/sessionService';
+import { SessionData } from '@/types/session';
 import {
   SidebarMenuItem,
   SidebarMenuButton,

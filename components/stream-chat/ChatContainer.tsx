@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { sendChatMessage } from '@/services/chatService';
-import { getChatHistory, MessageData } from '@/services/sessionService';
+import { getChatHistory } from '@/services/sessionService';
+import { MessageData } from '@/types/session';
 import ChatLayout from './ChatLayout';
 
 interface Message {

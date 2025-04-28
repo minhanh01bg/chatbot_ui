@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { getSessions, SessionData } from '@/services/sessionService';
+import { getSessions } from '@/services/sessionService';
+import { SessionData } from '@/types/session';
 import {
   SidebarGroup,
   SidebarGroupContent,
