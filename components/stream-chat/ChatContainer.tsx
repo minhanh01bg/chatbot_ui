@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { SidebarLeftIcon, PlusIcon, SparklesIcon } from '@/components/icons';
+import { SidebarLeftIcon, PlusIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -15,44 +15,17 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarFooter,
-  SidebarInset,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { AnimatePresence, motion } from 'framer-motion';
-
-// Add a CSS style block for the fixed content
-const sidebarStyles = `
-  .sidebar-layout {
-    display: flex;
-    height: 100%;
-  }
-  
-  .content-area {
-    flex: 1;
-    width: 100%;
-    min-width: 0;
-    height: 100dvh;
-    position: relative;
-    left: 0;
-    margin-left: 0;
-    transition: margin-left 0.3s ease;
-  }
-  
-  @media (min-width: 768px) {
-    [data-sidebar-open="true"] .content-area {
-      margin-left: 0;
-      width: calc(100% - var(--sidebar-width, 16rem));
-    }
-  }
-`;
+import { sendChatMessage } from '@/services/chatService';
+import { send } from 'process';
 
 interface Message {
   content: string;
   isBot: boolean;
-  id?: string;
 }
 
 interface ChatSession {
@@ -90,48 +63,30 @@ const ChatContainer = () => {
 
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
-    setMessages(prev => [...prev, { content: message, isBot: false, id: `user-${Date.now()}` }]);
+    setMessages(prev => [...prev, { content: message, isBot: false }]);
 
     try {
-      const response = await fetch('http://localhost:8001/api/v1/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODA5YjM0MTc5Y2FhN2VkM2ZiOWQ0ZmQiLCJ1c2VybmFtZSI6ImFkbWluIn0.a9r_nESBoFT9N6eRlh1WbHhVWGuqBij7adx_6uIfqBs'
-        },
-        body: JSON.stringify({
-          question: message,
-          chat_history: messages.map(msg => ({
-            type: msg.isBot ? 'assistant' : 'user',
-            content: msg.content
-          })),
-          session_id: 'test-session'
-        })
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-
-      const reader = response.body?.getReader();
-      if (!reader) return;
-
       let botMessage = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const text = new TextDecoder().decode(value);
-        botMessage += text;
-        setMessages(prev => {
-          const newMessages = [...prev];
-          if (newMessages[newMessages.length - 1].isBot) {
-            newMessages[newMessages.length - 1].content = botMessage;
-          } else {
-            newMessages.push({ content: botMessage, isBot: true, id: `bot-${Date.now()}` });
-          }
-          return newMessages;
-        });
-      }
+      await sendChatMessage(
+        message,
+        messages.map(msg => ({
+          type: msg.isBot ? 'assistant' : 'user',
+          content: msg.content
+        })),
+        'test-session',
+        (chunk) => {
+          botMessage += chunk;
+          setMessages(prev => {
+            const newMessages = [...prev];
+            if (newMessages[newMessages.length - 1].isBot) {
+              newMessages[newMessages.length - 1].content = botMessage;
+            } else {
+              newMessages.push({ content: botMessage, isBot: true });
+            }
+            return newMessages;
+          });
+        }
+      );
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -139,36 +94,41 @@ const ChatContainer = () => {
     }
   };
 
-  // Add the styles to the document head
-  useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.textContent = sidebarStyles;
-    document.head.appendChild(styleElement);
-
-    return () => {
-      document.head.removeChild(styleElement);
-    };
-  }, []);
-
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="flex w-full">
-        <AppSidebar />
-        <SidebarInset className="w-full">
-          <ChatContent 
-            messages={messages} 
-            messagesEndRef={messagesEndRef} 
-            isLoading={isLoading} 
-            onSendMessage={handleSendMessage} 
-          />
-        </SidebarInset>
-      </div>
+      <ChatLayout
+        messages={messages}
+        messagesEndRef={messagesEndRef}
+        isLoading={isLoading}
+        onSendMessage={handleSendMessage}
+      />
     </SidebarProvider>
   );
 };
 
-// Chat content component that will be rendered inside the SidebarInset
-const ChatContent = ({
+// Sidebar Toggle Component
+const SidebarToggle = () => {
+  const { toggleSidebar } = useSidebar();
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          onClick={toggleSidebar}
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+        >
+          <SidebarLeftIcon size={18} />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">Toggle Sidebar</TooltipContent>
+    </Tooltip>
+  );
+};
+
+// This component is inside the SidebarProvider context
+const ChatLayout = ({
   messages,
   messagesEndRef,
   isLoading,
@@ -179,115 +139,59 @@ const ChatContent = ({
   isLoading: boolean;
   onSendMessage: (message: string) => Promise<void>;
 }) => {
-  const { toggleSidebar } = useSidebar();
-  
+  const { state: sidebarState } = useSidebar();
+  const isSidebarOpen = sidebarState === 'expanded';
+
   return (
-    <div className="flex flex-col h-dvh bg-background w-full">
-      <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2 border-b z-10">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={toggleSidebar}
-              variant="outline"
-              className="md:px-2 md:h-fit"
-            >
-              <SidebarLeftIcon size={16} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent align="start">Toggle Sidebar</TooltipContent>
-        </Tooltip>
-      </header>
-      
-      <div
-        className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto pt-4 w-full"
-      >
-        {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full w-full">
-            <div className="text-center space-y-4 px-4">
-              <h2 className="text-2xl font-bold">Welcome to Chat Stream</h2>
-              <p className="text-muted-foreground">Start a conversation with the AI assistant by typing a message below.</p>
-            </div>
+    <div className="flex h-full w-full">
+      <AppSidebar />
+      <div className={cn(
+        "flex min-w-0 flex-col h-dvh bg-background",
+        "transition-all duration-300 ease-in-out flex-1"
+      )}>
+        <div className="flex items-center justify-between p-2 border-b sticky top-0 bg-background z-10">
+          <div className="flex items-center gap-2">
+            <SidebarToggle />
           </div>
-        ) : (
-          messages.map((msg, idx) => (
-            <AnimatePresence key={msg.id || idx}>
-              <motion.div
-                className="w-full px-4 group/message"
-                initial={{ y: 5, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                data-role={msg.isBot ? 'assistant' : 'user'}
-              >
-                <div
-                  className={cn(
-                    'flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl',
-                    {
-                      'group-data-[role=user]/message:w-fit': true,
-                    },
-                  )}
-                >
-                  {msg.isBot && (
-                    <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
-                      <div className="translate-y-px">
-                        <SparklesIcon size={14} />
-                      </div>
-                    </div>
-                  )}
+        </div>
 
-                  <div className="flex flex-col gap-2 w-full">
-                    <div className="flex flex-row gap-2 items-start">
-                      <div
-                        className={cn('flex flex-col gap-4', {
-                          'bg-primary text-primary-foreground px-3 py-2 rounded-xl': !msg.isBot,
-                        })}
-                      >
-                        {msg.isBot ? (
-                          <div className="prose prose-neutral dark:prose-invert max-w-none break-words">
-                            <ChatMessage message={msg.content} isBot={true} showAvatar={false} />
-                          </div>
-                        ) : (
-                          msg.content
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          ))
-        )}
-        {isLoading && messages.length > 0 && !messages[messages.length - 1].isBot && (
-          <motion.div
-            className="w-full px-4 group/message"
-            initial={{ y: 5, opacity: 0 }}
-            animate={{ y: 0, opacity: 1, transition: { delay: 0.3 } }}
-            data-role="assistant"
-          >
-            <div className="flex gap-4 w-full">
-              <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-                <SparklesIcon size={14} />
-              </div>
-
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex flex-col gap-4 text-muted-foreground">
-                  Thinking...
+        <div className="flex-1 overflow-y-auto overflow-x-hidden w-full">
+          <div className="flex flex-col min-w-0 gap-0 py-4 w-full">
+            {messages.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center space-y-4 px-4 max-w-3xl">
+                  <h2 className="text-2xl font-bold">Welcome to Chat Stream</h2>
+                  <p className="text-muted-foreground">Start a conversation with the AI assistant by typing a message below.</p>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-        <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
+            ) : (
+              messages.map((msg, idx) => (
+                <ChatMessage key={idx} message={msg.content} isBot={msg.isBot} />
+              ))
+            )}
+            {isLoading && messages.length > 0 && !messages[messages.length - 1].isBot && (
+              <ChatMessage message="..." isBot={true} />
+            )}
+            <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
+          </div>
+        </div>
+
+        <div className={cn(
+          "sticky bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background to-transparent py-2 w-full",
+          "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-16 after:bg-background after:-z-10"
+        )}>
+          <div className="mx-auto px-4 pb-6 w-full max-w-[min(100%,1200px)]">
+            <ChatInput onSend={onSendMessage} disabled={isLoading} />
+          </div>
+        </div>
       </div>
-      
-      <form className="flex px-4 bg-background pb-4 md:pb-6 gap-2 w-full">
-        <ChatInput onSend={onSendMessage} disabled={isLoading} />
-      </form>
     </div>
   );
 };
 
 const AppSidebar = () => {
   const { setOpenMobile } = useSidebar();
-  
+
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
       <SidebarHeader>
@@ -312,10 +216,9 @@ const AppSidebar = () => {
                   className="p-2 h-fit"
                   onClick={() => {
                     setOpenMobile(false);
-                    window.location.reload();
                   }}
                 >
-                  <PlusIcon size={16} />
+                  <PlusIcon />
                 </Button>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>

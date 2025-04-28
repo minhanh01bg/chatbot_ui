@@ -55,7 +55,7 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, disabled }) => {
         onKeyDown={handleKeyDown}
         placeholder="Send a message..."
         className={cn(
-          "min-h-[48px] max-h-[200px] resize-none py-3 pl-4 pr-12",
+          "min-h-[40px] max-h-[200px] resize-none py-3 pl-4 pr-12",
           "rounded-lg shadow-sm border-muted-foreground/20 w-full",
           "focus-visible:ring-1 focus-visible:ring-primary"
         )}
