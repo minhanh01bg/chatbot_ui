@@ -21,9 +21,10 @@ type GroupedChats = {
 interface SessionsListProps {
   onSelectSession: (sessionId: string) => void;
   activeSessionId?: string;
+  refreshTrigger?: number; // A value that changes to trigger a refresh
 }
 
-const SessionsList = ({ onSelectSession, activeSessionId }: SessionsListProps) => {
+const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: SessionsListProps) => {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,6 +34,14 @@ const SessionsList = ({ onSelectSession, activeSessionId }: SessionsListProps) =
       try {
         const response = await getSessions(1, 20);
         setSessions(response.data);
+        
+        // If we have an active session that's not in the list yet, check if it's in the new data
+        if (activeSessionId && !sessions.some(s => s.session_id === activeSessionId)) {
+          const activeSession = response.data.find(s => s.session_id === activeSessionId);
+          if (activeSession) {
+            // Scroll or highlight the session if needed
+          }
+        }
       } catch (error) {
         console.error('Error fetching sessions:', error);
       } finally {
@@ -41,7 +50,7 @@ const SessionsList = ({ onSelectSession, activeSessionId }: SessionsListProps) =
     };
 
     fetchSessions();
-  }, []);
+  }, [refreshTrigger, activeSessionId]); // Re-fetch when refreshTrigger or activeSessionId changes
 
   const groupChatsByDate = (chats: SessionData[]): GroupedChats => {
     const now = new Date();

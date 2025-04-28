@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { sendChatMessage } from '@/services/chatService';
-import { getChatHistory } from '@/services/sessionService';
+import { getChatHistory, createSession } from '@/services/sessionService';
 import { MessageData } from '@/types/session';
 import ChatLayout from './ChatLayout';
 
@@ -14,6 +14,7 @@ const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<string>('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -55,9 +56,28 @@ const ChatContainer = () => {
 
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
+    
+    // Add user message to the UI immediately
     setMessages(prev => [...prev, { content: message, isBot: false }]);
-
+    
     try {
+      // Create a new session if one doesn't exist
+      let sessionId = activeSessionId;
+      if (!sessionId) {
+        try {
+          const newSession = await createSession();
+          sessionId = newSession.session_id;
+          setActiveSessionId(sessionId);
+          
+          // Trigger a refresh of the sessions list
+          setRefreshTrigger(prev => prev + 1);
+        } catch (error) {
+          console.error('Error creating new session:', error);
+          // Fall back to a test session if creation fails
+          sessionId = 'test-session';
+        }
+      }
+      
       let botMessage = '';
       await sendChatMessage(
         message,
@@ -65,7 +85,7 @@ const ChatContainer = () => {
           type: msg.isBot ? 'assistant' : 'user',
           content: msg.content
         })),
-        activeSessionId || 'test-session',
+        sessionId,
         (chunk) => {
           botMessage += chunk;
           setMessages(prev => {
@@ -95,6 +115,7 @@ const ChatContainer = () => {
         onSendMessage={handleSendMessage}
         onSelectSession={handleSelectSession}
         activeSessionId={activeSessionId}
+        refreshTrigger={refreshTrigger}
       />
     </SidebarProvider>
   );

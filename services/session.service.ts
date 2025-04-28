@@ -1,4 +1,4 @@
-import { SessionResponse, ChatHistoryResponse } from '@/types/session';
+import { SessionResponse, ChatHistoryResponse, SessionData } from '@/types/session';
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getChatSessions = async (page: number = 1, pageSize: number = 10): Promise<SessionResponse> => {
@@ -36,3 +36,19 @@ export const getChatHistory = async (sessionId: string): Promise<ChatHistoryResp
 
     return response.json();
 };
+
+export const createSession = async (): Promise<SessionData> => {
+    const response = await fetch(
+        `${BACKEND_URL}/api/v1/create_session`,
+        {
+            method: 'POST',
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to create chat session');
+    }
+
+    return response.json();
+};
+    

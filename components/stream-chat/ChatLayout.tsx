@@ -17,6 +17,7 @@ interface ChatLayoutProps {
   onSendMessage: (message: string) => Promise<void>;
   onSelectSession: (sessionId: string) => void;
   activeSessionId?: string;
+  refreshTrigger?: number;
 }
 
 const ChatLayout = ({
@@ -25,7 +26,8 @@ const ChatLayout = ({
   isLoading,
   onSendMessage,
   onSelectSession,
-  activeSessionId
+  activeSessionId,
+  refreshTrigger
 }: ChatLayoutProps) => {
   const { state: sidebarState } = useSidebar();
   const isSidebarOpen = sidebarState === 'expanded';
@@ -35,6 +37,7 @@ const ChatLayout = ({
       <AppSidebar 
         onSelectSession={onSelectSession}
         activeSessionId={activeSessionId}
+        refreshTrigger={refreshTrigger}
       />
       <div className={cn(
         "flex min-w-0 flex-col h-dvh bg-background",

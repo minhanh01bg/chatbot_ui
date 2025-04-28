@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getChatSessions } from '@/services/session.service';
+import { getChatSessions, createSession } from '@/services/session.service';
 
 export async function GET(request: Request) {
     try {
@@ -12,6 +12,18 @@ export async function GET(request: Request) {
     } catch (error) {
         return NextResponse.json(
             { error: 'Failed to fetch sessions' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const session = await createSession();
+        return NextResponse.json(session);
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to create session' },
             { status: 500 }
         );
     }
