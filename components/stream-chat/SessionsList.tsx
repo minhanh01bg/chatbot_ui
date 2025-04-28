@@ -105,7 +105,7 @@ const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: 
                     </div>
                     {group.sessions.map((session) => (
                       <ChatItem
-                        key={`${session._id}-${group.key}`}
+                        key={`${session.session_id}-${group.key}-${refreshTrigger}`}
                         chat={session}
                         isActive={activeSessionId === session.session_id}
                         setOpenMobile={setOpenMobile}
