@@ -7,7 +7,7 @@ import {
   SidebarMenu,
   useSidebar,
 } from '@/components/ui/sidebar';
-import ChatItem from './ChatItem';
+import ChatItem from '@/components/stream-chat/ChatItem';
 
 type GroupedChats = {
   today: SessionData[];
