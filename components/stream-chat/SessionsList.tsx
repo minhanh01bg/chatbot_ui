@@ -34,14 +34,6 @@ const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: 
       try {
         const response = await getSessions(1, 20);
         setSessions(response.data);
-        
-        // If we have an active session that's not in the list yet, check if it's in the new data
-        if (activeSessionId && !sessions.some(s => s.session_id === activeSessionId)) {
-          const activeSession = response.data.find(s => s.session_id === activeSessionId);
-          if (activeSession) {
-            // Scroll or highlight the session if needed
-          }
-        }
       } catch (error) {
         console.error('Error fetching sessions:', error);
       } finally {
@@ -50,7 +42,7 @@ const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: 
     };
 
     fetchSessions();
-  }, [refreshTrigger, activeSessionId]); // Re-fetch when refreshTrigger or activeSessionId changes
+  }, [refreshTrigger]); // Only re-fetch when refreshTrigger changes, not when activeSessionId changes
 
   const groupChatsByDate = (chats: SessionData[]): GroupedChats => {
     const now = new Date();
