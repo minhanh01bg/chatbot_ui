@@ -4,6 +4,7 @@ import {
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
 import { Trash2Icon } from 'lucide-react';
+
 interface ChatItemProps {
   chat: SessionData;
   isActive: boolean;
@@ -13,27 +14,27 @@ interface ChatItemProps {
 }
 
 const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession }: ChatItemProps) => {
-  const title = chat.first_question || `Session ${chat.session_id.substring(0, 8)}`;
+  const title = chat.first_question || 'New Chat';
   
   const handleSessionClick = () => {
-    setOpenMobile(false);
     onSelectSession(chat.session_id);
+    setOpenMobile(false);
   };
-  const handleDeleteSession = () => {
-    console.log('delete session', chat.session_id);
+
+  const handleDeleteSession = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent session selection when clicking delete
     onDeleteSession(chat.session_id);
-  }
+  };
+
   return (
     <SidebarMenuItem key={chat._id}>
       <SidebarMenuButton asChild isActive={isActive}>
-        <div className="flex justify-between">
-            <button onClick={handleSessionClick}>
-                <span>{title}</span>
-            </button>
-            <button onClick={handleDeleteSession} title="Delete Session">
-                <Trash2Icon className="w-4 h-4" />
-            </button>
-        </div>
+        <button className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
+          <span className="truncate flex-1 text-left">{title}</span>
+          <button onClick={handleDeleteSession} title="Delete Session" className="flex-shrink-0">
+            <Trash2Icon className="w-4 h-4" />
+          </button>
+        </button>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
