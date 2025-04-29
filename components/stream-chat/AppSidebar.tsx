@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/icons';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SessionData } from '@/types/session';
 import {
   Sidebar,
   SidebarMenu,
@@ -16,14 +17,15 @@ interface AppSidebarProps {
   onDeleteSession: (sessionId: string) => void;
   activeSessionId?: string;
   refreshTrigger?: number;
+  sessions: SessionData[];
+  setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
 }
 
-const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger }: AppSidebarProps) => {
+const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger, sessions, setSessions }: AppSidebarProps) => {
   const { setOpenMobile } = useSidebar();
 
   const handleNewChat = () => {
     setOpenMobile(false);
-    // Clear active session by passing empty string
     onSelectSession('');
   };
 
@@ -65,6 +67,8 @@ const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refresh
           onDeleteSession={onDeleteSession}
           activeSessionId={activeSessionId}
           refreshTrigger={refreshTrigger}
+          sessions={sessions}
+          setSessions={setSessions}
         />
       </SidebarContent>
     </Sidebar>

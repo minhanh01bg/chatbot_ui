@@ -4,6 +4,7 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import AppSidebar from './AppSidebar';
 import SidebarToggle from './SidebarToggle';
+import { SessionData } from '@/types/session';
 
 interface Message {
   content: string;
@@ -19,6 +20,8 @@ interface ChatLayoutProps {
   onDeleteSession: (sessionId: string) => void;
   activeSessionId?: string;
   refreshTrigger?: number;
+  sessions: SessionData[];
+  setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
 }
 
 const ChatLayout = ({
@@ -30,6 +33,8 @@ const ChatLayout = ({
   onDeleteSession,
   activeSessionId,
   refreshTrigger,
+  sessions,
+  setSessions
 }: ChatLayoutProps) => {
   const { state: sidebarState } = useSidebar();
   const isSidebarOpen = sidebarState === 'expanded';
@@ -41,6 +46,8 @@ const ChatLayout = ({
         onDeleteSession={onDeleteSession}
         activeSessionId={activeSessionId}
         refreshTrigger={refreshTrigger}
+        sessions={sessions}
+        setSessions={setSessions}
       />
       <div className={cn(
         "flex min-w-0 flex-col h-dvh bg-background",

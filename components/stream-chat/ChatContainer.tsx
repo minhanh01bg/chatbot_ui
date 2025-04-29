@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { sendChatMessage } from '@/services/chatService';
 import { getChatHistory, createSession, deleteSession } from '@/services/sessionService';
-import { MessageData } from '@/types/session';
+import { MessageData, SessionData } from '@/types/session';
 import ChatLayout from './ChatLayout';
 
 interface Message {
@@ -14,6 +14,7 @@ const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<string>('');
+  const [sessions, setSessions] = useState<SessionData[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -66,23 +67,21 @@ const ChatContainer = () => {
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
     
-    // Add user message to the UI immediately
     setMessages(prev => [...prev, { content: message, isBot: false }]);
     
     try {
-      // Create a new session if one doesn't exist
       let sessionId = activeSessionId;
       if (!sessionId) {
         try {
           const newSession = await createSession();
           sessionId = newSession.session_id;
+					newSession.first_question = message;
           setActiveSessionId(sessionId);
           
-          // Trigger a refresh of the sessions list
-          setRefreshTrigger(prev => prev + 1);
+          // Add new session to the existing list instead of refreshing
+          setSessions(prev => [newSession, ...prev]);
         } catch (error) {
           console.error('Error creating new session:', error);
-          // Fall back to a test session if creation fails
           sessionId = 'test-session';
         }
       }
@@ -123,9 +122,11 @@ const ChatContainer = () => {
         isLoading={isLoading}
         onSendMessage={handleSendMessage}
         onSelectSession={handleSelectSession}
-				onDeleteSession={handleDeleteSession}
+        onDeleteSession={handleDeleteSession}
         activeSessionId={activeSessionId}
         refreshTrigger={refreshTrigger}
+        sessions={sessions}
+        setSessions={setSessions}
       />
     </SidebarProvider>
   );

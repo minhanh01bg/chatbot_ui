@@ -22,11 +22,12 @@ interface SessionsListProps {
   onSelectSession: (sessionId: string) => void;
   onDeleteSession: (sessionId: string) => void;
   activeSessionId?: string;
-  refreshTrigger?: number; // A value that changes to trigger a refresh
+  refreshTrigger?: number;
+  sessions: SessionData[];
+  setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
 }
 
-const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger = 0 }: SessionsListProps) => {
-  const [sessions, setSessions] = useState<SessionData[]>([]);
+const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger = 0, sessions, setSessions }: SessionsListProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refre
       }
     };
     fetchSessions();
-  }, [refreshTrigger]); // Only re-fetch when refreshTrigger changes, not when activeSessionId changes
+  }, [refreshTrigger, setSessions]);
 
   const groupChatsByDate = (chats: SessionData[]): GroupedChats => {
     const now = new Date();
