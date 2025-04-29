@@ -111,6 +111,7 @@ const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refre
                         setOpenMobile={setOpenMobile}
                         onSelectSession={onSelectSession}
                         onDeleteSession={onDeleteSession}
+                        setSessions={setSessions}
                       />
                     ))}
                   </div>

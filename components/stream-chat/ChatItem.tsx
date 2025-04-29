@@ -11,9 +11,10 @@ interface ChatItemProps {
   setOpenMobile: (open: boolean) => void;
   onSelectSession: (sessionId: string) => void;
   onDeleteSession: (sessionId: string) => void;
+  setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
 }
 
-const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession }: ChatItemProps) => {
+const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession, setSessions }: ChatItemProps) => {
   const title = chat.first_question || 'New Chat';
   
   const handleSessionClick = () => {
@@ -24,16 +25,18 @@ const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSess
   const handleDeleteSession = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent session selection when clicking delete
     onDeleteSession(chat.session_id);
+    setSessions((prevSessions: SessionData[]) => prevSessions.filter((session: SessionData) => session.session_id !== chat.session_id));
+    setOpenMobile(false);
   };
 
   return (
-    <SidebarMenuItem key={chat._id}>
-      <SidebarMenuButton asChild isActive={isActive}>
-        <button className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
+    <SidebarMenuItem key={chat.session_id}>
+      <SidebarMenuButton asChild isActive={isActive} key={chat.session_id}>
+        <button key={chat.session_id} className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
           <span className="truncate flex-1 text-left">{title}</span>
-          <button onClick={handleDeleteSession} title="Delete Session" className="flex-shrink-0">
+          <div onClick={handleDeleteSession} title="Delete Session" className="flex-shrink-0 cursor-pointer">
             <Trash2Icon className="w-4 h-4" />
-          </button>
+          </div>
         </button>
       </SidebarMenuButton>
     </SidebarMenuItem>

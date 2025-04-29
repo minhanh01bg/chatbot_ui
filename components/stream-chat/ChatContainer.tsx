@@ -58,7 +58,7 @@ const ChatContainer = () => {
 			await deleteSession(sessionId);
 			setActiveSessionId('');
 			setMessages([]);
-			setRefreshTrigger(prev => prev + 1);
+			// setRefreshTrigger(prev => prev + 1);
 		} catch (error) {
 			console.error('Error deleting session:', error);
 		}
