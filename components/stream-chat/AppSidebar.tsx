@@ -13,11 +13,12 @@ import SessionsList from './SessionsList';
 
 interface AppSidebarProps {
   onSelectSession: (sessionId: string) => void;
+  onDeleteSession: (sessionId: string) => void;
   activeSessionId?: string;
   refreshTrigger?: number;
 }
 
-const AppSidebar = ({ onSelectSession, activeSessionId, refreshTrigger }: AppSidebarProps) => {
+const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger }: AppSidebarProps) => {
   const { setOpenMobile } = useSidebar();
 
   const handleNewChat = () => {
@@ -61,6 +62,7 @@ const AppSidebar = ({ onSelectSession, activeSessionId, refreshTrigger }: AppSid
       <SidebarContent>
         <SessionsList 
           onSelectSession={onSelectSession} 
+          onDeleteSession={onDeleteSession}
           activeSessionId={activeSessionId}
           refreshTrigger={refreshTrigger}
         />

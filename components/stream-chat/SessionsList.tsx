@@ -20,11 +20,12 @@ type GroupedChats = {
 
 interface SessionsListProps {
   onSelectSession: (sessionId: string) => void;
+  onDeleteSession: (sessionId: string) => void;
   activeSessionId?: string;
   refreshTrigger?: number; // A value that changes to trigger a refresh
 }
 
-const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: SessionsListProps) => {
+const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger = 0 }: SessionsListProps) => {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,7 +41,6 @@ const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: 
         setIsLoading(false);
       }
     };
-
     fetchSessions();
   }, [refreshTrigger]); // Only re-fetch when refreshTrigger changes, not when activeSessionId changes
 
@@ -110,6 +110,7 @@ const SessionsList = ({ onSelectSession, activeSessionId, refreshTrigger = 0 }: 
                         isActive={activeSessionId === session.session_id}
                         setOpenMobile={setOpenMobile}
                         onSelectSession={onSelectSession}
+                        onDeleteSession={onDeleteSession}
                       />
                     ))}
                   </div>

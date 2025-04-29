@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { sendChatMessage } from '@/services/chatService';
-import { getChatHistory, createSession } from '@/services/sessionService';
+import { getChatHistory, createSession, deleteSession } from '@/services/sessionService';
 import { MessageData } from '@/types/session';
 import ChatLayout from './ChatLayout';
 
@@ -53,7 +53,16 @@ const ChatContainer = () => {
       setIsLoading(false);
     }
   };
-
+	const handleDeleteSession = async (sessionId: string) => {
+		try {
+			await deleteSession(sessionId);
+			setActiveSessionId('');
+			setMessages([]);
+			setRefreshTrigger(prev => prev + 1);
+		} catch (error) {
+			console.error('Error deleting session:', error);
+		}
+	}
   const handleSendMessage = async (message: string) => {
     setIsLoading(true);
     
@@ -114,6 +123,7 @@ const ChatContainer = () => {
         isLoading={isLoading}
         onSendMessage={handleSendMessage}
         onSelectSession={handleSelectSession}
+				onDeleteSession={handleDeleteSession}
         activeSessionId={activeSessionId}
         refreshTrigger={refreshTrigger}
       />

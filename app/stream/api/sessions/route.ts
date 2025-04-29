@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getChatSessions, createSession } from '@/services/session.service';
+import { getChatSessions, createSession, deleteSession } from '@/services/session.service';
 
 export async function GET(request: Request) {
     try {
@@ -24,6 +24,26 @@ export async function POST(request: Request) {
     } catch (error) {
         return NextResponse.json(
             { error: 'Failed to create session' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const sessionId = searchParams.get('session_id');
+        if (!sessionId) {
+            return NextResponse.json(
+                { error: 'Session ID is required' },
+                { status: 400 }
+            );
+        }
+        await deleteSession(sessionId);
+        return NextResponse.json({ message: 'Session deleted successfully' });
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to delete session' },
             { status: 500 }
         );
     }
