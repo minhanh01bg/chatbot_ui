@@ -19,14 +19,15 @@ interface AppSidebarProps {
   refreshTrigger?: number;
   sessions: SessionData[];
   setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
+  onNewChat: () => void;
 }
 
-const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger, sessions, setSessions }: AppSidebarProps) => {
+const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refreshTrigger, sessions, setSessions, onNewChat }: AppSidebarProps) => {
   const { setOpenMobile } = useSidebar();
 
   const handleNewChat = () => {
     setOpenMobile(false);
-    onSelectSession('');
+    onNewChat();
   };
 
   return (

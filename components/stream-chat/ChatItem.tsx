@@ -31,8 +31,8 @@ const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSess
 
   return (
     <SidebarMenuItem key={chat.session_id}>
-      <SidebarMenuButton asChild isActive={isActive} key={chat.session_id}>
-        <button key={chat.session_id} className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
+      <SidebarMenuButton asChild isActive={isActive}>
+        <button className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
           <span className="truncate flex-1 text-left">{title}</span>
           <div onClick={handleDeleteSession} title="Delete Session" className="flex-shrink-0 cursor-pointer">
             <Trash2Icon className="w-4 h-4" />

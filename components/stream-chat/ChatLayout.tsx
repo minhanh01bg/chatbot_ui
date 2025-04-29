@@ -5,6 +5,9 @@ import ChatInput from './ChatInput';
 import AppSidebar from './AppSidebar';
 import SidebarToggle from './SidebarToggle';
 import { SessionData } from '@/types/session';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { PlusIcon } from '@/components/icons';
 
 interface Message {
   content: string;
@@ -22,6 +25,7 @@ interface ChatLayoutProps {
   refreshTrigger?: number;
   sessions: SessionData[];
   setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
+  onNewChat: () => void;
 }
 
 const ChatLayout = ({
@@ -34,7 +38,8 @@ const ChatLayout = ({
   activeSessionId,
   refreshTrigger,
   sessions,
-  setSessions
+  setSessions,
+  onNewChat
 }: ChatLayoutProps) => {
   const { state: sidebarState } = useSidebar();
   const isSidebarOpen = sidebarState === 'expanded';
@@ -48,15 +53,32 @@ const ChatLayout = ({
         refreshTrigger={refreshTrigger}
         sessions={sessions}
         setSessions={setSessions}
+        onNewChat={onNewChat}
       />
       <div className={cn(
         "flex min-w-0 flex-col h-dvh bg-background",
         "transition-all duration-300 ease-in-out flex-1"
       )}>
-        <div className="flex items-center justify-between p-2 border-b sticky top-0 bg-background z-10">
+        <div className="flex items-center  p-2 border-b sticky top-0 bg-background z-10">
           <div className="flex items-center gap-2">
             <SidebarToggle />
           </div>
+          {/* check if sidebar is open */}
+          {!isSidebarOpen && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  className="p-2 h-fit"
+                  onClick={onNewChat}
+                >
+                  <PlusIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="end">New Chat</TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden w-full">

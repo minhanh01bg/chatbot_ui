@@ -18,6 +18,11 @@ const ChatContainer = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const handleNewChat = () => {
+    setActiveSessionId('');
+    setMessages([]);
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -127,6 +132,7 @@ const ChatContainer = () => {
         refreshTrigger={refreshTrigger}
         sessions={sessions}
         setSessions={setSessions}
+        onNewChat={handleNewChat}
       />
     </SidebarProvider>
   );
