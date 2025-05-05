@@ -57,28 +57,37 @@ export default function Sidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <SidebarMenuItem key={item.name}>
-                <SidebarMenuButton asChild isActive={isActive}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpenMobile(false)}
-                    className="flex items-center"
-                  >
-                    <item.icon
-                      className="mr-3 h-6 w-6 flex-shrink-0"
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
+        <div data-sidebar="group" className="relative flex w-full min-w-0 flex-col p-2">
+          <div data-sidebar="group-content" className="w-full text-sm">
+            <div className="px-2 py-1 text-xs text-sidebar-foreground/50">Main Navigation</div>
+            <SidebarMenu className="flex w-full min-w-0 flex-col gap-1">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={item.name} className="group/menu-item relative">
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive}
+                      className="h-8 text-sm flex gap-2 p-3"
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpenMobile(false)}
+                        className="flex items-center"
+                      >
+                        <item.icon
+                          className="mr-3 h-5 w-5 flex-shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span className="truncate flex-1 text-left">{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </div>
+        </div>
       </SidebarContent>
     </UISidebar>
   );
