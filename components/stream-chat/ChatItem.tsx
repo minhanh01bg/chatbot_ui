@@ -11,10 +11,10 @@ interface ChatItemProps {
   setOpenMobile: (open: boolean) => void;
   onSelectSession: (sessionId: string) => void;
   onDeleteSession: (sessionId: string) => void;
-  setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
+  setSessions: (sessions: SessionData[]) => void;
 }
 
-const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession, setSessions }: ChatItemProps) => {
+const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession }: ChatItemProps) => {
   const title = chat.first_question || 'New Chat';
   
   const handleSessionClick = () => {
@@ -22,11 +22,9 @@ const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSess
     setOpenMobile(false);
   };
 
-  const handleDeleteSession = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent session selection when clicking delete
     onDeleteSession(chat.session_id);
-    setSessions((prevSessions: SessionData[]) => prevSessions.filter((session: SessionData) => session.session_id !== chat.session_id));
-    setOpenMobile(false);
   };
 
   return (
@@ -34,7 +32,7 @@ const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSess
       <SidebarMenuButton asChild isActive={isActive}>
         <button className="flex justify-between w-full gap-2" onClick={handleSessionClick}>
           <span className="truncate flex-1 text-left">{title}</span>
-          <div onClick={handleDeleteSession} title="Delete Session" className="flex-shrink-0 cursor-pointer">
+          <div onClick={handleDeleteClick} title="Delete Session" className="flex-shrink-0 cursor-pointer">
             <Trash2Icon className="w-4 h-4" />
           </div>
         </button>
@@ -43,4 +41,4 @@ const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSess
   );
 };
 
-export default ChatItem; 
+export default ChatItem;
