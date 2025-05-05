@@ -1,31 +1,15 @@
-import { cookies } from 'next/headers';
+'use client'
 
-import { Chat } from '@/components/chat';
-import { DEFAULT_MODEL_NAME, models } from '@/lib/ai/models';
-import { generateUUID } from '@/lib/utils';
-import { DataStreamHandler } from '@/components/data-stream-handler';
+import ChatContainer from '@/components/stream-chat/ChatContainer'
 
-export default async function Page() {
-  const id = generateUUID();
-
-  const cookieStore = await cookies();
-  const modelIdFromCookie = cookieStore.get('model-id')?.value;
-
-  const selectedModelId =
-    models.find((model) => model.id === modelIdFromCookie)?.id ||
-    DEFAULT_MODEL_NAME;
-
+export default function StreamPage() {
   return (
-    <>
-      <Chat
-        key={id}
-        id={id}
-        initialMessages={[]}
-        selectedModelId={selectedModelId}
-        selectedVisibilityType="private"
-        isReadonly={false}
-      />
-      <DataStreamHandler id={id} />
-    </>
-  );
+    <div className="flex min-h-[calc(100vh-theme(spacing.16))] flex-col">
+      <div className="flex-1 w-full overflow-hidden">
+        <div className="relative h-full w-full">
+          <ChatContainer />
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -1,14 +1,23 @@
-import { auth } from '@/app/(auth)/auth';
-import { getChatsByUserId } from '@/lib/db/queries';
+import { NextResponse } from 'next/server';
+import { getChatHistory } from '@/services/session.service';
 
-export async function GET() {
-  const session = await auth();
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const sessionId = searchParams.get('session_id');
 
-  if (!session || !session.user) {
-    return Response.json('Unauthorized!', { status: 401 });
-  }
-
-  // biome-ignore lint: Forbidden non-null assertion.
-  const chats = await getChatsByUserId({ id: session.user.id! });
-  return Response.json(chats);
+        if (!sessionId) {
+            return NextResponse.json(
+                { error: 'Session ID is required' },
+                { status: 400 }
+            );
+        }
+        const history = await getChatHistory(sessionId);
+        return NextResponse.json(history);
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to fetch chat history' },
+            { status: 500 }
+        );
+    }
 }

@@ -59,7 +59,7 @@ const ChatLayout = ({
         "flex min-w-0 flex-col h-dvh bg-background",
         "transition-all duration-300 ease-in-out flex-1"
       )}>
-        <div className="flex items-center  p-2 border-b sticky top-0 bg-background z-10">
+        <div className="flex items-center  p-2 sticky top-0 bg-background z-10">
           <div className="flex items-center gap-2">
             <SidebarToggle />
           </div>

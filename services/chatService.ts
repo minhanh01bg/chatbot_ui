@@ -9,7 +9,7 @@ export const sendChatMessage = async (
   sessionId: string,
   onChunkReceived: (chunk: string) => void
 ) => {
-  const response = await fetch('/stream/api/chat', {
+  const response = await fetch('/api/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
