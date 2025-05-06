@@ -1,5 +1,6 @@
 import Sidebar from '@/components/admin/Sidebar';
 import Navbar from '@/components/admin/Navbar';
+import Backdrop from '@/components/admin/Backdrop';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default function AdminLayout({
@@ -9,13 +10,26 @@ export default function AdminLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="min-h-screen flex bg-background w-full">
+        {/* Sidebar and Backdrop */}
         <Sidebar />
+        <Backdrop />
+        
+        {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-h-screen">
           <Navbar />
-          <main className="flex-1 p-6 bg-background overflow-auto">
-            {children}
+          
+          {/* Page Content */}
+          <main className="flex-1 p-4 md:p-6 overflow-auto">
+            <div className="mx-auto max-w-7xl">
+              {children}
+            </div>
           </main>
+          
+          {/* Footer */}
+          <footer className="py-4 px-6 border-t border-border text-sm text-muted-foreground text-center">
+            <p>© {new Date().getFullYear()} Admin Dashboard. All rights reserved.</p>
+          </footer>
         </div>
       </div>
     </SidebarProvider>

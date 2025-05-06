@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { 
   HomeIcon, 
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
   Cog6ToothIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -18,70 +20,151 @@ import {
   SidebarMenuButton,
   useSidebar
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { PanelLeftIcon } from 'lucide-react';
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href?: string;
+  icon: React.ElementType;
+  subItems?: { name: string; href: string }[];
+};
+
+const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Chat Test', href: '/admin/chat-test', icon: ChatBubbleLeftRightIcon },
-  { name: 'Users', href: '/admin/users', icon: UserGroupIcon },
+  { 
+    name: 'Users Management', 
+    icon: UserGroupIcon,
+    subItems: [
+      { name: 'User List', href: '/admin/users' },
+      { name: 'User Roles', href: '/admin/users/roles' },
+    ] 
+  },
   { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
   { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { toggleSidebar, setOpenMobile } = useSidebar();
+  const { toggleSidebar, setOpenMobile, open, isHovered, setIsHovered } = useSidebar();
+  
+  const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
+
+  const isActive = (path: string) => pathname === path;
+  const isSubmenuActive = (subItems?: { name: string; href: string }[]) => {
+    return subItems?.some(item => pathname === item.href);
+  };
+
+  // Track if any submenu should be open based on active path
+  useEffect(() => {
+    navigation.forEach((item, index) => {
+      if (item.subItems?.some(subItem => pathname === subItem.href)) {
+        setOpenSubmenu(index);
+      }
+    });
+  }, [pathname]);
+
+  const handleSubmenuToggle = (index: number) => {
+    setOpenSubmenu(prevState => prevState === index ? null : index);
+  };
 
   return (
-    <UISidebar className="group-data-[side=left]:border-r-0">
-      <SidebarHeader>
-        <SidebarMenu>
-          <div className="flex flex-row justify-between items-center">
-            <h1 className="text-xl font-bold px-2">Admin Panel</h1>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={toggleSidebar}
-                >
-                  <PanelLeftIcon className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">Toggle Sidebar</TooltipContent>
-            </Tooltip>
-          </div>
-        </SidebarMenu>
+    <UISidebar 
+      className="group-data-[side=left]:border-r-0"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <SidebarHeader className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-800">
+        <div className="flex flex-row justify-between items-center px-4 w-full">
+          {(open || isHovered) && (
+            <h1 className="text-xl font-bold">Admin Panel</h1>
+          )}
+          {!open && !isHovered && (
+            <div className="w-full flex justify-center">
+              <span className="font-bold text-xl">A</span>
+            </div>
+          )}
+        </div>
       </SidebarHeader>
       <SidebarContent>
-        <div data-sidebar="group" className="relative flex w-full min-w-0 flex-col p-2">
-          <div data-sidebar="group-content" className="w-full text-sm">
-            <div className="px-2 py-1 text-xs text-sidebar-foreground/50">Main Navigation</div>
+        <div className="relative flex w-full min-w-0 flex-col p-2 mt-2">
+          <div className="w-full">
+            {(open || isHovered) && (
+              <div className="px-3 py-1 text-xs text-sidebar-foreground/50 mb-2">Main Navigation</div>
+            )}
             <SidebarMenu className="flex w-full min-w-0 flex-col gap-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
+              {navigation.map((item, index) => {
+                const isItemActive = item.href ? isActive(item.href) : isSubmenuActive(item.subItems);
                 return (
                   <SidebarMenuItem key={item.name} className="group/menu-item relative">
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={isActive}
-                      className="h-8 text-sm flex gap-2 p-3"
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setOpenMobile(false)}
-                        className="flex items-center"
+                    {item.subItems ? (
+                      <>
+                        <button
+                          onClick={() => handleSubmenuToggle(index)}
+                          className={`flex w-full items-center justify-between gap-2 rounded-lg p-2 
+                          ${isItemActive ? 
+                            'bg-brand-500/10 text-brand-500' : 
+                            'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          <div className="flex items-center">
+                            <item.icon
+                              className={`h-5 w-5 mr-3 flex-shrink-0 
+                              ${isItemActive ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400'}`}
+                              aria-hidden="true"
+                            />
+                            {(open || isHovered) && (
+                              <span className="text-sm font-medium">{item.name}</span>
+                            )}
+                          </div>
+                          {(open || isHovered) && (
+                            <ChevronDownIcon
+                              className={`h-4 w-4 transition-transform duration-200 
+                              ${openSubmenu === index ? 'rotate-180' : ''}`}
+                            />
+                          )}
+                        </button>
+                        {(open || isHovered) && openSubmenu === index && (
+                          <div className="mt-1 ml-7 space-y-1">
+                            {item.subItems.map((subItem) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                onClick={() => setOpenMobile(false)}
+                                className={`block rounded-lg px-2 py-1.5 text-sm 
+                                ${isActive(subItem.href) ?
+                                  'bg-brand-500/10 text-brand-500 font-medium' :
+                                  'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                                }`}
+                              >
+                                {subItem.name}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <SidebarMenuButton 
+                        asChild 
+                        isActive={isItemActive}
+                        className="h-9 text-sm flex gap-2 p-2"
                       >
-                        <item.icon
-                          className="mr-3 h-5 w-5 flex-shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span className="truncate flex-1 text-left">{item.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
+                        <Link
+                          href={item.href || '#'}
+                          onClick={() => setOpenMobile(false)}
+                          className="flex items-center"
+                        >
+                          <item.icon
+                            className={`h-5 w-5 mr-3 flex-shrink-0
+                            ${isItemActive ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400'}`}
+                            aria-hidden="true"
+                          />
+                          {(open || isHovered) && (
+                            <span className="truncate text-sm font-medium">{item.name}</span>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                 );
               })}
