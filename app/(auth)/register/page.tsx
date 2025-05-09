@@ -34,6 +34,9 @@ export default function Page() {
       toast.success('Account created successfully');
       setIsSuccessful(true);
       router.refresh();
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
     }
   }, [state, router]);
 

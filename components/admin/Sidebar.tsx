@@ -10,6 +10,7 @@ import {
   Cog6ToothIcon,
   ChartBarIcon,
   ChevronDownIcon,
+  DocumentIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -30,6 +31,7 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
+  { name: 'Documents', href: '/admin/documents', icon: DocumentIcon },
   { name: 'Chat Test', href: '/admin/chat-test', icon: ChatBubbleLeftRightIcon },
   { 
     name: 'Users Management', 
