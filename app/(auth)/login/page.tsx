@@ -35,9 +35,9 @@ export default function Page() {
       toast.success('Login successful!');
       setIsSuccessful(true);
       router.refresh();
-      // Chuyển hướng đến trang chat sau khi đăng nhập thành công
+      // Redirect to chat page after successful login
       setTimeout(() => {
-        router.push('/'); // URL của trang chat chính
+        router.push('/'); // URL of the main chat page
       }, 1000);
     }
   }, [state.status, router]);
@@ -47,17 +47,17 @@ export default function Page() {
     formAction(formData);
   };
 
-  // Hàm xử lý đăng xuất và xóa tất cả cookies session
+  // Function to handle logout and clear all session cookies
   const handleForceLogout = async () => {
-    // Đăng xuất khỏi NextAuth
+    // Sign out of NextAuth
     await signOut({ redirect: false });
     
-    // Xóa cookies thủ công
+    // Manually clear cookies
     document.cookie.split(";").forEach(function(c) {
       document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     
-    toast.success('Đã đăng xuất và xóa cache session');
+    toast.success('Successfully logged out and cleared session cache');
     router.refresh();
   };
 
@@ -86,13 +86,13 @@ export default function Page() {
           </p>
         </AuthForm>
         
-        <div className="border-t pt-4">
-          <p className="text-center text-sm text-gray-500 mb-2">Gặp vấn đề đăng nhập?</p>
+        {/* <div className="border-t pt-4">
+          <p className="text-center text-sm text-gray-500 mb-2">Having login issues?</p>
           <LogoutButton 
             variant="outline" 
             className="w-full"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

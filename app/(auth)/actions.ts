@@ -21,11 +21,11 @@ export const login = async (
   formData: FormData,
 ): Promise<LoginActionState> => {
   try {
-    // Trước khi đăng nhập, đảm bảo đăng xuất phiên hiện tại
+    // Before login, ensure to sign out of current session
     try {
       await signOut({ redirect: false });
     } catch (e) {
-      // Bỏ qua lỗi đăng xuất nếu có
+      // Ignore sign out errors if any
     }
     
     const validatedData = authFormSchema.parse({
@@ -36,7 +36,7 @@ export const login = async (
     try {
       console.log('Calling login service with:', validatedData.email);
       
-      // Đăng nhập vào NextAuth với provider credentials
+      // Login to NextAuth with credentials provider
       const signInResult = await signIn('credentials', {
         email: validatedData.email,
         password: validatedData.password,
@@ -78,11 +78,11 @@ export const register = async (
   formData: FormData,
 ): Promise<RegisterActionState> => {
   try {
-    // Đăng xuất phiên hiện tại trước khi đăng ký
+    // Sign out of current session before registration
     try {
       await signOut({ redirect: false });
     } catch (e) {
-      // Bỏ qua lỗi đăng xuất nếu có
+      // Ignore sign out errors if any
     }
     
     const validatedData = authFormSchema.parse({
@@ -91,13 +91,13 @@ export const register = async (
     });
 
     try {
-      // Gọi API đăng ký
+      // Call registration API
       await registerService(
         validatedData.email,
         validatedData.password
       );
       
-      // Đăng nhập sau khi đăng ký thành công
+      // Sign in after successful registration
       const signInResult = await signIn('credentials', {
         email: validatedData.email,
         password: validatedData.password,
@@ -111,7 +111,7 @@ export const register = async (
 
       return { status: 'success' };
     } catch (error) {
-      // Kiểm tra nếu người dùng đã tồn tại
+      // Check if user already exists
       if (error instanceof Error && error.message.includes('already exists')) {
         return { status: 'user_exists' };
       }

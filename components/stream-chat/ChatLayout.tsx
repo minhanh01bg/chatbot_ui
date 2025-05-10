@@ -8,6 +8,8 @@ import { SessionData } from '@/types/session';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/icons';
+import { ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
 
 interface Message {
   content: string;
@@ -59,26 +61,43 @@ const ChatLayout = ({
         "flex min-w-0 flex-col h-dvh bg-background",
         "transition-all duration-300 ease-in-out flex-1"
       )}>
-        <div className="flex items-center  p-2 sticky top-0 bg-background z-10">
+        <div className="flex items-center justify-between p-2 sticky top-0 bg-background z-10">
           <div className="flex items-center gap-2">
             <SidebarToggle />
+            {/* check if sidebar is open */}
+            {!isSidebarOpen && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    className="p-2 h-fit"
+                    onClick={onNewChat}
+                  >
+                    <PlusIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent align="end">New Chat</TooltipContent>
+              </Tooltip>
+            )}
           </div>
-          {/* check if sidebar is open */}
-          {!isSidebarOpen && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  type="button"
-                  className="p-2 h-fit"
-                  onClick={onNewChat}
-                >
-                  <PlusIcon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent align="end">New Chat</TooltipContent>
-            </Tooltip>
-          )}
+          
+          {/* Admin access button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                type="button"
+                className="p-2 h-fit"
+                asChild
+              >
+                <Link href="/admin">
+                  <ShieldCheck className="h-5 w-5" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Admin Dashboard</TooltipContent>
+          </Tooltip>
         </div>
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden w-full">

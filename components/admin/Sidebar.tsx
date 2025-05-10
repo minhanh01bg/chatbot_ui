@@ -32,7 +32,6 @@ type NavItem = {
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Documents', href: '/admin/documents', icon: DocumentIcon },
-  { name: 'Chat Test', href: '/admin/chat-test', icon: ChatBubbleLeftRightIcon },
   { 
     name: 'Users Management', 
     icon: UserGroupIcon,

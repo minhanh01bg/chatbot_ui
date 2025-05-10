@@ -1,121 +1,124 @@
-const BACKEND_URL = process.env.BACKEND_URL;
-
 /**
- * Hàm đăng nhập - gọi API login và lấy token
- * @param email Email của người dùng
- * @param password Mật khẩu của người dùng
- * @returns Response từ API chứa access_token và token_type
+ * Login function - call login API and get token
+ * @param email User's email
+ * @param password User's password
+ * @returns API response containing access_token and token_type
  */
 export const login = async (email: string, password: string) => {
-    const timestamp = Date.now();
-    const response = await fetch(`${BACKEND_URL}/api/v1/login?t=${timestamp}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        },
-        body: JSON.stringify({ email, password }),
-        cache: 'no-store'
-    });
+    console.log('Login attempt initiated');
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+            },
+            body: JSON.stringify({ email, password }),
+            cache: 'no-store'
+        });
 
-    if (!response.ok) {
-        console.error('Login API error:', response.status, response.statusText);
-        throw new Error('Failed to login');
+        if (!response.ok) {
+            console.error('Login API error:', {
+                status: response.status,
+                statusText: response.statusText
+            });
+            throw new Error(`Login failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Login successful');
+        
+        return data;
+    } catch (error) {
+        console.error('Login request failed');
+        throw error;
     }
-
-    return response.json();
 };
 
 /**
- * Hàm đăng ký người dùng mới
- * @param email Email của người dùng mới
- * @param password Mật khẩu của người dùng mới
- * @returns Response từ API
+ * Register function - register a new user
+ * @param email New user's email
+ * @param password New user's password
+ * @returns API response
  */
 export const register = async (email: string, password: string) => {
-    const timestamp = Date.now();
-    const response = await fetch(`${BACKEND_URL}/api/v1/register?t=${timestamp}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        },
-        body: JSON.stringify({ email, password }),
-        cache: 'no-store'
-    });
+    console.log('Registration attempt initiated');
 
-    if (!response.ok) {
-        console.error('Register API error:', response.status, response.statusText);
-        throw new Error('Failed to register');
+    try {
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+            },
+            body: JSON.stringify({ email, password }),
+            cache: 'no-store'
+        });
+
+        if (!response.ok) {
+            console.error('Registration API error:', {
+                status: response.status,
+                statusText: response.statusText
+            });
+            throw new Error(`Registration failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Registration successful');
+
+        return data;
+    } catch (error) {
+        console.error('Registration request failed');
+        throw error;
     }
-
-    return response.json();
 };
 
 /**
- * Tạo headers với token xác thực từ session
- * @param session Session từ NextAuth chứa accessToken và tokenType
- * @returns Headers cho API request
- */
-export const createAuthHeaders = (session: any) => {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-    };
-
-    // Thêm Authorization header nếu có token
-    if (session?.accessToken) {
-        const tokenType = session.tokenType || 'Bearer';
-        headers['Authorization'] = `${tokenType} ${session.accessToken}`;
-    }
-
-    return headers;
-};
-
-/**
- * Gọi API với xác thực dùng token trong session
- * Sử dụng hàm này cho các API call cần xác thực người dùng
+ * Call API with authentication using session token
+ * Use this function for API calls that require user authentication
  * 
- * @param endpoint Đường dẫn API (không bao gồm BACKEND_URL)
- * @param options Tùy chọn fetch (method, body, v.v.)
- * @param session Session từ NextAuth chứa accessToken
- * @returns Dữ liệu trả về từ API dạng JSON
+ * @param endpoint API endpoint path on the backend
+ * @param options Fetch options (method, body, etc.)
+ * @param session NextAuth session containing accessToken
+ * @returns JSON data from API response
  * 
  * @example
- * // Lấy thông tin người dùng
+ * // Get user profile
  * const userData = await fetchWithAuth('/api/v1/user/profile', { method: 'GET' }, session);
  */
 export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, session: any) => {
-    const url = `${BACKEND_URL}${endpoint}`;
-    const timestamp = Date.now();
-    
-    // Tạo headers với token xác thực từ session
-    const headers = createAuthHeaders(session);
-    
-    // Gộp với headers từ options nếu có
-    const mergedHeaders = {
-        ...headers,
-        ...(options.headers || {})
-    };
+    try {
+        // Create proxy request payload
+        const proxyRequest = {
+            endpoint, // Backend endpoint path
+            method: options.method || 'GET',
+            body: options.body ? JSON.parse(options.body as string) : undefined
+        };
 
-    const response = await fetch(`${url}?t=${timestamp}`, {
-        ...options,
-        headers: mergedHeaders,
-        cache: 'no-store'
-    });
+        const response = await fetch('/api/auth-proxy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+            },
+            body: JSON.stringify(proxyRequest),
+            cache: 'no-store'
+        });
 
-    if (!response.ok) {
-        console.error(`API error (${endpoint}):`, response.status, response.statusText);
-        throw new Error(`API request failed: ${response.statusText}`);
+        if (!response.ok) {
+            console.error(`API error:`, {
+                status: response.status,
+                statusText: response.statusText
+            });
+            throw new Error(`API request failed: ${response.statusText}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('API request failed');
+        throw error;
     }
-
-    return response.json();
 };
 
 

@@ -12,7 +12,7 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
-// Mở rộng type User để hỗ trợ thêm các trường chúng ta cần
+// Extend User type to support additional fields we need
 interface CustomUser extends User {
   accessToken?: string;
   tokenType?: string;
@@ -26,80 +26,58 @@ export const {
 } = NextAuth({
   ...authConfig,
   session: {
-    // Sử dụng strategy là "jwt" để dễ quản lý, nhưng với maxAge ngắn để tránh cache lâu
+    // Use "jwt" strategy for easier management, with shorter maxAge to avoid long caching
     strategy: "jwt",
-    maxAge: 60 * 60, // 1 giờ thay vì 30 ngày mặc định
+    maxAge: 60 * 60, // 1 hour instead of default 30 days
   },
   providers: [
     Credentials({
       credentials: {},
       async authorize({ email, password }: any) {
         try {
-          console.log('Calling login API with:', email);
-          // Luôn gọi API đăng nhập mới
+          console.log('Authentication attempt initiated');
           const loginResponse = await loginService(email, password);
-          console.log('Login API response:', loginResponse);
           
-          // Kiểm tra nếu loginResponse có token
-          if (loginResponse && loginResponse.access_token) {
-            try {
-              // Giải mã JWT token để lấy thông tin người dùng
-              const decodedToken = jwtDecode(loginResponse.access_token);
-              console.log('Decoded token:', decodedToken);
-              
-              // Tạo user object từ token và email
-              const user: CustomUser = {
-                id: typeof decodedToken.sub === 'string' ? decodedToken.sub : email,
-                email: email,
-                name: email.split('@')[0] || null,
-                // Thêm các trường accessToken và tokenType
-                accessToken: loginResponse.access_token,
-                tokenType: loginResponse.token_type
-              };
-              
-              return user;
-            } catch (decodeError) {
-              console.error('Failed to decode JWT:', decodeError);
-              
-              // Nếu không giải mã được token, vẫn trả về user với thông tin tối thiểu
-              const user: CustomUser = {
-                id: email,
-                email: email,
-                name: email.split('@')[0] || null,
-                accessToken: loginResponse.access_token,
-                tokenType: loginResponse.token_type
-              };
-              
-              return user;
-            }
+          if (!loginResponse || !loginResponse.access_token) {
+            console.error('Authentication failed: Invalid response format');
+            return null;
           }
+
+          // Create user object from response
+          const user: CustomUser = {
+            id: loginResponse.user.id,
+            email: loginResponse.user.email,
+            name: loginResponse.user.email.split('@')[0] || null,
+            accessToken: loginResponse.access_token,
+            tokenType: loginResponse.token_type
+          };
           
-          // Nếu không có token, trả về null
-          console.error('No access_token in response');
-          return null;
+          console.log('Authentication successful');
+          
+          return user;
         } catch (error) {
-          console.error('Authentication error:', error);
+          console.error('Authentication error');
           return null;
         }
-      },
+      }
     }),
   ],
   callbacks: {
-    // Thêm timestamp để đảm bảo token luôn được refresh
+    // Add timestamp to ensure token is always refreshed
     async jwt({ token, user }) {
       if (user) {
         const customUser = user as CustomUser;
         token.id = customUser.id;
-        // Lưu token từ API response vào JWT
+        // Save token from API response to JWT
         token.accessToken = customUser.accessToken;
         token.tokenType = customUser.tokenType;
-        // Thêm timestamp để đánh dấu thời gian tạo token
+        // Add timestamp to mark token creation time
         token.createdAt = Date.now();
       }
 
-      // Kiểm tra xem token có cần refresh không
+      // Check if token needs refresh
       const shouldRefreshTime = Math.floor((Date.now() - (token.createdAt as number || 0)) / 1000);
-      // Nếu token đã tồn tại quá 30 phút, đánh dấu cần refresh
+      // If token exists for more than 30 minutes, mark for refresh
       if (shouldRefreshTime > 30 * 60) {
         token.needsRefresh = true;
       }
@@ -115,10 +93,10 @@ export const {
     }) {
       if (session.user) {
         session.user.id = token.id as string;
-        // Thêm các thông tin từ token vào session
+        // Add token information to session
         (session as any).accessToken = token.accessToken;
         (session as any).tokenType = token.tokenType;
-        // Thêm thông tin về timestamp
+        // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
       }

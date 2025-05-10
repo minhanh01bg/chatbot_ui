@@ -5,8 +5,14 @@ import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-export default function ChatTest() {
+interface ChatTestProps {
+  className?: string;
+  variant?: 'default' | 'embedded';
+}
+
+export default function ChatTest({ className, variant = 'default' }: ChatTestProps) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
 
@@ -29,30 +35,48 @@ export default function ChatTest() {
     }, 1000);
   };
 
+  // Conditionally apply border based on the variant
+  const isEmbedded = variant === 'embedded';
+
   return (
-    <Card className="flex flex-col h-full">
-      <CardContent className="flex-1 p-4 overflow-y-auto">
-        {chatHistory.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-4 ${
-              msg.role === 'user' ? 'text-right' : 'text-left'
-            }`}
-          >
+    <Card className={cn(
+      "flex flex-col h-full",
+      isEmbedded && "border-0 shadow-none",
+      className
+    )}>
+      <CardContent className={cn(
+        "flex-1 overflow-y-auto",
+        isEmbedded ? "p-0" : "p-4"
+      )}>
+        {chatHistory.length === 0 ? (
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+            Ask a question to test your imported data
+          </div>
+        ) : (
+          chatHistory.map((msg, index) => (
             <div
-              className={`inline-block p-3 rounded-lg ${
-                msg.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
+              key={index}
+              className={`mb-4 ${
+                msg.role === 'user' ? 'text-right' : 'text-left'
               }`}
             >
-              {msg.content}
+              <div
+                className={`inline-block p-3 rounded-lg ${
+                  msg.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {msg.content}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </CardContent>
 
-      <form onSubmit={handleSubmit} className="p-4 border-t">
+      <form onSubmit={handleSubmit} className={cn(
+        isEmbedded ? "pt-4" : "p-4"
+      )}>
         <div className="flex space-x-2">
           <Input
             type="text"

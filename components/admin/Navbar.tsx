@@ -73,7 +73,7 @@ export default function Navbar() {
         <div
           className={`${
             isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-md lg:shadow-none`}
+          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-md lg:shadow-none absolute top-16 left-0 right-0 bg-background border-b lg:static lg:border-0`}
         >
           <div className="flex items-center gap-3">
             <NotificationDropdown />

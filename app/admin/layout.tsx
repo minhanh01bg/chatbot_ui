@@ -21,7 +21,7 @@ export default function AdminLayout({
           
           {/* Page Content */}
           <main className="flex-1 p-4 md:p-6 overflow-auto">
-            <div className="mx-auto max-w-7xl">
+            <div>
               {children}
             </div>
           </main>
