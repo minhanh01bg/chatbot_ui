@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -14,106 +14,73 @@ import { Button } from '../../../components/ui/button';
 import { Eye, Edit, Trash2, Download, Search, Plus } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
+import { get_documents } from '../../../services/document.service';
 
-// Define the document type
+// Define the document type based on API response
 interface Document {
-  id: string;
+  _id: string;
   title: string;
-  category: string;
-  status: 'published' | 'draft' | 'archived';
-  createdAt: string;
-  updatedAt: string;
+  description: string;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  vectorstore_id: string;
+  file_name: string;
 }
 
-// Sample data for demonstration
-const documentsData: Document[] = [
-  {
-    id: '1',
-    title: 'Project Proposal',
-    category: 'Business',
-    status: 'published',
-    createdAt: '2023-10-15',
-    updatedAt: '2023-10-20',
-  },
-  {
-    id: '2',
-    title: 'Financial Report Q3',
-    category: 'Finance',
-    status: 'published',
-    createdAt: '2023-09-30',
-    updatedAt: '2023-10-05',
-  },
-  {
-    id: '3',
-    title: 'Marketing Strategy',
-    category: 'Marketing',
-    status: 'draft',
-    createdAt: '2023-10-10',
-    updatedAt: '2023-10-12',
-  },
-  {
-    id: '4',
-    title: 'User Research Results',
-    category: 'Research',
-    status: 'published',
-    createdAt: '2023-09-15',
-    updatedAt: '2023-09-20',
-  },
-  {
-    id: '5',
-    title: 'Product Roadmap',
-    category: 'Product',
-    status: 'draft',
-    createdAt: '2023-10-01',
-    updatedAt: '2023-10-08',
-  },
-  {
-    id: '6',
-    title: 'Annual Report',
-    category: 'Finance',
-    status: 'archived',
-    createdAt: '2022-12-15',
-    updatedAt: '2023-01-10',
-  },
-  {
-    id: '7',
-    title: 'Brand Guidelines',
-    category: 'Design',
-    status: 'published',
-    createdAt: '2023-08-20',
-    updatedAt: '2023-09-05',
-  },
-];
-
 export default function DocumentsTable() {
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [totalItems, setTotalItems] = useState(0);
   
-  const itemsPerPage = 5;
-  const filteredDocuments = documentsData.filter(doc => 
+  const itemsPerPage = 15;
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        setLoading(true);
+        const skip = (currentPage - 1) * itemsPerPage;
+        const response = await get_documents(skip, itemsPerPage);
+        setDocuments(response.documents);
+        setTotalItems(response.total);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching documents:', err);
+        setError('Failed to load documents. Please try again later.');
+        setDocuments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, [currentPage]);
+
+  // Filter documents based on search term
+  const filteredDocuments = documents.filter(doc => 
     doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.category.toLowerCase().includes(searchTerm.toLowerCase())
+    doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doc.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    doc.file_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentDocuments = filteredDocuments.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const getStatusColor = (status: Document['status']) => {
-    switch (status) {
-      case 'published':
-        return 'success';
-      case 'draft':
-        return 'warning';
-      case 'archived':
-        return 'error';
-      default:
-        return 'default';
-    }
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
   return (
@@ -143,27 +110,31 @@ export default function DocumentsTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>File Name</TableHead>
                 <TableHead>Created</TableHead>
-                <TableHead>Updated</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentDocuments.length > 0 ? (
-                currentDocuments.map((doc) => (
-                  <TableRow key={doc.id}>
-                    <TableCell className="font-medium">{doc.title}</TableCell>
-                    <TableCell>{doc.category}</TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusColor(doc.status)}>
-                        {doc.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{doc.createdAt}</TableCell>
-                    <TableCell>{doc.updatedAt}</TableCell>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    Loading documents...
+                  </TableCell>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center text-red-500">
+                    {error}
+                  </TableCell>
+                </TableRow>
+              ) : filteredDocuments.length > 0 ? (
+                filteredDocuments.map((doc) => (
+                  <TableRow key={doc._id}>
+                    <TableCell className='font-medium'>{doc._id}</TableCell>
+                    <TableCell className="font-medium">{doc.file_name}</TableCell>
+                    <TableCell>{formatDate(doc.created_at)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -188,7 +159,7 @@ export default function DocumentsTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No documents found.
                   </TableCell>
                 </TableRow>
@@ -196,7 +167,7 @@ export default function DocumentsTable() {
             </TableBody>
           </Table>
         </div>
-        {filteredDocuments.length > itemsPerPage && (
+        {totalPages > 1 && (
           <div className="flex items-center justify-center p-4 border-t border-gray-200 dark:border-gray-800">
             <Pagination
               currentPage={currentPage}
