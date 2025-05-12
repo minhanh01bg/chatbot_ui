@@ -11,7 +11,21 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { get_site_documents_with_token } from '@/services/document.service';
 
+// Define API document interface (from backend)
+interface ApiDocument {
+  _id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  vectorstore_id: string;
+  file_name: string;
+}
+
+// Define UI document interface (for component)
 interface Document {
   id: string;
   name: string;
@@ -22,11 +36,20 @@ interface Document {
   type: string;
 }
 
-interface SiteDocumentsProps {
-  siteId: string;
+interface Site {
+  _id?: string;
+  id?: string;
+  name: string;
+  chat_token?: string;
+  [key: string]: any;
 }
 
-export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
+interface SiteDocumentsProps {
+  siteId: string;
+  site: Site; // Pass the complete site object directly
+}
+
+export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -36,40 +59,57 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch documents for the site
+  // Fetch documents when component mounts or site changes
   useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Use the new API endpoint
-        const response = await fetch(`/admin/sites/api/${siteId}/documents`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Error fetching documents: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        setDocuments(data);
-      } catch (error) {
-        console.error('Error fetching documents:', error);
-        toast({
-          title: 'Error fetching documents',
-          description: 'There was a problem loading your documents.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    console.log('Site in SiteDocuments:', site);
+    
+    // If we have a site with chat_token, fetch documents
+    if (site?.chat_token) {
+      fetchSiteDocuments(site.chat_token);
+    } else {
+      setIsLoading(false);
+      console.warn('No chat_token found for site:', site);
+      toast({
+        title: 'Missing token',
+        description: 'No chat token found for this site. Documents cannot be fetched.',
+        variant: 'destructive',
+      });
+    }
+  }, [site, toast]);
 
-    fetchDocuments();
-  }, [siteId, toast]);
+  // Fetch documents using chat_token
+  const fetchSiteDocuments = async (chatToken: string) => {
+    try {
+      console.log('Fetching documents with token:', chatToken.substring(0, 10) + '...');
+      console.log('Site ID:', siteId);
+      
+      const data = await get_site_documents_with_token(siteId, chatToken);
+      console.log('Documents fetched successfully:', data);
+      
+      // Map the API documents to our UI document format
+      const formattedDocuments: Document[] = (data.documents || []).map((doc: ApiDocument) => ({
+        id: doc._id,
+        name: doc.title || doc.file_name,
+        siteId: siteId,
+        status: 'completed' as const, // Type assertion to match enum 
+        createdAt: doc.created_at,
+        size: 0, // Default size
+        type: doc.file_name?.split('.').pop() || 'unknown'
+      }));
+      
+      setDocuments(formattedDocuments);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      console.error('Error details:', { siteId, tokenLength: chatToken?.length });
+      toast({
+        title: 'Error fetching documents',
+        description: 'There was a problem loading your documents.',
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+    }
+  };
 
   // Filter documents based on search term
   const filteredDocuments = documents.filter(doc => 
@@ -78,92 +118,76 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
     doc.status.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files || event.target.files.length === 0) return;
+  // Handle file upload
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !site?.chat_token) return;
     
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
+    setIsUploading(true);
+    setUploadProgress(0);
     
     try {
-      setIsUploading(true);
-      setUploadProgress(0);
+      // Create FormData
+      const formData = new FormData();
+      formData.append('file', file);
       
-      // Using XMLHttpRequest for progress tracking
-      const xhr = new XMLHttpRequest();
+      // Use consistent backend URL
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8002';
+      console.log("Using backend URL for upload:", backendUrl);
       
-      xhr.open('POST', `/admin/sites/api/${siteId}/documents`);
-      
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (progressEvent) => {
-        if (progressEvent.lengthComputable) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(progress);
-        }
+      // Direct call to backend API with chat_token
+      const response = await fetch(`${backendUrl}/api/v1/upload_document`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${site.chat_token}`
+        },
+        body: formData
       });
       
-      // Handle response
-      xhr.onload = function() {
-        if (this.status >= 200 && this.status < 300) {
-          try {
-            const response = JSON.parse(xhr.responseText);
-            setDocuments(prev => [...prev, response]);
-            
-            toast({
-              title: 'Document uploaded',
-              description: 'Your document has been uploaded successfully and is now processing.',
-            });
-            
-            router.refresh();
-          } catch (e) {
-            console.error('Error parsing response:', e);
-          }
-        } else {
-          console.error('Error uploading document:', xhr.statusText);
-          toast({
-            title: 'Error uploading document',
-            description: 'There was a problem uploading your document.',
-            variant: 'destructive',
-          });
-        }
-        
-        setIsUploading(false);
-        setUploadProgress(0);
-      };
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
       
-      xhr.onerror = () => {
-        console.error('Network error during upload');
-        toast({
-          title: 'Network error',
-          description: 'There was a network problem uploading your document.',
-          variant: 'destructive',
-        });
-        
-        setIsUploading(false);
-        setUploadProgress(0);
-      };
+      const result = await response.json();
+      console.log('Upload result:', result);
       
-      xhr.send(formData);
+      toast({
+        title: 'Document uploaded',
+        description: 'Your document has been uploaded successfully.',
+      });
+      
+      // Refresh documents list
+      if (site?.chat_token) {
+        fetchSiteDocuments(site.chat_token);
+      }
     } catch (error) {
       console.error('Error uploading document:', error);
       toast({
-        title: 'Error uploading document',
+        title: 'Upload failed',
         description: 'There was a problem uploading your document.',
         variant: 'destructive',
       });
+    } finally {
       setIsUploading(false);
       setUploadProgress(0);
     }
   };
-
+  
+  // Handle document deletion
   const handleDeleteDocument = async () => {
-    if (!documentToDelete) return;
+    if (!documentToDelete || !site?.chat_token) return;
     
     try {
-      const response = await fetch(`/admin/sites/api/${siteId}/documents/${documentToDelete}`, {
+      // Use consistent backend URL
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8002';
+      console.log("Using backend URL for delete:", backendUrl);
+      
+      // Direct call to backend API with chat_token
+      const response = await fetch(`${backendUrl}/api/v1/documents/${documentToDelete}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${site.chat_token}`
         }
       });
       
@@ -171,6 +195,7 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
         throw new Error(`Error deleting document: ${response.statusText}`);
       }
       
+      // Remove the deleted document from the list
       setDocuments(prev => prev.filter(doc => doc.id !== documentToDelete));
       
       toast({
@@ -178,8 +203,6 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
         description: 'The document has been removed successfully.',
       });
       
-      setDocumentToDelete(null);
-      router.refresh();
     } catch (error) {
       console.error('Error deleting document:', error);
       toast({
@@ -187,10 +210,13 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
         description: 'There was a problem deleting the document.',
         variant: 'destructive',
       });
+    } finally {
+      setDocumentToDelete(null);
     }
   };
-
-  const formatSize = (bytes: number) => {
+  
+  // Format file size
+  const formatSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -200,7 +226,7 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle>Documents</CardTitle>
+          <CardTitle>Documents for {site?.name || 'Site'}</CardTitle>
           <CardDescription>Manage documents for this site</CardDescription>
         </div>
         <div className="flex items-center gap-4">
@@ -212,7 +238,7 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
           />
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="sm">
+              <Button size="sm" disabled={!site?.chat_token}>
                 <Plus className="mr-2 h-4 w-4" /> Add Document
               </Button>
             </DialogTrigger>
@@ -245,9 +271,18 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
           </Dialog>
         </div>
       </CardHeader>
+      
       <CardContent>
         {isLoading ? (
           <div className="text-center py-10">Loading documents...</div>
+        ) : !site?.chat_token ? (
+          <div className="text-center py-10 text-red-500">
+            <AlertTriangle className="mx-auto h-12 w-12 opacity-50 mb-2" />
+            <p>Missing Chat Token</p>
+            <p className="text-sm mt-1 text-muted-foreground">
+              This site doesn't have a chat token configured. Documents cannot be accessed.
+            </p>
+          </div>
         ) : (
           <>
             {filteredDocuments.length === 0 ? (
@@ -281,32 +316,35 @@ export default function SiteDocuments({ siteId }: SiteDocumentsProps) {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {doc.status === 'error' && (
-                        <AlertTriangle className="h-5 w-5 text-red-500" />
-                      )}
+                    
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm" onClick={() => toast({
+                        title: "Document View",
+                        description: "Document viewer is coming soon."
+                      })}>View</Button>
+                      
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => setDocumentToDelete(doc.id)}
-                          >
-                            <Trash2 className="h-5 w-5 text-muted-foreground hover:text-red-500" />
+                          <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
+                            <Trash2 className="h-4 w-4 mr-1" /> Delete
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete document</AlertDialogTitle>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete this document? This action cannot be undone.
+                              This will permanently delete the document. This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel onClick={() => setDocumentToDelete(null)}>
-                              Cancel
-                            </AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteDocument}>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => {
+                                setDocumentToDelete(doc.id);
+                                handleDeleteDocument();
+                              }}
+                            >
                               Delete
                             </AlertDialogAction>
                           </AlertDialogFooter>

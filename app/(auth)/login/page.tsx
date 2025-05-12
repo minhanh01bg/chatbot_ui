@@ -33,15 +33,67 @@ export default function Page() {
       toast.error('Please enter a valid email and password (minimum 6 characters).');
     } else if (state.status === 'success') {
       toast.success('Login successful!');
-      console.log(state)
+      console.log(state);
       setIsSuccessful(true);
       router.refresh();
-      // Redirect to chat page after successful login
-      setTimeout(() => {
-        router.push('/'); // URL of the main chat page
-      }, 1000);
+      
+      // Save access token to localStorage if available and sync with server cookies
+      const syncTokenWithServer = async () => {
+        try {
+          console.log('Client: Fetching session data after login');
+          const res = await fetch('/api/auth/session');
+          const session = await res.json();
+          
+          console.log('Client: Session data received:', JSON.stringify({
+            hasAccessToken: !!session?.accessToken,
+            tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none'
+          }));
+          
+          if (session?.accessToken) {
+            // Store in localStorage
+            localStorage.setItem('access_token', session.accessToken);
+            console.log('Client: Access token saved to localStorage');
+            
+            // Set client-side cookie
+            document.cookie = `client_access_token=${session.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+            
+            // Call the server API to ensure cookies are set server-side too
+            try {
+              const tokenResponse = await fetch('/api/set-token', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: session.accessToken }),
+              });
+              
+              const tokenResult = await tokenResponse.json();
+              console.log('Client: Server-side token syncing result:', tokenResult.success ? 'Success' : 'Failed');
+            } catch (error) {
+              console.error('Client: Failed to sync token with server:', error);
+            }
+            
+            // Verify client-side cookies
+            setTimeout(() => {
+              const clientCookies = document.cookie.split(';').map(c => c.trim());
+              console.log('Client: All client-accessible cookies:', clientCookies);
+              const hasToken = clientCookies.some(c => c.startsWith('client_access_token='));
+              console.log('Client: client_access_token cookie exists:', hasToken);
+            }, 100);
+            
+            // Redirect to admin dashboard after successful login and token setup
+            setTimeout(() => {
+              router.push('/admin');
+            }, 300);
+          }
+        } catch (err) {
+          console.error('Error syncing token:', err);
+        }
+      };
+      
+      syncTokenWithServer();
     }
-  }, [state.status, router]);
+  }, [state, router]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get('email') as string);
@@ -63,37 +115,29 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-dvh w-screen items-start pt-12 md:pt-0 md:items-center justify-center bg-background">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
-        <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Sign In</h3>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Use your email and password to sign in
-          </p>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
+      <div className="w-full max-w-md bg-card rounded-lg shadow-lg dark:shadow-slate-800 p-6">
+        <div className="mb-4 text-center">
+          <h1 className="text-2xl font-bold">Login</h1>
+          <p className="text-muted-foreground mt-1">Welcome back! Please enter your credentials.</p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>
-            {isSuccessful ? 'Signed in!' : 'Sign in'}
-          </SubmitButton>
-          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
-            {"Don't have an account? "}
-            <Link
-              href="/register"
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-            >
-              Sign up
-            </Link>
-            {' for free.'}
-          </p>
+
+        <AuthForm isLogin state={state} formAction={formAction}>
+          <div className="flex justify-between mt-6">
+            <SubmitButton>Login</SubmitButton>
+            <Button asChild variant="link">
+              <Link href="/register">Create Account</Link>
+            </Button>
+          </div>
         </AuthForm>
-        
-        {/* <div className="border-t pt-4">
-          <p className="text-center text-sm text-gray-500 mb-2">Having login issues?</p>
-          <LogoutButton 
-            variant="outline" 
-            className="w-full"
-          />
-        </div> */}
+
+        {isSuccessful && (
+          <div className="mt-4 text-center">
+            <p className="text-green-600 dark:text-green-400 mb-2">
+              Login successful! Redirecting...
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

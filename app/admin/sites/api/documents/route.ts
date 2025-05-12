@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/session';
 
-const BACKEND_API_URL = 'http://localhost:8002/api/v1';
+const BACKEND_API_URL = 'http://127.0.0.1:8002/api/v1';
 
 // GET /admin/sites/api/[id]/documents
 export async function GET(
@@ -22,19 +22,40 @@ export async function GET(
     const skip = searchParams.get('skip') || '0';
     const limit = searchParams.get('limit') || '10';
     
-    // Get user token from session
-    const userToken = session.accessToken;
-
-    if (!userToken) {
+    // First fetch the site to get its chat_token
+    const accessToken = session.accessToken;
+    if (!accessToken) {
       return NextResponse.json({ error: 'No access token found' }, { status: 401 });
     }
-
-    // Make request to backend API
-    const response = await fetch(`${BACKEND_API_URL}/sites/${siteId}/documents?skip=${skip}&limit=${limit}`, {
+    
+    // Get the site details to obtain the chat_token
+    const siteResponse = await fetch(`${process.env.BACKEND_URL}/api/v1/sites/${siteId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userToken}`
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    
+    if (!siteResponse.ok) {
+      return NextResponse.json({ error: 'Failed to fetch site details' }, { status: 404 });
+    }
+    
+    const siteData = await siteResponse.json();
+    
+    // Use the chat_token from the site data
+    const chatToken = siteData.chat_token;
+    
+    if (!chatToken) {
+      return NextResponse.json({ error: 'No chat token found for this site' }, { status: 401 });
+    }
+
+    // Make request to backend API with the site's chat_token
+    const response = await fetch(`${BACKEND_API_URL}/get_documents?skip=${skip}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${chatToken}`
       }
     });
 
@@ -71,27 +92,46 @@ export async function POST(
 
     const siteId = params.id;
     
-    // Get user token from session
-    const userToken = session.accessToken;
-
-    if (!userToken) {
+    // Get user token from session for accessing site details
+    const accessToken = session.accessToken;
+    if (!accessToken) {
       return NextResponse.json({ error: 'No access token found' }, { status: 401 });
     }
-
-    // Parse formData or JSON depending on content type
-    let formData: FormData;
     
+    // Get the site details to obtain the chat_token
+    const siteResponse = await fetch(`${process.env.BACKEND_URL}/api/v1/sites/${siteId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    
+    if (!siteResponse.ok) {
+      return NextResponse.json({ error: 'Failed to fetch site details' }, { status: 404 });
+    }
+    
+    const siteData = await siteResponse.json();
+    
+    // Use the chat_token from the site data
+    const chatToken = siteData.chat_token;
+    
+    if (!chatToken) {
+      return NextResponse.json({ error: 'No chat token found for this site' }, { status: 401 });
+    }
+
     // Check if it's a FormData request
     const contentType = request.headers.get('content-type') || '';
     if (contentType.includes('multipart/form-data')) {
-      formData = await request.formData();
+      // Handle file upload
+      const formData = await request.formData();
       
-      // Make request to backend API with FormData
-      const response = await fetch(`${BACKEND_API_URL}/sites/${siteId}/documents`, {
+      // Make request to backend API with the site's chat_token
+      const response = await fetch(`${BACKEND_API_URL}/upload_document`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${userToken}`
-          // Don't set Content-Type for FormData, it will be set automatically with the boundary
+          'Authorization': `Bearer ${chatToken}`
+          // Don't set Content-Type for FormData, it will be set automatically with boundary
         },
         body: formData
       });
@@ -111,11 +151,11 @@ export async function POST(
       const jsonData = await request.json();
       
       // Make request to backend API with JSON
-      const response = await fetch(`${BACKEND_API_URL}/sites/${siteId}/documents`, {
+      const response = await fetch(`${BACKEND_API_URL}/documents`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userToken}`
+          'Authorization': `Bearer ${chatToken}`
         },
         body: JSON.stringify(jsonData)
       });

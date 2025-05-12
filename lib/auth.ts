@@ -74,8 +74,23 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-here',
 };
 
-// For direct API usage - this simulates getting a token for testing
-export const getTokenForAPI = () => {
-  // For testing purposes - in production this would be a proper token from your auth system
-  return process.env.NEXT_PUBLIC_TEST_API_TOKEN || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZjYmY5YTc1N2NhYzExN...";
+// For direct API usage - this gets the token from cookies or falls back to the test token
+export const getTokenForAPI = async () => {
+  try {
+    // Try to get token from cookies first
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const tokenFromCookie = cookieStore.get('access_token')?.value;
+    
+    if (tokenFromCookie) {
+      console.log('Using access token from cookie for API call');
+      return tokenFromCookie;
+    }
+  } catch (e) {
+    console.error('Error getting token from cookie:', e);
+  }
+  
+  // Fall back to environment variable or hardcoded test token
+  return process.env.NEXT_PUBLIC_TEST_API_TOKEN || 
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZjYmY5YTc1N2NhYzExN...";
 }; 

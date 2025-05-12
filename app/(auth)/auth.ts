@@ -74,15 +74,8 @@ export const {
           };
           
           console.log('Authentication successful for user:', user.email);
-          //   add cookie to browser
-          // const cookieStore = await cookies().set({
-          //   name: 'access_token',
-          //   value: loginResponse.access_token,
-          //   httpOnly: true,
-          //   secure: process.env.NODE_ENV === 'production',
-          //   sameSite: 'strict',
-          //   maxAge: 60 * 60 * 24 * 7 // 1 week
-          // });
+          
+          // Set the access token in the user object that will be passed to the JWT callback
           return user;
         } catch (error) {
           console.error('Authentication error:', error);
@@ -103,6 +96,9 @@ export const {
         token.tokenType = customUser.tokenType;
         // Add timestamp to mark token creation time
         token.createdAt = Date.now();
+        
+        // For debugging
+        console.log('JWT callback called, access token stored in token object');
       }
 
       // Check if token needs refresh
@@ -129,6 +125,9 @@ export const {
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
+        
+        // For debugging
+        console.log('Session callback called, access token available in session');
       }
 
       return session;

@@ -1,55 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/session';
 
-
-// GET /admin/sites/api/[id]
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const session = await getServerSession();
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const siteId = params.id;
-    
-    // Get user token from session
-    const userToken = session.accessToken;
-
-    if (!userToken) {
-      return NextResponse.json({ error: 'No access token found' }, { status: 401 });
-    }
-
-    // Make request to backend API
-    const response = await fetch(`${process.env.BACKEND_URL}/api/v1/sites/${siteId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userToken}`
-      }
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      return NextResponse.json(
-        { error: errorData.detail || 'Failed to fetch site' }, 
-        { status: response.status }
-      );
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error(`Error fetching site ${params.id}:`, error);
-    return NextResponse.json(
-      { error: 'An error occurred while fetching the site' },
-      { status: 500 }
-    );
-  }
-}
+const BACKEND_URL = process.env.BACKEND_URL;
 
 // PUT /admin/sites/api/[id]
 export async function PUT(
@@ -57,28 +8,26 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Get access token directly from request cookies with fallback to client token
+    const accessToken = request.cookies.get('access_token')?.value;
+    const clientToken = request.cookies.get('client_access_token')?.value;
+    const token = accessToken || clientToken;
+    
+    // Check authorization
+    if (!token) {
+      console.error('Site Detail API: No access token found in cookies');
+      return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 });
     }
 
     const siteId = params.id;
     const updateData = await request.json();
-    
-    // Get user token from session
-    const userToken = session.accessToken;
-
-    if (!userToken) {
-      return NextResponse.json({ error: 'No access token found' }, { status: 401 });
-    }
 
     // Make request to backend API
-    const response = await fetch(`${process.env.BACKEND_URL}/api/v1/sites/${siteId}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/sites/${siteId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userToken}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(updateData)
     });
@@ -108,27 +57,25 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Get access token directly from request cookies with fallback to client token
+    const accessToken = request.cookies.get('access_token')?.value;
+    const clientToken = request.cookies.get('client_access_token')?.value;
+    const token = accessToken || clientToken;
+    
+    // Check authorization
+    if (!token) {
+      console.error('Site Detail API: No access token found in cookies');
+      return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 });
     }
 
     const siteId = params.id;
-    
-    // Get user token from session
-    const userToken = session.accessToken;
-
-    if (!userToken) {
-      return NextResponse.json({ error: 'No access token found' }, { status: 401 });
-    }
 
     // Make request to backend API
-    const response = await fetch(`${process.env.BACKEND_URL}/api/v1/sites/${siteId}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/sites/${siteId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${userToken}`
+        'Authorization': `Bearer ${token}`
       }
     });
 

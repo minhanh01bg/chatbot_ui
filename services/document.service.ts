@@ -16,12 +16,37 @@ interface DocumentsResponse {
   limit: number;
 }
 
+// Helper function to get the access token from cookie or localStorage
+const getAccessToken = async (): Promise<string> => {
+  // Try to get from localStorage in the browser
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) return token;
+  }
+  
+  // If running on server, try to get from cookie
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const token = cookieStore.get('access_token')?.value;
+    if (token) return token;
+  } catch (e) {
+    console.error('Error getting access token from cookie:', e);
+  }
+  
+  // Fallback to empty string if no token found
+  return '';
+};
+
+// Generic documents API - for app-wide documents
 export const get_documents = async (skip: number = 0, limit: number = 10): Promise<DocumentsResponse> => {
   try {
+    // Get the access token from cookie if available
     const response = await fetch(`/admin/documents/api?skip=${skip}&limit=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await getAccessToken()}`
       },
     });
 
@@ -34,24 +59,37 @@ export const get_documents = async (skip: number = 0, limit: number = 10): Promi
     console.error('Failed to fetch documents:', error);
     throw error;
   }
-}
+};
 
-export const get_document_by_id = async (id: string): Promise<Document> => {
+// Get documents for a specific site using chat_token
+export const get_site_documents_with_token = async (
+  siteId: string, 
+  chatToken: string,
+  skip: number = 0, 
+  limit: number = 10
+): Promise<DocumentsResponse> => {
   try {
-    const response = await fetch(`/admin/documents/api/${id}`, {
+    // Use hardcoded URL if environment variable is not available
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8002';
+    console.log("Using backend URL for documents API:", backendUrl);
+    
+    // Call the backend directly with the site's chat_token
+    const response = await fetch(`${backendUrl}/api/v1/get_documents?skip=${skip}&limit=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${chatToken}`
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Error fetching document: ${response.statusText}`);
+      throw new Error(`Error fetching documents: ${response.statusText}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error(`Failed to fetch document with id ${id}:`, error);
+    console.error(`Failed to fetch documents for site ${siteId}:`, error);
     throw error;
   }
-}
+};

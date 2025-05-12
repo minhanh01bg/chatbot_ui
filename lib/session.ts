@@ -1,22 +1,30 @@
 import { cookies } from 'next/headers';
 
-// Simulate getting a server session for API routes
+// Get server session for API routes
 export async function getServerSession() {
-  // In a real app, this would use next-auth to get the session
-  // For now, we'll simulate a session with a hardcoded user and token
+  // Get cookies from the request
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+  console.log('Session debug: All cookies:', JSON.stringify(allCookies.map(c => c.name)));
   
-  // You could extract this from cookies in a real implementation
-  const cookieStore = cookies();
-  // For testing, return a dummy session
-  // In production, this would validate the session from cookies
+  // Try to get token from HTTP-only cookie first
+  const accessToken = cookieStore.get('access_token')?.value;
+  console.log('Session debug: access_token cookie:', accessToken ? `Found (${accessToken.length} chars)` : 'Not found');
+  
+  // Fall back to client-accessible cookie if needed
+  const clientToken = cookieStore.get('client_access_token')?.value;
+  console.log('Session debug: client_access_token cookie:', clientToken ? 'Found' : 'Not found');
+  
+  // Use whichever token is available
+  const token = accessToken || clientToken;
+  
+  // Return a session object with the token
   return {
     user: {
       id: '67fcbf9a757cac1148b1ac3f',
       name: 'Admin User',
       email: 'admin@example.com',
     },
-    // Use an environment variable token or a hardcoded one for testing
-    accessToken: process.env.NEXT_PUBLIC_TEST_API_TOKEN || 
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZjYmY5YTc1N2NhYzExN..."
+    accessToken: token
   };
 } 

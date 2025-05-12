@@ -41,23 +41,46 @@ export async function POST(request: NextRequest) {
     
     // Get response data
     const data = await response.json();
-    console.log("Backend response data:", JSON.stringify(data));
+    console.log("Backend response received with access_token:", !!data.access_token);
     
-    // Return backend response
-    return NextResponse.json(
-      data,
-      { status: response.status }
-    );
-		// const res = NextResponse.json({ success: true });
-    // res.cookies.set('access_token', data.access_token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: 'strict',
-    //   path: '/',
-    //   maxAge: 60 * 60 * 24 * 7 // 1 week
-    // });
+    // Create response with cookies
+    const res = NextResponse.json(data, { status: response.status });
+    
+    // Set access token to cookie if login was successful
+    if (response.ok && data.access_token) {
+      console.log("Setting access_token cookie, token length:", data.access_token.length);
+      
+      // Critical settings for proper cookie functioning:
+      // 1. path='/' ensures cookie is available across the entire site
+      // 2. sameSite='lax' ensures cookie is sent with most navigation requests
+      // 3. secure=false for local development (would be true in production)
+      // 4. httpOnly=true for the server-only cookie to prevent client JS access
+      res.cookies.set('access_token', data.access_token, {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+      });
+      
+      // Also set a non-httpOnly cookie for client-side JavaScript
+      res.cookies.set('client_access_token', data.access_token, {
+        path: '/',
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+      });
+      
+      // Add debugging header
+      res.headers.set('X-Set-Cookies', 'true');
+      
+      console.log("Access token cookies set successfully");
+    } else {
+      console.error("Failed to set access_token cookie - token not available in response");
+    }
 
-    // return res;
+    return res;
   } catch (error) {
     console.error('Login proxy error', error);
     console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));

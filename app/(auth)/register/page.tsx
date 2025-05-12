@@ -34,6 +34,23 @@ export default function Page() {
       toast.success('Account created successfully');
       setIsSuccessful(true);
       router.refresh();
+      
+      // Save access token to localStorage if available
+      const fetchSession = async () => {
+        try {
+          const res = await fetch('/api/auth/session');
+          const session = await res.json();
+          if (session?.accessToken) {
+            localStorage.setItem('access_token', session.accessToken);
+            console.log('Access token saved to localStorage after registration');
+          }
+        } catch (err) {
+          console.error('Failed to save access token to localStorage after registration:', err);
+        }
+      };
+      
+      fetchSession();
+      
       setTimeout(() => {
         router.push('/');
       }, 1000);

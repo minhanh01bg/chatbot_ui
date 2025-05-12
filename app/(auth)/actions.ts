@@ -49,8 +49,60 @@ export const login = async (
       }
       
       console.log('Login successful', signInResult);
-    //   saved cookies
-      
+      // Added manual cookie setting - get session access token and store it
+      if (signInResult?.ok) {
+        try {
+          console.log('Fetching session data to set access token cookie');
+          const session = await fetch('/api/auth/session');
+          const sessionData = await session.json();
+          
+          console.log('Session data received:', JSON.stringify({
+            hasAccessToken: !!sessionData?.accessToken,
+            tokenFirstChars: sessionData?.accessToken ? sessionData.accessToken.substring(0, 10) + '...' : 'none'
+          }));
+          
+          if (sessionData?.accessToken) {
+            try {
+              const { cookies } = await import('next/headers');
+              const cookieStore = await cookies();
+              
+              // Check existing cookies
+              const existingCookies = cookieStore.getAll();
+              console.log('Existing cookies before setting:', JSON.stringify(existingCookies.map(c => c.name)));
+              
+              // Set the cookie
+              cookieStore.set('access_token', sessionData.accessToken, { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7 // 1 week
+              });
+              
+              // Also set a non-httpOnly cookie for client-side access
+              cookieStore.set('client_access_token', sessionData.accessToken, { 
+                httpOnly: false, 
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7 // 1 week
+              });
+              
+              // Verify cookie was set
+              const verificationCookies = cookieStore.getAll();
+              console.log('Cookies after setting:', JSON.stringify(verificationCookies.map(c => c.name)));
+              const tokenCookieSet = cookieStore.get('access_token');
+              console.log('Access token cookie set successfully:', !!tokenCookieSet);
+            } catch (cookieError) {
+              console.error('Error setting cookies:', cookieError);
+              console.error('Error details:', JSON.stringify(cookieError instanceof Error ? { message: cookieError.message, stack: cookieError.stack } : cookieError));
+            }
+          }
+        } catch (e) {
+          console.error('Failed to save access token to cookie:', e);
+          console.error('Error details:', JSON.stringify(e instanceof Error ? { message: e.message, stack: e.stack } : e));
+        }
+      }
 
       return { status: 'success' };
     } catch (error) {
@@ -110,6 +162,29 @@ export const register = async (
       if (signInResult?.error) {
         console.error('Sign in after registration error:', signInResult.error);
         return { status: 'failed' };
+      }
+
+      // Added manual cookie setting - get session access token and store it
+      if (signInResult?.ok) {
+        try {
+          const session = await fetch('/api/auth/session');
+          const sessionData = await session.json();
+          
+          if (sessionData?.accessToken) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = await cookies();
+            cookieStore.set('access_token', sessionData.accessToken, { 
+              httpOnly: true, 
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'strict',
+              path: '/',
+              maxAge: 60 * 60 * 24 * 7 // 1 week
+            });
+            console.log('Access token cookie set successfully after registration');
+          }
+        } catch (e) {
+          console.error('Failed to save access token to cookie after registration:', e);
+        }
       }
 
       return { status: 'success' };

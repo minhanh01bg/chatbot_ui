@@ -53,6 +53,13 @@ export const login = async (email: string, password: string) => {
             throw new Error('Invalid response format - missing access_token');
         }
         
+        // Store token client-side
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('access_token', data.access_token);
+            document.cookie = `client_access_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+            console.log('Login service: saved access token to localStorage and client cookie');
+        }
+        
         return data;
     } catch (error) {
         console.error('Login request failed with error:', error);
