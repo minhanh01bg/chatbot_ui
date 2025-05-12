@@ -48,6 +48,16 @@ export async function POST(request: NextRequest) {
       data,
       { status: response.status }
     );
+		// const res = NextResponse.json({ success: true });
+    // res.cookies.set('access_token', data.access_token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: 'strict',
+    //   path: '/',
+    //   maxAge: 60 * 60 * 24 * 7 // 1 week
+    // });
+
+    // return res;
   } catch (error) {
     console.error('Login proxy error', error);
     console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));
