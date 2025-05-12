@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 
 import { getUser } from '@/lib/db/queries';
 import { login as loginService } from '../../services/login.service';
+import { cookies } from 'next/headers';
 
 import { authConfig } from './auth.config';
 
@@ -35,11 +36,31 @@ export const {
       credentials: {},
       async authorize({ email, password }: any) {
         try {
-          console.log('Authentication attempt initiated');
+          console.log('Authentication attempt initiated for email:', email);
+          
+          if (!email || !password) {
+            console.error('Authentication failed: Missing credentials');
+            return null;
+          }
+          
           const loginResponse = await loginService(email, password);
           
-          if (!loginResponse || !loginResponse.access_token) {
-            console.error('Authentication failed: Invalid response format');
+          console.log('Login service response received:', !!loginResponse);
+          
+          if (!loginResponse) {
+            console.error('Authentication failed: No response from login service');
+            return null;
+          }
+          
+          if (!loginResponse.access_token) {
+            console.error('Authentication failed: Invalid response format - missing access_token');
+            console.error('Response structure:', JSON.stringify(Object.keys(loginResponse)));
+            return null;
+          }
+          
+          if (!loginResponse.user || !loginResponse.user.id || !loginResponse.user.email) {
+            console.error('Authentication failed: Invalid user data in response');
+            console.error('User data:', JSON.stringify(loginResponse.user));
             return null;
           }
 
@@ -52,11 +73,20 @@ export const {
             tokenType: loginResponse.token_type
           };
           
-          console.log('Authentication successful');
-          
+          console.log('Authentication successful for user:', user.email);
+          //   add cookie to browser
+          // const cookieStore = await cookies().set({
+          //   name: 'access_token',
+          //   value: loginResponse.access_token,
+          //   httpOnly: true,
+          //   secure: process.env.NODE_ENV === 'production',
+          //   sameSite: 'strict',
+          //   maxAge: 60 * 60 * 24 * 7 // 1 week
+          // });
           return user;
         } catch (error) {
-          console.error('Authentication error');
+          console.error('Authentication error:', error);
+          console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));
           return null;
         }
       }

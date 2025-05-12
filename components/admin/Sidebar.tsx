@@ -11,6 +11,7 @@ import {
   ChartBarIcon,
   ChevronDownIcon,
   DocumentIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -31,7 +32,11 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-  { name: 'Documents', href: '/admin/documents', icon: DocumentIcon },
+  { 
+    name: 'Sites', 
+    href: '/admin/sites',
+    icon: GlobeAltIcon
+  },
   { 
     name: 'Users Management', 
     icon: UserGroupIcon,
@@ -52,14 +57,15 @@ export default function Sidebar() {
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
 
   const isActive = (path: string) => pathname === path;
+  const isActivePrefix = (path: string) => pathname.startsWith(path);
   const isSubmenuActive = (subItems?: { name: string; href: string }[]) => {
-    return subItems?.some(item => pathname === item.href);
+    return subItems?.some(item => pathname === item.href || pathname.startsWith(item.href));
   };
 
   // Track if any submenu should be open based on active path
   useEffect(() => {
     navigation.forEach((item, index) => {
-      if (item.subItems?.some(subItem => pathname === subItem.href)) {
+      if (item.subItems?.some(subItem => pathname === subItem.href || pathname.startsWith(subItem.href))) {
         setOpenSubmenu(index);
       }
     });
@@ -95,7 +101,9 @@ export default function Sidebar() {
             )}
             <SidebarMenu className="flex w-full min-w-0 flex-col gap-1">
               {navigation.map((item, index) => {
-                const isItemActive = item.href ? isActive(item.href) : isSubmenuActive(item.subItems);
+                const isItemActive = item.href 
+                  ? isActive(item.href) || isActivePrefix(item.href)
+                  : isSubmenuActive(item.subItems);
                 return (
                   <SidebarMenuItem key={item.name} className="group/menu-item relative">
                     {item.subItems ? (
@@ -133,7 +141,7 @@ export default function Sidebar() {
                                 href={subItem.href}
                                 onClick={() => setOpenMobile(false)}
                                 className={`block rounded-lg px-2 py-1.5 text-sm 
-                                ${isActive(subItem.href) ?
+                                ${isActive(subItem.href) || pathname.startsWith(subItem.href) ?
                                   'bg-brand-500/10 text-brand-500 font-medium' :
                                   'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                                 }`}

@@ -33,6 +33,7 @@ export default function Page() {
       toast.error('Please enter a valid email and password (minimum 6 characters).');
     } else if (state.status === 'success') {
       toast.success('Login successful!');
+      console.log(state)
       setIsSuccessful(true);
       router.refresh();
       // Redirect to chat page after successful login

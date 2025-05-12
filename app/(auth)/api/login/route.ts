@@ -14,13 +14,15 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-
+  
   try {
     // Extract credentials from request
     const credentials = await request.json();
+    console.log("Login credentials received:", JSON.stringify({ email: credentials.email }));
     
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
     const apiUrl = BACKEND_URL.replace('localhost', '127.0.0.1');
+    console.log("Making request to:", `${apiUrl}/api/v1/login`);
     
     // Forward request to backend
     const response = await fetch(`${apiUrl}/api/v1/login`, {
@@ -35,8 +37,11 @@ export async function POST(request: NextRequest) {
       cache: 'no-store'
     });
 
+    console.log("Backend response status:", response.status);
+    
     // Get response data
     const data = await response.json();
+    console.log("Backend response data:", JSON.stringify(data));
     
     // Return backend response
     return NextResponse.json(
@@ -44,7 +49,8 @@ export async function POST(request: NextRequest) {
       { status: response.status }
     );
   } catch (error) {
-    console.error('Login proxy error');
+    console.error('Login proxy error', error);
+    console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));
     return NextResponse.json(
       { error: 'Authentication failed' },
       { status: 500 }

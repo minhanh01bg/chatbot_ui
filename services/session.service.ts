@@ -3,7 +3,7 @@ const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getChatSessions = async (page: number = 1, pageSize: number = 10): Promise<SessionResponse> => {
     const response = await fetch(
-        `${BACKEND_URL}/api/v1/chat_sessions?page=${page}&page_size=${pageSize}`,
+        `${BACKEND_URL}/api/v1/sessions?page=${page}&page_size=${pageSize}`,
         {
             method: 'GET',
             headers: {

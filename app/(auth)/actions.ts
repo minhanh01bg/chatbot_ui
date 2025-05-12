@@ -3,7 +3,7 @@
 import { z } from 'zod';
 
 import { createUser, getUser } from '@/lib/db/queries';
-import { login as loginService, register as registerService } from '../../services/login.service';
+import { register as registerService } from '../../services/login.service';
 
 import { signIn, signOut } from './auth';
 
@@ -48,7 +48,10 @@ export const login = async (
         return { status: 'failed' };
       }
       
-      console.log('Login successful');
+      console.log('Login successful', signInResult);
+    //   saved cookies
+      
+
       return { status: 'success' };
     } catch (error) {
       console.error('Login failed:', error);
