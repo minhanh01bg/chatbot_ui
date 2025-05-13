@@ -1,9 +1,9 @@
 import { SessionResponse, ChatHistoryResponse, SessionData } from '@/types/session';
-const BACKEND_URL = process.env.BACKEND_URL;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getChatSessions = async (page: number = 1, pageSize: number = 10): Promise<SessionResponse> => {
     const response = await fetch(
-        `${BACKEND_URL}/api/v1/sessions?page=${page}&page_size=${pageSize}`,
+        `${NEXT_PUBLIC_BACKEND_URL}/api/v1/sessions?page=${page}&page_size=${pageSize}`,
         {
             method: 'GET',
             headers: {
@@ -21,7 +21,7 @@ export const getChatSessions = async (page: number = 1, pageSize: number = 10): 
 
 export const getChatHistory = async (sessionId: string): Promise<ChatHistoryResponse> => {
     const response = await fetch(
-        `${BACKEND_URL}/api/v1/chat_history?session_id=${sessionId}`,
+        `${NEXT_PUBLIC_BACKEND_URL}/api/v1/chat_history?session_id=${sessionId}`,
         {
             method: 'GET',
             headers: {
@@ -39,7 +39,7 @@ export const getChatHistory = async (sessionId: string): Promise<ChatHistoryResp
 
 export const createSession = async (): Promise<SessionData> => {
     const response = await fetch(
-        `${BACKEND_URL}/api/v1/create_session`,
+        `${NEXT_PUBLIC_BACKEND_URL}/api/v1/create_session`,
         {
             method: 'POST',
         }
@@ -54,7 +54,7 @@ export const createSession = async (): Promise<SessionData> => {
     
 export const deleteSession = async (sessionId: string): Promise<void> => {
     const response = await fetch(
-        `${BACKEND_URL}/api/v1/session/${sessionId}`,
+        `${NEXT_PUBLIC_BACKEND_URL}/api/v1/session/${sessionId}`,
         {
             method: 'DELETE',
         }

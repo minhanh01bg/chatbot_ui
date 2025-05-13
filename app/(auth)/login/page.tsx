@@ -9,7 +9,6 @@ import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'next-auth/react';
-import LogoutButton from '@/components/logout-button';
 
 import { login, type LoginActionState } from '../actions';
 
@@ -115,29 +114,28 @@ export default function Page() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
+    <div className="flex justify-center items-center min-h-screen from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
       <div className="w-full max-w-md bg-card rounded-lg shadow-lg dark:shadow-slate-800 p-6">
         <div className="mb-4 text-center">
           <h1 className="text-2xl font-bold">Login</h1>
           <p className="text-muted-foreground mt-1">Welcome back! Please enter your credentials.</p>
         </div>
 
-        <AuthForm isLogin state={state} formAction={formAction}>
-          <div className="flex justify-between mt-6">
-            <SubmitButton>Login</SubmitButton>
-            <Button asChild variant="link">
-              <Link href="/register">Create Account</Link>
-            </Button>
-          </div>
+        <AuthForm action={handleSubmit} defaultEmail={email}>
+          <SubmitButton isSuccessful={isSuccessful}>
+            {isSuccessful ? 'Signed in!' : 'Sign in'}
+          </SubmitButton>
+          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
+            {"Don't have an account? "}
+            <Link
+              href="/register"
+              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
+            >
+              Sign up
+            </Link>
+            {' for free.'}
+          </p>
         </AuthForm>
-
-        {isSuccessful && (
-          <div className="mt-4 text-center">
-            <p className="text-green-600 dark:text-green-400 mb-2">
-              Login successful! Redirecting...
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

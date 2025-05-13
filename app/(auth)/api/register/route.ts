@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 /**
  * API route that serves as a proxy for registration
  * This prevents exposing the backend URL directly to the client
  */
 export async function POST(request: NextRequest) {
-  if (!BACKEND_URL) {
+  if (!NEXT_PUBLIC_BACKEND_URL) {
     console.error('Server configuration error: Missing API configuration');
     return NextResponse.json(
       { error: 'Server configuration error' },
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const userData = await request.json();
     
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
-    const apiUrl = BACKEND_URL.replace('localhost', '127.0.0.1');
+    const apiUrl = NEXT_PUBLIC_BACKEND_URL.replace('localhost', '127.0.0.1');
     
     // Forward request to backend
     const response = await fetch(`${apiUrl}/api/v1/register`, {

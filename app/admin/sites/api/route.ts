@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // GET /admin/sites/api
 export async function GET(request: NextRequest) {
@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     console.log('Sites API: Direct cookie access token:', accessToken ? `Found token of length ${accessToken.length}` : 'No token');
     // Try client token as fallback
     const clientToken = request.cookies.get('client_access_token')?.value;
+    console.log('Sites API: Client access token:', clientToken);
     console.log('Sites API: Client token fallback:', clientToken ? 'Available' : 'Not available');
     
     // Use the appropriate token
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     // Call backend API with the token
     console.log('Sites API: Using token for authorization');
-    const response = await fetch(`${BACKEND_URL}/api/v1/sites`, {
+    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

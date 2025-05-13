@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 /**
  * API route that serves as a general-purpose proxy for authenticated requests
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    if (!BACKEND_URL) {
+    if (!NEXT_PUBLIC_BACKEND_URL) {
       console.error('Server configuration error: Missing API configuration');
       return NextResponse.json(
         { error: 'Server configuration error' },
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
-    const apiUrl = BACKEND_URL.replace('localhost', '127.0.0.1');
+    const apiUrl = NEXT_PUBLIC_BACKEND_URL.replace('localhost', '127.0.0.1');
     const url = `${apiUrl}${endpoint}`;
     
     // Forward request to backend with authorization

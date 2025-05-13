@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Site } from '@/components/admin/sites/SiteDocuments';
+import { message } from '@/lib/db/schema';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, ArrowDown, Bot, User } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { Bot, User, ArrowDown, Send } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -17,9 +21,10 @@ interface ChatMessage {
 interface ChatTestProps {
   variant?: 'embedded' | 'fullpage';
   siteId?: string;
+  site?: Site;
 }
 
-export default function ChatTest({ variant = 'fullpage', siteId }: ChatTestProps) {
+export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTestProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,15 +65,57 @@ export default function ChatTest({ variant = 'fullpage', siteId }: ChatTestProps
     setIsLoading(true);
 
     try {
-      
+      const data_request = {
+        question: input,
+        chat_history: messages.map(msg => ({
+          type: msg.role,
+          content: msg.content,
+        })),
+        session_id: siteId,
+      }
+      console.log("Sending data:", data_request);
+      const res:any = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${site?.chat_token}`,
+        },
+        body: JSON.stringify(data_request),
+      });
 
+      if (!res.ok) {
+        throw new Error('Failed to fetch response');
+      }
+      const reader = res?.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let botContent = '';
       const botMessage: ChatMessage = {
         role: 'assistant',
-        content: 'Sorry, I could not generate a response.',
+        content: '',
         timestamp: new Date(),
       };
-
       setMessages(prev => [...prev, botMessage]);
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+  
+        const chunk = decoder.decode(value, { stream: true });
+        botContent += chunk;
+        // Cập nhật nội dung botMessage trong danh sách message
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastIndex = updated.length - 1;
+  
+          if (updated[lastIndex].role === 'assistant') {
+            updated[lastIndex] = {
+              ...updated[lastIndex],
+              content: botContent,
+            };
+          }
+          return updated;
+        });
+      }
+      // setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error fetching response:', error);
       
@@ -152,7 +199,7 @@ export default function ChatTest({ variant = 'fullpage', siteId }: ChatTestProps
         </Button>
       )}
       
-      <form onSubmit={handleSubmit} className="p-4 border-t">
+      <form onSubmit={handleSubmit}>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Type your message..."

@@ -36,7 +36,7 @@ interface Document {
   type: string;
 }
 
-interface Site {
+export interface Site {
   _id?: string;
   id?: string;
   name: string;
@@ -48,6 +48,9 @@ interface SiteDocumentsProps {
   siteId: string;
   site: Site; // Pass the complete site object directly
 }
+// interface ApiResponse {
+//   list_docs: ApiDocument[];
+// }
 
 export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const router = useRouter();
@@ -83,11 +86,11 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       console.log('Fetching documents with token:', chatToken.substring(0, 10) + '...');
       console.log('Site ID:', siteId);
       
-      const data = await get_site_documents_with_token(siteId, chatToken);
+      const data: any = await get_site_documents_with_token(siteId, chatToken);
       console.log('Documents fetched successfully:', data);
       
       // Map the API documents to our UI document format
-      const formattedDocuments: Document[] = (data.documents || []).map((doc: ApiDocument) => ({
+      const formattedDocuments: Document[] = (data?.list_docs || []).map((doc: ApiDocument) => ({
         id: doc._id,
         name: doc.title || doc.file_name,
         siteId: siteId,
@@ -136,7 +139,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       console.log("Using backend URL for upload:", backendUrl);
       
       // Direct call to backend API with chat_token
-      const response = await fetch(`${backendUrl}/api/v1/upload_document`, {
+      const response = await fetch(`${backendUrl}/api/v1/add_documents`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${site.chat_token}`
@@ -179,7 +182,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
     
     try {
       // Use consistent backend URL
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8002';
+      const backendUrl = process.env.NEXT_PUBLIC_NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8002';
       console.log("Using backend URL for delete:", backendUrl);
       
       // Direct call to backend API with chat_token

@@ -28,7 +28,7 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
     const pathParts = pathname.split('/');
     return pathParts[3] || '';
   }, [pathname]);
-  
+
   const [site, setSite] = useState<Site | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,30 +44,30 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
         } else {
           // Site ID mismatch, load from API
           console.error('Site ID mismatch between stored site and URL parameters');
-          setSite({ 
-            name: 'Site', 
-            _id: siteId, 
-            id: siteId 
+          setSite({
+            name: 'Site',
+            _id: siteId,
+            id: siteId
           });
         }
       } catch (e) {
         console.error('Error parsing stored site:', e);
-        setSite({ 
-          name: 'Site', 
-          _id: siteId, 
-          id: siteId 
+        setSite({
+          name: 'Site',
+          _id: siteId,
+          id: siteId
         });
       }
     } else {
       // No stored site, use minimal data
-      setSite({ 
-        name: 'Site', 
-        _id: siteId, 
-        id: siteId 
+      setSite({
+        name: 'Site',
+        _id: siteId,
+        id: siteId
       });
     }
     setIsLoading(false);
-    
+
     // Optional: Clear localStorage after use
     // localStorage.removeItem('selected_site');
   }, [siteId]);
@@ -86,7 +86,7 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
             </div>
           )}
         </div>
-        
+
         <div className="h-[calc(100vh-14rem)]">
           <div className="border rounded-lg bg-background shadow overflow-hidden">
             <div className="px-4 pt-4 pb-4 border-b">
@@ -96,7 +96,16 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
               </p>
             </div>
             <div className="px-4 py-4 h-[calc(100vh-24rem)]">
-              <ChatTest variant="embedded" />
+              {isLoading ? (
+                  <div className="text-center py-10">Loading chat interface...</div>
+                ) : site ? (
+                  <ChatTest variant="embedded" siteId={siteId} site={site} />
+
+                ) : (
+                  <div className="text-center py-10 text-red-500">
+                    Failed to load chat interface. Please try again later.
+                  </div>
+                )}
             </div>
           </div>
         </div>

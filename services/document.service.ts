@@ -70,7 +70,7 @@ export const get_site_documents_with_token = async (
 ): Promise<DocumentsResponse> => {
   try {
     // Use hardcoded URL if environment variable is not available
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8002';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8002';
     console.log("Using backend URL for documents API:", backendUrl);
     
     // Call the backend directly with the site's chat_token

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // PUT /admin/sites/api/[id]
 export async function PUT(
@@ -23,7 +23,7 @@ export async function PUT(
     const updateData = await request.json();
 
     // Make request to backend API
-    const response = await fetch(`${BACKEND_URL}/api/v1/sites/${siteId}`, {
+    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites/${siteId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export async function DELETE(
     const siteId = params.id;
 
     // Make request to backend API
-    const response = await fetch(`${BACKEND_URL}/api/v1/sites/${siteId}`, {
+    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites/${siteId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
