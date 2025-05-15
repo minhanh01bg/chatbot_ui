@@ -20,8 +20,8 @@ export default function AdminLayout({
           <Navbar />
           
           {/* Page Content */}
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
-            <div>
+          <main className="flex-1 p-4 overflow-auto">
+            <div className='h-full'>
               {children}
             </div>
           </main>

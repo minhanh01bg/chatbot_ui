@@ -73,9 +73,9 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
   }, [siteId]);
 
   return (
-    <div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+    <div className='h-full'>
+      <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="lg:col-span-1">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
           ) : site ? (
@@ -87,20 +87,19 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
           )}
         </div>
 
-        <div className="h-[calc(100vh-14rem)]">
-          <div className="border rounded-lg bg-background shadow overflow-hidden">
-            <div className="px-4 pt-4 pb-4 border-b">
+        <div className="h-full grid-col-span-1 lg:col-span-1">
+          <div className="flex flex-col h-full border rounded-lg bg-background shadow overflow-hidden">
+            <div className="px-6 pt-6 pb-4 border-b">
               <h2 className="text-xl font-semibold mb-2">Test Imported Data</h2>
               <p className="text-sm text-muted-foreground">
                 Use this chat interface to test how your imported documents respond to queries.
               </p>
             </div>
-            <div className="px-4 py-4 h-[calc(100vh-24rem)]">
+            <div className="px-2 py-2 flex-1 overflow-y-auto">
               {isLoading ? (
                   <div className="text-center py-10">Loading chat interface...</div>
                 ) : site ? (
                   <ChatTest variant="embedded" siteId={siteId} site={site} />
-
                 ) : (
                   <div className="text-center py-10 text-red-500">
                     Failed to load chat interface. Please try again later.
@@ -112,4 +111,4 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
       </div>
     </div>
   );
-} 
+}
