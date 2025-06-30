@@ -35,12 +35,21 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function getUserByUsername(username: string): Promise<Array<User>> {
+  try {
+    return await db.select().from(user).where(eq(user.username, username));
+  } catch (error) {
+    console.error('Failed to get user by username from database');
+    throw error;
+  }
+}
+
+export async function createUser(email: string, username: string, password: string) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await db.insert(user).values({ email, username, password: hash });
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;

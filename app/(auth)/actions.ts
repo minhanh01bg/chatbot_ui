@@ -8,7 +8,7 @@ import { register as registerService } from '../../services/login.service';
 import { signIn, signOut } from './auth';
 
 const authFormSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(3).max(64),
   password: z.string().min(6),
 });
 
@@ -29,16 +29,16 @@ export const login = async (
     }
     
     const validatedData = authFormSchema.parse({
-      email: formData.get('email'),
+      username: formData.get('username'),
       password: formData.get('password'),
     });
 
     try {
-      console.log('Calling login service with:', validatedData.email);
-      
+      console.log('Calling login service with:', validatedData.username);
+
       // Login to NextAuth with credentials provider
       const signInResult = await signIn('credentials', {
-        email: validatedData.email,
+        username: validatedData.username,
         password: validatedData.password,
         redirect: false,
       });
@@ -141,20 +141,20 @@ export const register = async (
     }
     
     const validatedData = authFormSchema.parse({
-      email: formData.get('email'),
+      username: formData.get('username'),
       password: formData.get('password'),
     });
 
     try {
       // Call registration API
       await registerService(
-        validatedData.email,
+        validatedData.username,
         validatedData.password
       );
-      
+
       // Sign in after successful registration
       const signInResult = await signIn('credentials', {
-        email: validatedData.email,
+        username: validatedData.username,
         password: validatedData.password,
         redirect: false,
       });

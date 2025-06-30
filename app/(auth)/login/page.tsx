@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
-import { Button } from '@/components/ui/button';
 import { signOut } from 'next-auth/react';
 
 import { login, type LoginActionState } from '../actions';
@@ -15,7 +14,7 @@ import { login, type LoginActionState } from '../actions';
 export default function Page() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
 
   const [state, formAction] = useActionState<LoginActionState, FormData>(
@@ -29,7 +28,7 @@ export default function Page() {
     if (state.status === 'failed') {
       toast.error('Invalid credentials or server error. Please try again.');
     } else if (state.status === 'invalid_data') {
-      toast.error('Please enter a valid email and password (minimum 6 characters).');
+      toast.error('Please enter a valid username and password (minimum 6 characters).');
     } else if (state.status === 'success') {
       toast.success('Login successful!');
       console.log(state);
@@ -95,7 +94,7 @@ export default function Page() {
   }, [state, router]);
 
   const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get('email') as string);
+    setUsername(formData.get('username') as string);
     formAction(formData);
   };
 
@@ -121,7 +120,7 @@ export default function Page() {
           <p className="text-muted-foreground mt-1">Welcome back! Please enter your credentials.</p>
         </div>
 
-        <AuthForm action={handleSubmit} defaultEmail={email}>
+        <AuthForm action={handleSubmit} defaultUsername={username}>
           <SubmitButton isSuccessful={isSuccessful}>
             {isSuccessful ? 'Signed in!' : 'Sign in'}
           </SubmitButton>

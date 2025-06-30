@@ -18,20 +18,24 @@ export async function POST(request: NextRequest) {
   try {
     // Extract registration data from request
     const userData = await request.json();
-    
+
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
     const apiUrl = NEXT_PUBLIC_BACKEND_URL.replace('localhost', '127.0.0.1');
-    
+
+    // Create FormData for backend request
+    const formData = new FormData();
+    formData.append('username', userData.username);
+    formData.append('password', userData.password);
+
     // Forward request to backend
     const response = await fetch(`${apiUrl}/api/v1/register`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0'
       },
-      body: JSON.stringify(userData),
+      body: formData,
       cache: 'no-store'
     });
 

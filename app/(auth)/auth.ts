@@ -17,6 +17,7 @@ interface ExtendedSession extends Session {
 interface CustomUser extends User {
   accessToken?: string;
   tokenType?: string;
+  username?: string;
 }
 
 export const {
@@ -34,16 +35,16 @@ export const {
   providers: [
     Credentials({
       credentials: {},
-      async authorize({ email, password }: any) {
+      async authorize({ username, password }: any) {
         try {
-          console.log('Authentication attempt initiated for email:', email);
-          
-          if (!email || !password) {
+          console.log('Authentication attempt initiated for username:', username);
+
+          if (!username || !password) {
             console.error('Authentication failed: Missing credentials');
             return null;
           }
-          
-          const loginResponse = await loginService(email, password);
+
+          const loginResponse = await loginService(username, password);
           
           console.log('Login service response received:', !!loginResponse);
           
@@ -58,7 +59,7 @@ export const {
             return null;
           }
           
-          if (!loginResponse.user || !loginResponse.user.id || !loginResponse.user.email) {
+          if (!loginResponse.user || !loginResponse.user.id || !loginResponse.user.username) {
             console.error('Authentication failed: Invalid user data in response');
             console.error('User data:', JSON.stringify(loginResponse.user));
             return null;
@@ -67,13 +68,13 @@ export const {
           // Create user object from response
           const user: CustomUser = {
             id: loginResponse.user.id,
-            email: loginResponse.user.email,
-            name: loginResponse.user.email.split('@')[0] || null,
+            username: loginResponse.user.username,
+            name: loginResponse.user.username || null,
             accessToken: loginResponse.access_token,
             tokenType: loginResponse.token_type
           };
           
-          console.log('Authentication successful for user:', user.email);
+          console.log('Authentication successful for user:', user.username);
           
           // Set the access token in the user object that will be passed to the JWT callback
           return user;
