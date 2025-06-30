@@ -317,7 +317,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className='overflow-auto h-[calc(100vh-350px)]'>
         {isLoading ? (
           <div className="text-center py-10">Loading documents...</div>
         ) : !site?.chat_token ? (
