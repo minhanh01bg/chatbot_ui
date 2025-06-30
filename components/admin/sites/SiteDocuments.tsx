@@ -88,10 +88,8 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const fetchSiteDocuments = async (chatToken: string) => {
     try {
       setIsLoading(true);
-      console.log('Fetching documents with token:', chatToken.substring(0, 10) + '...');
-      console.log('Site ID:', siteId);
+      console.log('Site ID:', siteId.substring(0, 10) + '...');
       console.log('Pagination:', { currentPage, itemsPerPage });
-      console.log(currentPage)
       const data: any = await get_site_documents_with_token(siteId, chatToken, currentPage, itemsPerPage);
       console.log('Documents fetched successfully:', data);
 
