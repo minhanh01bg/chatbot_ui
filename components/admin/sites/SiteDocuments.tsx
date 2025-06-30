@@ -66,10 +66,10 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10); // Reduced for testing
 
-  // Fetch documents when component mounts or site changes
+  // Fetch documents when component mounts, site changes, or pagination changes
   useEffect(() => {
     console.log('Site in SiteDocuments:', site);
-    
+
     // If we have a site with chat_token, fetch documents
     if (site?.chat_token) {
       fetchSiteDocuments(site.chat_token);
@@ -82,14 +82,16 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
         variant: 'destructive',
       });
     }
-  }, [site, toast]);
+  }, [site, toast, currentPage, itemsPerPage]);
 
-  // Fetch documents using chat_token
+  // Fetch documents using chat_token with pagination
   const fetchSiteDocuments = async (chatToken: string) => {
     try {
+      setIsLoading(true);
       console.log('Fetching documents with token:', chatToken.substring(0, 10) + '...');
       console.log('Site ID:', siteId);
-      
+      console.log('Pagination:', { currentPage, itemsPerPage });
+      console.log(currentPage)
       const data: any = await get_site_documents_with_token(siteId, chatToken, currentPage, itemsPerPage);
       console.log('Documents fetched successfully:', data);
 
@@ -120,22 +122,28 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
     }
   };
 
-  // Filter documents based on search term
-  const filteredDocuments = documents.filter(doc =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // For server-side pagination, we use documents directly (already paginated from server)
+  // Client-side filtering is applied only for search within current page
+  const filteredDocuments = searchTerm
+    ? documents.filter(doc =>
+        doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.status.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : documents;
 
-  // Pagination logic
-  // const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
+  // Server-side pagination - documents are already paginated
+  const paginatedDocuments = filteredDocuments;
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedDocuments = filteredDocuments.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + itemsPerPage, totalDocs);
 
   // Debug logs
   console.log('=== SiteDocuments Debug ===');
-  console.log('Should show pagination:', filteredDocuments);
+  console.log('Documents count:', documents.length);
+  console.log('Total docs from server:', totalDocs);
+  console.log('Total pages from server:', totalPages);
+  console.log('Current page:', currentPage);
+  console.log('Items per page:', itemsPerPage);
 
   // Reset to first page when search term changes
   useEffect(() => {
@@ -155,19 +163,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
     setCurrentPage(prev => Math.min(totalPages, prev + 1));
   };
 
-  // Test function to add fake documents
-  const addFakeDocuments = () => {
-    const fakeDocuments: Document[] = Array.from({ length: 25 }, (_, i) => ({
-      id: `fake-${i}`,
-      name: `Test Document ${i + 1}`,
-      siteId: siteId,
-      status: 'completed' as const,
-      createdAt: new Date().toISOString(),
-      size: Math.floor(Math.random() * 1000000),
-      type: 'pdf'
-    }));
-    setDocuments(fakeDocuments);
-  };
+
 
   // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -287,9 +283,6 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button onClick={addFakeDocuments} variant="outline" size="sm">
-            Add Test Data
-          </Button>
           <Dialog>
             <DialogTrigger asChild>
               <Button size="sm" disabled={!site?.chat_token}>
@@ -415,15 +408,15 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
 
       {/* Debug Info */}
       <div className="px-6 py-2 bg-gray-100 text-xs">
-        Debug: {filteredDocuments.length} docs, {totalPages} pages, page {currentPage}
+        Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
       </div>
 
       {/* Pagination Controls */}
-      {filteredDocuments.length > 0 && totalPages > 1 && (
+      {totalDocs > 0 && totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-t">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-muted-foreground">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredDocuments.length)} of {totalDocs} documents
+              Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
             </span>
           </div>
 

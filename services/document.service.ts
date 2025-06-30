@@ -65,8 +65,8 @@ export const get_documents = async (skip: number = 0, limit: number = 10): Promi
 export const get_site_documents_with_token = async (
   siteId: string, 
   chatToken: string,
-  skip: number = 1, 
-  limit: number = 10
+  skip: number, 
+  limit: number
 ): Promise<DocumentsResponse> => {
   try {
     // Use hardcoded URL if environment variable is not available
@@ -74,7 +74,7 @@ export const get_site_documents_with_token = async (
     console.log("Using backend URL for documents API:", backendUrl);
     
     // Call the backend directly with the site's chat_token
-    const response = await fetch(`${backendUrl}/api/v1/get_documents?skip=${skip}&limit=${limit}`, {
+    const response = await fetch(`${backendUrl}/api/v1/get_documents?page=${skip}&page_size=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
