@@ -74,8 +74,8 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
 
   return (
     <div className='h-full'>
-      <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="lg:col-span-1">
+      <div className="h-full grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
           ) : site ? (
@@ -87,7 +87,7 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
           )}
         </div>
 
-        <div className="h-full grid-col-span-1 lg:col-span-1">
+        <div className="h-full grid-col-span-1 lg:col-span-2">
           <div className="flex flex-col border rounded-lg bg-background shadow overflow-hidden">
             <div className="px-6 pt-6 pb-4 border-b">
               <h2 className="text-xl font-semibold mb-2">Test Imported Data</h2>
