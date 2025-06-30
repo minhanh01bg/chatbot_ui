@@ -88,7 +88,7 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
         </div>
 
         <div className="h-full grid-col-span-1 lg:col-span-1">
-          <div className="flex flex-col h-full border rounded-lg bg-background shadow overflow-hidden">
+          <div className="flex flex-col border rounded-lg bg-background shadow overflow-hidden">
             <div className="px-6 pt-6 pb-4 border-b">
               <h2 className="text-xl font-semibold mb-2">Test Imported Data</h2>
               <p className="text-sm text-muted-foreground">

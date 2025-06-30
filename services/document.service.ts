@@ -65,7 +65,7 @@ export const get_documents = async (skip: number = 0, limit: number = 10): Promi
 export const get_site_documents_with_token = async (
   siteId: string, 
   chatToken: string,
-  skip: number = 0, 
+  skip: number = 1, 
   limit: number = 10
 ): Promise<DocumentsResponse> => {
   try {

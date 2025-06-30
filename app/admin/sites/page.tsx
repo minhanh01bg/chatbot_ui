@@ -1,5 +1,4 @@
 import Sites from '@/components/admin/sites/Sites';
-import ChatTest from '@/components/admin/ChatTest';
 
 export default function SitesPage() {
   return (
