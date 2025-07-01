@@ -19,7 +19,7 @@ export default function WebSocketTestPage() {
     timestamp: Date;
   }>>([]);
   const [messageInput, setMessageInput] = useState('');
-  const [connectionUrl, setConnectionUrl] = useState('ws://localhost:8001/api/v1/ws');
+  const [connectionUrl, setConnectionUrl] = useState('ws://localhost:8001/api/v1/ws/683e52e292a535ff6242425d');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto scroll to bottom when new messages arrive
