@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { 
-  HomeIcon, 
+import {
+  HomeIcon,
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
   Cog6ToothIcon,
@@ -12,6 +12,7 @@ import {
   ChevronDownIcon,
   DocumentIcon,
   GlobeAltIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -37,6 +38,11 @@ const navigation: NavItem[] = [
     href: '/admin/sites',
     icon: GlobeAltIcon
   },
+  {
+    name: "Web socket test",
+    href: '/admin/test',
+    icon: WrenchScrewdriverIcon,
+  },
   { 
     name: 'Users Management', 
     icon: UserGroupIcon,
@@ -46,6 +52,7 @@ const navigation: NavItem[] = [
     ] 
   },
   { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
+  { name: 'WebSocket Test', href: '/admin/test', icon: WrenchScrewdriverIcon },
   { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
