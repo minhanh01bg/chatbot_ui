@@ -317,7 +317,96 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
         </div>
       </CardHeader>
       
-      <CardContent className='overflow-auto h-[calc(100vh-350px)]'>
+      {/* Debug Info */}
+      <div className="px-6 py-2 bg-gray-100 text-xs">
+        Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
+      </div>
+
+      {/* Pagination Controls */}
+      {totalDocs > 0 && totalPages > 1 && (
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">
+              Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
+              <span className="text-sm text-muted-foreground mr-2">Items per page:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  setItemsPerPage(Number(value));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-20 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + i;
+                  } else {
+                    pageNumber = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <Button
+                      key={pageNumber}
+                      variant={currentPage === pageNumber ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => goToPage(pageNumber)}
+                      className="w-8 h-8 p-0"
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <span className="text-sm text-muted-foreground ml-2">
+              Page {currentPage} of {totalPages}
+            </span>
+          </div>
+        </div>
+      )}
+      <CardContent className='mt-6 overflow-auto h-[calc(100vh-352px)]'>
         {isLoading ? (
           <div className="text-center py-10">Loading documents...</div>
         ) : !site?.chat_token ? (
@@ -404,95 +493,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
         )}
       </CardContent>
 
-      {/* Debug Info */}
-      <div className="px-6 py-2 bg-gray-100 text-xs">
-        Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
-      </div>
-
-      {/* Pagination Controls */}
-      {totalDocs > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-4 border-t">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">
-              Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <span className="text-sm text-muted-foreground mr-2">Items per page:</span>
-              <Select
-                value={itemsPerPage.toString()}
-                onValueChange={(value) => {
-                  setItemsPerPage(Number(value));
-                  setCurrentPage(1);
-                }}
-              >
-                <SelectTrigger className="w-20 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNumber;
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = currentPage - 2 + i;
-                  }
-
-                  return (
-                    <Button
-                      key={pageNumber}
-                      variant={currentPage === pageNumber ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => goToPage(pageNumber)}
-                      className="w-8 h-8 p-0"
-                    >
-                      {pageNumber}
-                    </Button>
-                  );
-                })}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <span className="text-sm text-muted-foreground ml-2">
-              Page {currentPage} of {totalPages}
-            </span>
-          </div>
-        </div>
-      )}
+      
     </Card>
   );
 }
