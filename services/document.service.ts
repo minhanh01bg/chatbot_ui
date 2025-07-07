@@ -93,3 +93,29 @@ export const get_site_documents_with_token = async (
     throw error;
   }
 };
+
+// Crawler data automatic API - for crawling website data
+export const crawler_data_automatic = async (url: string, chatToken: string): Promise<any> => {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+
+    const response = await fetch(`${backendUrl}/api/v1/crawler_data_automatic?url=${encodeURIComponent(url)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${chatToken}`
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Crawler failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Failed to start crawler for URL ${url}:`, error);
+    throw error;
+  }
+};

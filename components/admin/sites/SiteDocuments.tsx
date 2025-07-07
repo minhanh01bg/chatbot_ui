@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus, FileText, AlertTriangle, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, FileText, AlertTriangle, Trash2, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { get_site_documents_with_token } from '@/services/document.service';
+import { get_site_documents_with_token, crawler_data_automatic } from '@/services/document.service';
 
 // Define API document interface (from backend)
 interface ApiDocument {
@@ -65,6 +65,11 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10); // Reduced for testing
+
+  // Crawler modal state
+  const [isCrawlerModalOpen, setIsCrawlerModalOpen] = useState(false);
+  const [crawlerUrl, setCrawlerUrl] = useState('');
+  const [isCrawling, setIsCrawling] = useState(false);
 
   // Fetch documents when component mounts, site changes, or pagination changes
   useEffect(() => {
@@ -217,7 +222,61 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       setUploadProgress(0);
     }
   };
-  
+
+  // Handle crawler data automatic
+  const handleCrawlerDataAutomatic = async () => {
+    if (!crawlerUrl.trim() || !site?.chat_token) {
+      toast({
+        title: 'Invalid input',
+        description: 'Please enter a valid URL.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsCrawling(true);
+
+    try {
+      // Call crawler API using service
+      const result = await crawler_data_automatic(crawlerUrl, site.chat_token);
+      console.log('Crawler result:', result);
+
+      if (result.message && result.message.includes('already running')) {
+        toast({
+          title: 'Crawler already running',
+          description: 'A crawler task is already running for this site.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Crawler started',
+          description: `Crawler task started successfully for site ${result.site_id}`,
+        });
+
+        // Close modal and reset form
+        setIsCrawlerModalOpen(false);
+        setCrawlerUrl('');
+
+        // Refresh documents list after a short delay to allow crawler to process
+        setTimeout(() => {
+          if (site?.chat_token) {
+            fetchSiteDocuments(site.chat_token);
+          }
+        }, 2000);
+      }
+
+    } catch (error) {
+      console.error('Error starting crawler:', error);
+      toast({
+        title: 'Crawler failed',
+        description: error instanceof Error ? error.message : 'There was a problem starting the crawler.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCrawling(false);
+    }
+  };
+
   // Handle document deletion
   const handleDeleteDocument = async () => {
     if (!documentToDelete || !site?.chat_token) return;
@@ -310,6 +369,52 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
                       <Progress value={uploadProgress} className="h-2" />
                     </div>
                   )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Crawler Modal */}
+          <Dialog open={isCrawlerModalOpen} onOpenChange={setIsCrawlerModalOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" disabled={!site?.chat_token}>
+                <Globe className="mr-2 h-4 w-4" /> Crawl Website
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Crawl Website Data</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="crawler-url">Website URL</Label>
+                  <Input
+                    id="crawler-url"
+                    type="url"
+                    placeholder="https://example.com"
+                    value={crawlerUrl}
+                    onChange={(e) => setCrawlerUrl(e.target.value)}
+                    disabled={isCrawling}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Enter the URL of the website you want to crawl for documents.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCrawlerModalOpen(false)}
+                    disabled={isCrawling}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCrawlerDataAutomatic}
+                    disabled={isCrawling || !crawlerUrl.trim()}
+                  >
+                    {isCrawling ? 'Starting Crawler...' : 'Start Crawling'}
+                  </Button>
                 </div>
               </div>
             </DialogContent>
