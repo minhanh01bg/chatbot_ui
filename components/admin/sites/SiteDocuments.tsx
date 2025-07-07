@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus, FileText, AlertTriangle, Trash2, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
+import { Plus, FileText, AlertTriangle, Trash2, ChevronLeft, ChevronRight, Globe, Square, Activity } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +11,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { get_site_documents_with_token, crawler_data_automatic } from '@/services/document.service';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { get_site_documents_with_token, crawler_data_automatic, stop_crawler } from '@/services/document.service';
 
 // Define API document interface (from backend)
 interface ApiDocument {
@@ -71,6 +74,22 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const [crawlerUrl, setCrawlerUrl] = useState('');
   const [isCrawling, setIsCrawling] = useState(false);
 
+  // WebSocket and crawler status state
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [crawlerStatus, setCrawlerStatus] = useState<{
+    status: string;
+    message: string;
+    url: string;
+    end: boolean;
+  } | null>(null);
+  const [crawlerHistory, setCrawlerHistory] = useState<Array<{
+    timestamp: string;
+    status: string;
+    message: string;
+    url: string;
+  }>>([]);
+  const [activeTab, setActiveTab] = useState('documents');
+
   // Fetch documents when component mounts, site changes, or pagination changes
   useEffect(() => {
     console.log('Site in SiteDocuments:', site);
@@ -88,6 +107,67 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       });
     }
   }, [site, toast, currentPage, itemsPerPage]);
+
+  // WebSocket connection for crawler status
+  useEffect(() => {
+    if (!site?.chat_token) return;
+
+    // Create WebSocket connection
+    const wsUrl = `ws://localhost:8001/api/v1/ws/${site.chat_token}`;
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log('WebSocket connected for crawler status');
+      setSocket(ws);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Crawler status received:', data);
+
+        // Update current status
+        setCrawlerStatus(data);
+
+        // Add to history
+        setCrawlerHistory(prev => [...prev, {
+          timestamp: new Date().toLocaleTimeString(),
+          status: data.status,
+          message: data.message,
+          url: data.url
+        }]);
+
+        // If crawler ended, stop crawling state
+        if (data.end) {
+          setIsCrawling(false);
+          // Refresh documents after crawler completes
+          if (site?.chat_token) {
+            setTimeout(() => {
+              fetchSiteDocuments(site.chat_token!);
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+      setSocket(null);
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    // Cleanup on unmount
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, [site?.chat_token]);
 
   // Fetch documents using chat_token with pagination
   const fetchSiteDocuments = async (chatToken: string) => {
@@ -181,12 +261,8 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       const formData = new FormData();
       formData.append('file', file);
       
-      // Use consistent backend URL
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
-      console.log("Using backend URL for upload:", backendUrl);
-      
-      // Direct call to backend API with chat_token
-      const response = await fetch(`${backendUrl}/api/v1/add_documents`, {
+      // Call Next.js API route in admin/sites/api instead of backend directly
+      const response = await fetch('/admin/sites/api/documents/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${site.chat_token}`
@@ -257,6 +333,9 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
         setIsCrawlerModalOpen(false);
         setCrawlerUrl('');
 
+        // Switch to crawler tab to show status
+        setActiveTab('crawler');
+
         // Refresh documents list after a short delay to allow crawler to process
         setTimeout(() => {
           if (site?.chat_token) {
@@ -277,26 +356,58 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
     }
   };
 
+  // Handle stop crawler
+  const handleStopCrawler = async () => {
+    if (!site?.chat_token) return;
+
+    try {
+      const result = await stop_crawler(site.chat_token);
+      console.log('Stop crawler result:', result);
+
+      if (result.status === 'not running') {
+        toast({
+          title: 'No crawler running',
+          description: 'There is no crawler task currently running for this site.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Crawler stopped',
+          description: 'The crawler task has been stopped successfully.',
+        });
+
+        // Reset crawler state
+        setIsCrawling(false);
+        setCrawlerStatus(null);
+      }
+
+    } catch (error) {
+      console.error('Error stopping crawler:', error);
+      toast({
+        title: 'Stop crawler failed',
+        description: error instanceof Error ? error.message : 'There was a problem stopping the crawler.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   // Handle document deletion
   const handleDeleteDocument = async () => {
     if (!documentToDelete || !site?.chat_token) return;
     
     try {
-      // Use consistent backend URL
-      const backendUrl = process.env.NEXT_PUBLIC_NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
-      console.log("Using backend URL for delete:", backendUrl);
-      
-      // Direct call to backend API with chat_token
-      const response = await fetch(`${backendUrl}/api/v1/documents/${documentToDelete}`, {
+      // Call Next.js API route in admin/sites/api instead of backend directly
+      const response = await fetch(`/admin/sites/api/documents/delete?documentId=${documentToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${site.chat_token}`
         }
       });
-      
+
       if (!response.ok) {
-        throw new Error(`Error deleting document: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Error deleting document: ${response.statusText}`);
       }
       
       // Remove the deleted document from the list
@@ -333,6 +444,24 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
           <CardTitle>Documents for {site?.name || 'Site'}</CardTitle>
           <CardDescription>Manage documents for this site</CardDescription>
         </div>
+      </CardHeader>
+
+      <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="documents" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Documents
+            </TabsTrigger>
+            <TabsTrigger value="crawler" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Crawler Status
+              {isCrawling && <Badge variant="secondary" className="ml-1">Running</Badge>}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="documents" className="space-y-4">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex items-center gap-4">
           <Input
             placeholder="Search documents..."
@@ -420,15 +549,15 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
             </DialogContent>
           </Dialog>
         </div>
-      </CardHeader>
-      
-      {/* Debug Info */}
-      <div className="px-6 py-2 bg-gray-100 text-xs">
-        Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
-      </div>
+            </div>
 
-      {/* Pagination Controls */}
-      {totalDocs > 0 && totalPages > 1 && (
+            {/* Debug Info */}
+            <div className="px-6 py-2 bg-gray-100 text-xs">
+              Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
+            </div>
+
+            {/* Pagination Controls */}
+            {totalDocs > 0 && totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-muted-foreground">
@@ -511,7 +640,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
           </div>
         </div>
       )}
-      <CardContent className='mt-6 overflow-auto h-[calc(100vh-352px)]'>
+      <div className='mt-6 overflow-auto h-[calc(100vh-352px)]'>
         {isLoading ? (
           <div className="text-center py-10">Loading documents...</div>
         ) : !site?.chat_token ? (
@@ -596,9 +725,84 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
             )}
           </>
         )}
-      </CardContent>
+      </div>
+          </TabsContent>
 
-      
+          <TabsContent value="crawler" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Crawler Status</h3>
+              <div className="flex items-center gap-2">
+                {isCrawling && (
+                  <Button
+                    onClick={handleStopCrawler}
+                    variant="destructive"
+                    size="sm"
+                  >
+                    <Square className="mr-2 h-4 w-4" />
+                    Stop Crawler
+                  </Button>
+                )}
+                <Badge variant={
+                  crawlerStatus?.status === 'success' ? 'default' :
+                  crawlerStatus?.status === 'failed' ? 'destructive' :
+                  crawlerStatus?.status === 'processing' ? 'secondary' : 'outline'
+                }>
+                  {crawlerStatus?.status || 'Idle'}
+                </Badge>
+              </div>
+            </div>
+
+            {crawlerStatus && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Current Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div><strong>URL:</strong> {crawlerStatus.url}</div>
+                    <div><strong>Message:</strong> {crawlerStatus.message}</div>
+                    <div><strong>Status:</strong> {crawlerStatus.status}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Crawler History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[300px]">
+                  {crawlerHistory.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">No crawler activity yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {crawlerHistory.map((entry, index) => (
+                        <div key={index} className="border-b pb-2 last:border-b-0">
+                          <div className="flex items-center justify-between">
+                            <Badge variant={
+                              entry.status === 'success' ? 'default' :
+                              entry.status === 'failed' ? 'destructive' :
+                              'secondary'
+                            }>
+                              {entry.status}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">{entry.timestamp}</span>
+                          </div>
+                          <div className="text-sm mt-1">
+                            <div><strong>URL:</strong> {entry.url}</div>
+                            <div><strong>Message:</strong> {entry.message}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
     </Card>
   );
 }

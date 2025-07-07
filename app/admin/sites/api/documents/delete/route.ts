@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function DELETE(request: NextRequest) {
   try {
     // Get query parameters
     const { searchParams } = new URL(request.url);
-    const skip = searchParams.get('skip') || '0';
-    const limit = searchParams.get('limit') || '10';
+    const documentId = searchParams.get('documentId');
+
+    if (!documentId) {
+      return NextResponse.json(
+        { error: 'Document ID is required' },
+        { status: 400 }
+      );
+    }
 
     // Get authorization header from the request
     const authHeader = request.headers.get('authorization');
@@ -18,12 +24,12 @@ export async function GET(request: NextRequest) {
 
     // Get backend URL from environment variables
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
-
+    
     // Forward the request to FastAPI backend
     const backendResponse = await fetch(
-      `${backendUrl}/api/v1/get_documents?page=${skip}&page_size=${limit}`,
+      `${backendUrl}/api/v1/documents/${documentId}`,
       {
-        method: 'GET',
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authHeader, // Forward the auth header
@@ -32,15 +38,15 @@ export async function GET(request: NextRequest) {
     );
 
     // Get response data
-    const responseData = await backendResponse.json();
+    const responseData = await backendResponse.json().catch(() => ({}));
 
     // Return the response with the same status code
-    return NextResponse.json(responseData, {
-      status: backendResponse.status
+    return NextResponse.json(responseData, { 
+      status: backendResponse.status 
     });
 
   } catch (error) {
-    console.error('Get documents API error:', error);
+    console.error('Delete document API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const skip = searchParams.get('skip') || '0';
-    const limit = searchParams.get('limit') || '10';
-
     // Get authorization header from the request
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
@@ -16,18 +11,35 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Get the form data from the request
+    const formData = await request.formData();
+    
+    // Validate that we have a file
+    const file = formData.get('file') as File;
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400 }
+      );
+    }
+
     // Get backend URL from environment variables
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    
+    // Create new FormData for backend request
+    const backendFormData = new FormData();
+    backendFormData.append('file', file);
 
     // Forward the request to FastAPI backend
     const backendResponse = await fetch(
-      `${backendUrl}/api/v1/get_documents?page=${skip}&page_size=${limit}`,
+      `${backendUrl}/api/v1/add_documents`,
       {
-        method: 'GET',
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': authHeader, // Forward the auth header
+          // Don't set Content-Type for FormData, let the browser set it with boundary
         },
+        body: backendFormData,
       }
     );
 
@@ -35,12 +47,12 @@ export async function GET(request: NextRequest) {
     const responseData = await backendResponse.json();
 
     // Return the response with the same status code
-    return NextResponse.json(responseData, {
-      status: backendResponse.status
+    return NextResponse.json(responseData, { 
+      status: backendResponse.status 
     });
 
   } catch (error) {
-    console.error('Get documents API error:', error);
+    console.error('Upload document API error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
