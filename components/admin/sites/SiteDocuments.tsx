@@ -111,9 +111,10 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   // WebSocket connection for crawler status
   useEffect(() => {
     if (!site?.chat_token) return;
+    console.log('Connecting WebSocket for crawler status with token:', site);
 
     // Create WebSocket connection
-    const wsUrl = `ws://localhost:8001/api/v1/ws/${site.chat_token}`;
+    const wsUrl = `ws://localhost:8001/api/v1/ws/${site._id}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
