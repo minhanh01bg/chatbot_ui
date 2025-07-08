@@ -13,35 +13,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { get_site_documents_with_token, crawler_data_automatic, stop_crawler } from '@/services/document.service';
-
-// Define API document interface (from backend)
-interface ApiDocument {
-  _id: string;
-  site_id: string;
-  title: string;
-  source: string;
-  object_id: string;
-  created_time: string;
-  updated_time: string;
-  doc_type: string;
-  format: string;
-  file_name?: string;
-}
-
-// Define UI document interface (for component)
-interface Document {
-  id: string;
-  name: string;
-  siteId: string;
-  status: 'uploading' | 'processing' | 'completed' | 'failed';
-  createdAt: string;
-  size: number;
-  type: string;
-}
+import { Site, ApiDocument, Document, CrawlerStatus, CrawlerHistoryEntry } from '@/types/site';
 
 interface CrawlerTabProps {
   siteId: string;
-  site: any;
+  site: Site;
 }
 
 export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
@@ -66,18 +42,8 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
 
   // WebSocket and crawler status state
   const [, setSocket] = useState<WebSocket | null>(null);
-  const [crawlerStatus, setCrawlerStatus] = useState<{
-    status: string;
-    message: string;
-    url: string;
-    end: boolean;
-  } | null>(null);
-  const [crawlerHistory, setCrawlerHistory] = useState<Array<{
-    timestamp: string;
-    status: string;
-    message: string;
-    url: string;
-  }>>([]);
+  const [crawlerStatus, setCrawlerStatus] = useState<CrawlerStatus | null>(null);
+  const [crawlerHistory, setCrawlerHistory] = useState<CrawlerHistoryEntry[]>([]);
 
   // WebSocket connection for crawler status
   useEffect(() => {

@@ -1,22 +1,16 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Site } from '@/components/admin/sites/SiteDocuments';
-import { message } from '@/lib/db/schema';
+import { Site, ChatMessage } from '@/types/site';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bot, User, ArrowDown, Send } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Bot, User, ArrowDown, Send, MessageSquare, Zap } from 'lucide-react';
 
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
 
 interface ChatTestProps {
   variant?: 'embedded' | 'fullpage';
@@ -132,11 +126,34 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
   };
 
   return (
-    <div className={cn(
+    <Card className={cn(
       "flex flex-col h-[600px] max-h-full",
       variant === 'fullpage' ? "max-w-3xl mx-auto" : ""
     )}>
-      <div className="flex-1 min-h-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5" />
+            Chat Test
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Test your AI assistant with {site?.name || 'this site'}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Zap className="h-3 w-3" />
+            {messages.length} messages
+          </Badge>
+          {site?.chat_token && (
+            <Badge variant="secondary">Connected</Badge>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent className="flex-1 min-h-0 p-0">
+        <div className="flex flex-col h-full">
+          <div className="flex-1 min-h-0">
         <ScrollArea 
           ref={scrollAreaRef} 
           onScroll={handleScroll}
@@ -202,25 +219,27 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
           <ArrowDown className="h-4 w-4" />
         </Button>
       )}
-      
-      <div className="border-t p-4">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <Input
-            placeholder="Type your message..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button 
-            type="submit" 
-            size="icon"
-            disabled={isLoading || !input.trim()}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
-    </div>
+          </div>
+
+          <div className="border-t p-4">
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
+              <Input
+                placeholder="Type your message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+                className="flex-1"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !input.trim()}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          </div>
+      </CardContent>
+    </Card>
   );
 }

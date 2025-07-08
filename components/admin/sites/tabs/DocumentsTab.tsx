@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Plus, FileText, AlertTriangle, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
@@ -12,35 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { get_site_documents_with_token } from '@/services/document.service';
-
-// Define API document interface (from backend)
-interface ApiDocument {
-  _id: string;
-  site_id: string;
-  title: string;
-  source: string;
-  object_id: string;
-  created_time: string;
-  updated_time: string;
-  doc_type: string;
-  format: string;
-  file_name?: string;
-}
-
-// Define UI document interface (for component)
-interface Document {
-  id: string;
-  name: string;
-  siteId: string;
-  status: 'uploading' | 'processing' | 'completed' | 'failed';
-  createdAt: string;
-  size: number;
-  type: string;
-}
+import { Site, ApiDocument, Document } from '@/types/site';
 
 interface DocumentsTabProps {
   siteId: string;
-  site: any;
+  site: Site;
 }
 
 export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {

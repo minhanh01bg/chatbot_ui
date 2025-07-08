@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FileText, Activity } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 import DocumentsTab from './tabs/DocumentsTab';
 import CrawlerTab from './tabs/CrawlerTab';
+import { Site } from '@/types/site';
 
 interface SiteDocumentsProps {
   siteId: string;
-  site: any;
+  site: Site;
 }
 
 export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {

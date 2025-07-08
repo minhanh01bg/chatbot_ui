@@ -4,15 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import SiteDocuments from '@/components/admin/sites/SiteDocuments';
 import ChatTest from '@/components/admin/ChatTest';
-
-interface Site {
-  _id?: string;
-  id?: string;
-  name: string;
-  domain?: string;
-  chat_token?: string;
-  [key: string]: any;
-}
+import { Site } from '@/types/site';
 
 interface SiteDocumentsPageProps {
   params: {
@@ -20,7 +12,7 @@ interface SiteDocumentsPageProps {
   };
 }
 
-export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
+export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
   // Get site ID from pathname to avoid accessing params.id directly
   const pathname = usePathname();
   const siteId = React.useMemo(() => {
@@ -74,7 +66,7 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
 
   return (
     <div className=''>
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
         <div className="lg:col-span-4">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
