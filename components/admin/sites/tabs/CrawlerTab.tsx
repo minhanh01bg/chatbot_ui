@@ -309,9 +309,9 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full">
       {/* Crawler Management Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0 mb-4">
         <h3 className="text-lg font-semibold">Crawler Management</h3>
         <div className="flex items-center gap-2">
           {/* Crawl Website Button */}
@@ -451,8 +451,8 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
       </Card>
 
       {/* Crawler Documents Section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+      <Card className="flex-1 min-h-0 flex flex-col">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 flex-shrink-0">
           <CardTitle className="text-sm">Crawler Documents</CardTitle>
           <Input
             placeholder="Search crawler documents..."
@@ -461,7 +461,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
             onChange={(e) => setCrawlerSearchTerm(e.target.value)}
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 min-h-0 flex flex-col">
 
           {isCrawlerLoading ? (
             <div className="text-center py-10">Loading crawler documents...</div>
@@ -474,10 +474,10 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="flex flex-col h-full">
               {/* Crawler Pagination Controls */}
               {crawlerTotalDocs > 0 && crawlerTotalPages > 1 && (
-                <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center justify-between flex-shrink-0 mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">
                       Showing {((crawlerCurrentPage - 1) * crawlerItemsPerPage) + 1} to {Math.min(crawlerCurrentPage * crawlerItemsPerPage, crawlerTotalDocs)} of {crawlerTotalDocs} crawler documents
@@ -551,51 +551,55 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
                   </div>
                 </div>
               )}
-              {paginatedCrawlerDocuments.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-8 w-8 text-blue-500" />
-                    <div>
-                      <h3 className="font-medium">{doc.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Created: {new Date(doc.createdAt).toLocaleDateString()} • Type: {doc.type}
-                      </p>
-                    </div>
-                  </div>
+              <div className="flex-1 min-h-0 overflow-auto">
+                <div className="space-y-4">
+                  {paginatedCrawlerDocuments.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <FileText className="h-8 w-8 text-blue-500" />
+                        <div>
+                          <h3 className="font-medium">{doc.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Created: {new Date(doc.createdAt).toLocaleDateString()} • Type: {doc.type}
+                          </p>
+                        </div>
+                      </div>
 
-                  <div className="flex space-x-2">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDocumentToDelete(doc.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Document</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{doc.name}"? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => {
-                              handleDeleteDocument();
-                            }}
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                      <div className="flex space-x-2">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDocumentToDelete(doc.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Document</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{doc.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  handleDeleteDocument();
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           )}
         </CardContent>

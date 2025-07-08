@@ -221,9 +221,9 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full">
       {/* Header with search and upload */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-shrink-0 mb-4">
         <Input
           placeholder="Search documents..."
           className="max-w-[250px]"
@@ -243,10 +243,10 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="file">Select File</Label>
-                <Input 
-                  id="file" 
-                  type="file" 
-                  accept=".pdf,.docx,.txt,.md" 
+                <Input
+                  id="file"
+                  type="file"
+                  accept=".pdf,.docx,.txt,.md"
                   onChange={handleFileUpload}
                   disabled={isUploading}
                 />
@@ -266,13 +266,13 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
       </div>
 
       {/* Debug Info */}
-      <div className="px-6 py-2 bg-gray-100 text-xs">
+      <div className="px-6 py-2 bg-gray-100 text-xs flex-shrink-0 mb-4">
         Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
       </div>
 
       {/* Pagination Controls */}
       {totalDocs > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0 mb-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-muted-foreground">
               Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
@@ -350,7 +350,7 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
       )}
 
       {/* Documents Content */}
-      <div className='mt-6 overflow-auto h-[calc(100vh-352px)]'>
+      <div className='flex-1 min-h-0 overflow-auto'>
         {isLoading ? (
           <div className="text-center py-10">Loading documents...</div>
         ) : !site?.chat_token ? (
@@ -380,11 +380,11 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
                       <div>
                         <h3 className="font-medium">{doc.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Created: {new Date(doc.createdAt).toLocaleDateString()} • 
-                          Type: {doc.type} • 
-                          Status: {doc.status === 'completed' ? 'Ready' : 
-                                   doc.status === 'processing' ? 'Processing' : 
-                                   doc.status === 'uploading' ? 'Uploading' : 
+                          Created: {new Date(doc.createdAt).toLocaleDateString()} •
+                          Type: {doc.type} •
+                          Status: {doc.status === 'completed' ? 'Ready' :
+                                   doc.status === 'processing' ? 'Processing' :
+                                   doc.status === 'uploading' ? 'Uploading' :
                                    'Processing...'}
                         </p>
                       </div>
