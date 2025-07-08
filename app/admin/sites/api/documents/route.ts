@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const skip = searchParams.get('skip') || '0';
     const limit = searchParams.get('limit') || '10';
+    const format = searchParams.get('format') || 'file';
 
     // Get authorization header from the request
     const authHeader = request.headers.get('authorization');
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Forward the request to FastAPI backend
     const backendResponse = await fetch(
-      `${backendUrl}/api/v1/get_documents?page=${skip}&page_size=${limit}`,
+      `${backendUrl}/api/v1/get_documents?page=${skip}&page_size=${limit}&format=${format}`,
       {
         method: 'GET',
         headers: {

@@ -66,11 +66,12 @@ export const get_site_documents_with_token = async (
   siteId: string,
   chatToken: string,
   skip: number,
-  limit: number
+  limit: number,
+  format: string = 'file'
 ): Promise<DocumentsResponse> => {
   try {
     // Call Next.js API route in admin/sites/api instead of backend directly
-    const response = await fetch(`/admin/sites/api/documents?skip=${skip}&limit=${limit}`, {
+    const response = await fetch(`/admin/sites/api/documents?skip=${skip}&limit=${limit}&format=${format}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

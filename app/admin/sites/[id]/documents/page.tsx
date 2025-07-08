@@ -74,8 +74,8 @@ export default function SiteDocumentsPage({ params }: SiteDocumentsPageProps) {
 
   return (
     <div className=''>
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        <div className="lg:col-span-4">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
           ) : site ? (
