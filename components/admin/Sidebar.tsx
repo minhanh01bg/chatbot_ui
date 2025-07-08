@@ -38,11 +38,6 @@ const navigation: NavItem[] = [
     href: '/admin/sites',
     icon: GlobeAltIcon
   },
-  {
-    name: "Web socket test",
-    href: '/admin/test',
-    icon: WrenchScrewdriverIcon,
-  },
   { 
     name: 'Users Management', 
     icon: UserGroupIcon,
@@ -52,7 +47,6 @@ const navigation: NavItem[] = [
     ] 
   },
   { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
-  { name: 'WebSocket Test', href: '/admin/test', icon: WrenchScrewdriverIcon },
   { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
