@@ -80,14 +80,8 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
         </div>
 
         <div className="h-full grid-col-span-1 lg:col-span-2">
-          <div className="flex flex-col border rounded-lg bg-background shadow overflow-hidden">
-            <div className="px-6 pt-6 pb-4 border-b">
-              <h2 className="text-xl font-semibold mb-2">Test Imported Data</h2>
-              <p className="text-sm text-muted-foreground">
-                Use this chat interface to test how your imported documents respond to queries.
-              </p>
-            </div>
-            <div className="px-2 py-2 flex-1 overflow-y-auto">
+          <div className="flex flex-col rounded-lg bg-background">
+            <div className="flex-1 overflow-y-auto">
               {isLoading ? (
                   <div className="text-center py-10">Loading chat interface...</div>
                 ) : site ? (

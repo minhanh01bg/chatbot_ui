@@ -127,10 +127,10 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
 
   return (
     <Card className={cn(
-      "flex flex-col h-[600px] max-h-full",
-      variant === 'fullpage' ? "max-w-3xl mx-auto" : ""
+      "flex flex-col",
+      variant === 'fullpage' ? "max-w-3xl mx-auto h-[calc(100vh-8rem)]" : "h-[calc(100vh-8rem)]"
     )}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 flex-shrink-0">
         <div>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
@@ -151,11 +151,10 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 min-h-0 p-0">
-        <div className="flex flex-col h-full">
-          <div className="flex-1 min-h-0">
-        <ScrollArea 
-          ref={scrollAreaRef} 
+      <CardContent className="flex-1 min-h-0 p-0 flex flex-col">
+        <div className="flex-1 min-h-0 relative">
+        <ScrollArea
+          ref={scrollAreaRef}
           onScroll={handleScroll}
           className="h-full"
         >
@@ -207,38 +206,37 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
             )}
           </div>
         </ScrollArea>
-      </div>
-      
-      {showScrollButton && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute bottom-20 right-6 rounded-full shadow-md z-10"
-          onClick={scrollToBottom}
-        >
-          <ArrowDown className="h-4 w-4" />
-        </Button>
-      )}
-          </div>
 
-          <div className="border-t p-4">
-            <form onSubmit={handleSubmit} className="flex items-center gap-2">
-              <Input
-                placeholder="Type your message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={isLoading}
-                className="flex-1"
-              />
-              <Button
-                type="submit"
-                size="icon"
-                disabled={isLoading || !input.trim()}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
+        {showScrollButton && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute bottom-20 right-6 rounded-full shadow-md z-10"
+            onClick={scrollToBottom}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        )}
+        </div>
+
+        <div className="border-t p-4 flex-shrink-0">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            <Input
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              disabled={isLoading || !input.trim()}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </form>
+        </div>
       </CardContent>
     </Card>
   );
