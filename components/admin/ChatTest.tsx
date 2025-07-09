@@ -127,7 +127,7 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
 
   return (
     <Card className={cn(
-      "flex flex-col p-4",
+      "flex flex-col",
       variant === 'fullpage' ? "max-w-3xl mx-auto h-[calc(100vh-10rem)]" : "h-[calc(100vh-10rem)]"
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 flex-shrink-0">

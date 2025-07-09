@@ -65,9 +65,9 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
   }, [siteId]);
 
   return (
-    <div className=''>
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
-        <div className="lg:col-span-4">
+    // <div className=''>
+      <div className="h-full p-4 grid grid-cols-1 lg:grid-cols-6 gap-3">
+        <div className="h-full lg:col-span-4">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
           ) : site ? (
@@ -95,6 +95,6 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 }

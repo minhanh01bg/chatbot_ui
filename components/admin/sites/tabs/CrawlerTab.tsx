@@ -407,7 +407,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
       )}
 
       {/* Crawler History */}
-      <Card>
+      {/* <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-sm">Crawler History</CardTitle>
           {crawlerHistory.length > 0 && (
@@ -448,7 +448,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
             )}
           </ScrollArea>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Crawler Documents Section */}
       <Card className="flex-1 min-h-0 flex flex-col">
