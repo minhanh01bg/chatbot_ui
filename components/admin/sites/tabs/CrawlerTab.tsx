@@ -452,7 +452,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
 
       {/* Crawler Documents Section */}
       <Card className="flex-1 min-h-0 flex flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 flex-shrink-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 flex-shrink-0 p-4 pb-0">
           <CardTitle className="text-sm">Crawler Documents</CardTitle>
           <Input
             placeholder="Search crawler documents..."
@@ -461,7 +461,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
             onChange={(e) => setCrawlerSearchTerm(e.target.value)}
           />
         </CardHeader>
-        <CardContent className="flex-1 min-h-0 flex flex-col">
+        <CardContent className="flex-1 min-h-0 flex flex-col p-2">
 
           {isCrawlerLoading ? (
             <div className="text-center py-10">Loading crawler documents...</div>
@@ -477,10 +477,10 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
             <div className="flex flex-col h-full">
               {/* Crawler Pagination Controls */}
               {crawlerTotalDocs > 0 && crawlerTotalPages > 1 && (
-                <div className="flex items-center justify-between flex-shrink-0 mb-4">
+                <div className="flex items-center justify-between flex-shrink-0 m-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-muted-foreground">
-                      Showing {((crawlerCurrentPage - 1) * crawlerItemsPerPage) + 1} to {Math.min(crawlerCurrentPage * crawlerItemsPerPage, crawlerTotalDocs)} of {crawlerTotalDocs} crawler documents
+                      {crawlerTotalDocs} crawler documents
                     </span>
                   </div>
 
@@ -552,7 +552,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
                 </div>
               )}
               <div className="flex-1 min-h-0 overflow-auto">
-                <div className="space-y-4">
+                <div className="space-y-4 px-2 p-2">
                   {paginatedCrawlerDocuments.map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-3">

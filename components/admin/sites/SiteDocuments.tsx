@@ -17,7 +17,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
   const [activeTab, setActiveTab] = useState('documents');
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-10rem)]">
+    <Card className="flex flex-col h-[calc(100vh-9rem)] w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
         <div>
           <CardTitle>Documents for {site?.name || 'Site'}</CardTitle>

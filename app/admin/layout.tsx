@@ -27,7 +27,7 @@ export default function AdminLayout({
           </main>
           
           {/* Footer */}
-          <footer className="py-4 px-6 border-t border-border text-sm text-muted-foreground text-center">
+          <footer className="py-2 px-6 border-t border-border text-sm text-muted-foreground text-center">
             <p>© {new Date().getFullYear()} Admin Dashboard. All rights reserved.</p>
           </footer>
         </div>
