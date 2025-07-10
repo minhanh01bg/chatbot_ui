@@ -18,7 +18,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
 
   return (
     <Card className="flex flex-col h-[calc(100vh-9rem)] w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-shrink-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-0 flex-shrink-0">
         <div>
           <CardTitle>Documents for {site?.name || 'Site'}</CardTitle>
           <CardDescription>Manage documents for this site</CardDescription>
@@ -26,7 +26,7 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
       </CardHeader>
 
       <CardContent className="flex-1 min-h-0 p-0">
-        <div className="p-6 h-full flex flex-col">
+        <div className="p-4 h-full flex flex-col">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col h-full">
             <TabsList className="grid w-full grid-cols-2 flex-shrink-0">
               <TabsTrigger value="documents" className="flex items-center gap-2">
