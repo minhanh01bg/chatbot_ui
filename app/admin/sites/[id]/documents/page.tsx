@@ -66,7 +66,7 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
 
   return (
     <div className="h-full flex items-center justify-center p-4">
-      <div className="w-full grid grid-cols-1 lg:grid-cols-6 gap-3">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-8 gap-3">
         <div className="lg:col-span-4 flex items-center justify-center">
           {isLoading ? (
             <div className="text-center py-10">Loading site information...</div>
@@ -79,11 +79,11 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
           )}
         </div>
 
-        <div className="lg:col-span-2 flex items-center justify-center">
+        <div className="lg:col-span-4 flex items-center justify-center">
           {isLoading ? (
             <div className="text-center py-10">Loading chat interface...</div>
           ) : site ? (
-            <ChatTest variant="embedded" siteId={siteId} site={site} />
+            <ChatTest variant="embedded" site={site} />
           ) : (
             <div className="text-center py-10 text-red-500">
               Failed to load chat interface. Please try again later.

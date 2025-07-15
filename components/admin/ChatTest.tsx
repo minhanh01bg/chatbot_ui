@@ -10,21 +10,23 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, User, ArrowDown, Send, MessageSquare, Zap } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 
 interface ChatTestProps {
   variant?: 'embedded' | 'fullpage';
-  siteId?: string;
   site?: Site;
 }
 
-export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTestProps) {
+export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -62,10 +64,10 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
       const data_request = {
         question: input,
         chat_history: messages.map(msg => ({
-          type: msg.role,
+          role: msg.role,
           content: msg.content,
         })),
-        session_id: siteId,
+        session_id: sessionId,
       }
       console.log("Sending data:", data_request);
       const res:any = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat`, {
@@ -185,9 +187,68 @@ export default function ChatTest({ variant = 'embedded', siteId, site}: ChatTest
                       </Avatar>
                     )}
                     <div className="flex-1 overflow-hidden">
-                      <p className="whitespace-pre-wrap break-words">
-                        {message.content}
-                      </p>
+                      {message.role === 'assistant' ? (
+                        <div className="prose prose-sm max-w-none dark:prose-invert text-gray-800 dark:text-gray-200">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code: ({ className, children, ...props }: any) => {
+                                const match = /language-(\w+)/.exec(className || '');
+                                const isInline = !match;
+                                return isInline ? (
+                                  <code className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                                    {children}
+                                  </code>
+                                ) : (
+                                  <pre className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-lg overflow-x-auto my-3 border border-gray-200 dark:border-gray-700">
+                                    <code className={`${className} text-sm font-mono`} {...props}>
+                                      {children}
+                                    </code>
+                                  </pre>
+                                );
+                              },
+                              pre: ({ children }) => <div>{children}</div>,
+                              h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-4 first:mt-0 pb-1 border-b border-gray-200 dark:border-gray-700">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-lg font-semibold mb-2 mt-3 first:mt-0 pb-0.5">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-base font-medium mb-1 mt-2 first:mt-0">{children}</h3>,
+                              ul: ({ children }) => <ul className="list-disc ml-5 mb-4 space-y-1">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal ml-5 mb-4 space-y-1">{children}</ol>,
+                              li: ({ children }) => <li className="leading-relaxed pl-1">{children}</li>,
+                              p: ({ children }) => <p className="mb-3 last:mb-0 leading-relaxed text-gray-800 dark:text-gray-200">{children}</p>,
+                              blockquote: ({ children }) => (
+                                <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-3 bg-gray-50 dark:bg-gray-800/50 py-2 rounded-r text-gray-700 dark:text-gray-300">
+                                  {children}
+                                </blockquote>
+                              ),
+                              strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
+                              em: ({ children }) => <em className="italic text-gray-800 dark:text-gray-200">{children}</em>,
+                              table: ({ children }) => (
+                                <div className="overflow-x-auto my-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                  <table className="min-w-full border-collapse">
+                                    {children}
+                                  </table>
+                                </div>
+                              ),
+                              th: ({ children }) => (
+                                <th className="border-b border-r last:border-r-0 border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800 font-semibold text-left text-gray-700 dark:text-gray-300">
+                                  {children}
+                                </th>
+                              ),
+                              td: ({ children }) => (
+                                <td className="border-b border-r last:border-r-0 border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-200">
+                                  {children}
+                                </td>
+                              ),
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap break-words leading-relaxed">
+                          {message.content}
+                        </p>
+                      )}
                       <p className="mt-1 text-xs opacity-50">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
