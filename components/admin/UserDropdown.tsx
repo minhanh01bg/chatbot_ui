@@ -12,17 +12,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import { 
-  UserIcon, 
-  Settings, 
-  HelpCircle, 
+import { signOut, useSession } from 'next-auth/react';
+import {
+  UserIcon,
+  Settings,
+  HelpCircle,
   LayoutDashboard,
   LogOut
 } from 'lucide-react';
 
 export default function UserDropdown() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
@@ -30,16 +31,21 @@ export default function UserDropdown() {
     router.refresh();
   };
 
+  // Get user info from session or fallback to defaults
+  const userName = session?.user?.name || session?.user?.username || 'Administrator';
+  const userEmail = session?.user?.email || 'admin@example.com';
+  const userInitial = userName.charAt(0).toUpperCase();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-9 px-2 gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/admin-avatar.png" alt="Admin" />
-            <AvatarFallback>A</AvatarFallback>
+            <AvatarImage src="/admin-avatar.png" alt={userName} />
+            <AvatarFallback>{userInitial}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start">
-            <span className="hidden md:inline font-medium text-sm">Administrator</span>
+            <span className="hidden md:inline font-medium text-sm">{userName}</span>
             <span className="hidden md:inline text-xs text-muted-foreground">Admin</span>
           </div>
         </Button>
@@ -49,8 +55,8 @@ export default function UserDropdown() {
           <div className="flex flex-col space-y-0.5">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">Administrator</p>
-                <p className="text-xs text-muted-foreground">admin@example.com</p>
+                <p className="text-sm font-medium">{userName}</p>
+                <p className="text-xs text-muted-foreground">{userEmail}</p>
               </div>
             </DropdownMenuLabel>
           </div>

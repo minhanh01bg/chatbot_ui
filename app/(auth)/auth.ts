@@ -18,6 +18,7 @@ interface CustomUser extends User {
   accessToken?: string;
   tokenType?: string;
   username?: string;
+  email?: string;
 }
 
 export const {
@@ -59,7 +60,7 @@ export const {
             return null;
           }
           
-          if (!loginResponse.user || !loginResponse.user.id || !loginResponse.user.username) {
+          if (!loginResponse.user || !loginResponse.user.id) {
             console.error('Authentication failed: Invalid user data in response');
             console.error('User data:', JSON.stringify(loginResponse.user));
             return null;
@@ -68,13 +69,14 @@ export const {
           // Create user object from response
           const user: CustomUser = {
             id: loginResponse.user.id,
-            username: loginResponse.user.username,
-            name: loginResponse.user.username || null,
+            username: username, // Keep the original identifier (username/email) that user entered
+            name: username || loginResponse.user.id,
+            email: username.includes('@') ? username : null, // Set email if identifier is email
             accessToken: loginResponse.access_token,
             tokenType: loginResponse.token_type
           };
-          
-          console.log('Authentication successful for user:', user.username);
+
+          console.log('Authentication successful for user ID:', user.id);
           
           // Set the access token in the user object that will be passed to the JWT callback
           return user;
