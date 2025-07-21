@@ -166,6 +166,11 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
     setCrawlerCurrentPage(1);
   }, [crawlerSearchTerm]);
 
+  // Reset to first page when items per page changes
+  useEffect(() => {
+    setCrawlerCurrentPage(1);
+  }, [crawlerItemsPerPage]);
+
   // Crawler pagination handlers
   const goToCrawlerPage = (page: number) => {
     setCrawlerCurrentPage(Math.max(1, Math.min(page, crawlerTotalPages)));

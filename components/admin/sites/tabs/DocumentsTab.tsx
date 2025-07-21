@@ -118,6 +118,11 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
     setCurrentPage(1);
   }, [searchTerm]);
 
+  // Reset to first page when items per page changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
+
   // Pagination handlers
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
