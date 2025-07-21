@@ -6,34 +6,34 @@ import { Label } from './ui/label';
 export function AuthForm({
   action,
   children,
-  defaultUsername = '',
+  defaultIdentifier = '',
 }: {
   action: NonNullable<
     string | ((formData: FormData) => void | Promise<void>) | undefined
   >;
   children: React.ReactNode;
-  defaultUsername?: string;
+  defaultIdentifier?: string;
 }) {
   return (
     <Form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
       <div className="flex flex-col gap-2">
         <Label
-          htmlFor="username"
+          htmlFor="identifier"
           className="text-zinc-600 font-normal dark:text-zinc-400"
         >
-          Username
+          Username or email
         </Label>
 
         <Input
-          id="username"
-          name="username"
+          id="identifier"
+          name="identifier"
           className="bg-muted text-md md:text-sm"
           type="text"
-          placeholder="your_username"
-          autoComplete="username"
+          placeholder="your username or email"
+          autoComplete="identifier"
           required
           autoFocus
-          defaultValue={defaultUsername}
+          defaultValue={defaultIdentifier}
         />
       </div>
 

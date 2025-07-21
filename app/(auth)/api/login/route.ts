@@ -18,15 +18,19 @@ export async function POST(request: NextRequest) {
   try {
     // Extract credentials from request
     const credentials = await request.json();
-    console.log("Login credentials received:", JSON.stringify({ username: credentials.username }));
-    
+    console.log("Login credentials received:", JSON.stringify({
+      identifier: credentials.identifier || credentials.username,
+      hasPassword: !!credentials.password
+    }));
+
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
     const apiUrl = NEXT_PUBLIC_BACKEND_URL.replace('localhost', '127.0.0.1');
     console.log("Making request to:", `${apiUrl}/api/v1/login`);
-    
+
     // Create FormData for backend request
     const formData = new FormData();
-    formData.append('username', credentials.username);
+    // Backend expects 'username' field, but we send identifier (which can be username or email)
+    formData.append('username', credentials.identifier || credentials.username);
     formData.append('password', credentials.password);
 
     // Forward request to backend

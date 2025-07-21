@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
-import { signOut } from 'next-auth/react';
 
 import { login, type LoginActionState } from '../actions';
 
@@ -15,7 +14,7 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
 
   const [state, formAction] = useActionState<LoginActionState, FormData>(
@@ -116,23 +115,11 @@ export default function Page() {
   }, [state, router, searchParams]);
 
   const handleSubmit = (formData: FormData) => {
-    setUsername(formData.get('username') as string);
+    setIdentifier(formData.get('identifier') as string);
     formAction(formData);
   };
 
-  // Function to handle logout and clear all session cookies
-  const handleForceLogout = async () => {
-    // Sign out of NextAuth
-    await signOut({ redirect: false });
-    
-    // Manually clear cookies
-    document.cookie.split(";").forEach(function(c) {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    toast.success('Successfully logged out and cleared session cache');
-    router.refresh();
-  };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
@@ -142,7 +129,7 @@ export default function Page() {
           <p className="text-muted-foreground mt-1">Welcome back! Please enter your credentials.</p>
         </div>
 
-        <AuthForm action={handleSubmit} defaultUsername={username}>
+        <AuthForm action={handleSubmit} defaultIdentifier={identifier}>
           <SubmitButton isSuccessful={isSuccessful}>
             {isSuccessful ? 'Signed in!' : 'Sign in'}
           </SubmitButton>

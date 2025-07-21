@@ -37,7 +37,7 @@ export const {
       credentials: {},
       async authorize({ username, password }: any) {
         try {
-          console.log('Authentication attempt initiated for username:', username);
+          console.log('Authentication attempt initiated for identifier:', username);
 
           if (!username || !password) {
             console.error('Authentication failed: Missing credentials');

@@ -1,10 +1,10 @@
 /**
  * Login function - call login API and get token
- * @param username User's username
+ * @param identifier User's identifier (username or email)
  * @param password User's password
  * @returns API response containing access_token and token_type
  */
-export const login = async (username: string, password: string) => {
+export const login = async (identifier: string, password: string) => {
     console.log('Login attempt initiated');
     try {
         // Sử dụng đường dẫn tương đối đơn giản - đã được loại trừ khỏi middleware
@@ -14,7 +14,7 @@ export const login = async (username: string, password: string) => {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ identifier, password }),
             cache: 'no-store'
         });
 
@@ -73,11 +73,11 @@ export const login = async (username: string, password: string) => {
 
 /**
  * Register function - register a new user
- * @param username New user's username
+ * @param identifier New user's identifier (username or email)
  * @param password New user's password
  * @returns API response
  */
-export const register = async (username: string, password: string) => {
+export const register = async (identifier: string, password: string) => {
     console.log('Registration attempt initiated');
 
     try {
@@ -88,7 +88,7 @@ export const register = async (username: string, password: string) => {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ identifier, password }),
             cache: 'no-store'
         });
 

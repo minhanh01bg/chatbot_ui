@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
 
     // Create FormData for backend request
     const formData = new FormData();
-    formData.append('username', userData.username);
+    // Backend expects 'username' field, but we send identifier (which can be username or email)
+    formData.append('username', userData.identifier || userData.username);
     formData.append('password', userData.password);
 
     // Forward request to backend
