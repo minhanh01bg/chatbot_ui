@@ -60,7 +60,7 @@ export const {
             return null;
           }
           
-          if (!loginResponse.user || !loginResponse.user.id) {
+          if (!loginResponse.user || !loginResponse.user.id || !loginResponse.user.identifier) {
             console.error('Authentication failed: Invalid user data in response');
             console.error('User data:', JSON.stringify(loginResponse.user));
             return null;
@@ -69,9 +69,9 @@ export const {
           // Create user object from response
           const user: CustomUser = {
             id: loginResponse.user.id,
-            username: username, // Keep the original identifier (username/email) that user entered
-            name: username || loginResponse.user.id,
-            email: username.includes('@') ? username : null, // Set email if identifier is email
+            username: loginResponse.user.identifier, // Use identifier from backend
+            name: loginResponse.user.identifier, // Use identifier as display name
+            email: loginResponse.user.identifier.includes('@') ? loginResponse.user.identifier : null, // Set email if identifier is email
             accessToken: loginResponse.access_token,
             tokenType: loginResponse.token_type
           };

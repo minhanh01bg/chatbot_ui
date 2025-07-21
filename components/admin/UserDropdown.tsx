@@ -25,15 +25,17 @@ export default function UserDropdown() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await signOut({ redirect: false });
     router.push('/login');
     router.refresh();
   };
 
   // Get user info from session or fallback to defaults
-  const userName = session?.user?.name || session?.user?.username || 'Administrator';
-  const userEmail = session?.user?.email || 'admin@example.com';
+  const userIdentifier = (session?.user as any)?.identifier || session?.user?.name || 'Administrator';
+  console.log(userIdentifier)
+  const userName = userIdentifier;
+  const userEmail = userIdentifier.includes('@') ? userIdentifier : 'admin@example.com';
   const userInitial = userName.charAt(0).toUpperCase();
 
   return (
