@@ -11,6 +11,8 @@ import PlanComparison from '@/components/plans/PlanComparison';
 import CurrentSubscription from '@/components/plans/CurrentSubscription';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import AuthDebug from '@/components/debug/AuthDebug';
+import { debugAuthState } from '@/lib/auth-utils';
 import Link from 'next/link';
 
 export default function PlansPage() {
@@ -19,7 +21,18 @@ export default function PlansPage() {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'comparison'>('cards');
   const { toast } = useToast();
-  const { isAuthenticated } = useCurrentUser();
+  const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
+
+  // Debug log
+  useEffect(() => {
+    console.log('Plans page - Auth state:', {
+      isAuthenticated,
+      userLoading,
+      user: user ? { id: user.id, name: user.name, hasToken: !!user.accessToken } : null,
+      localStorage: typeof window !== 'undefined' ? !!localStorage.getItem('access_token') : null,
+      cookies: typeof window !== 'undefined' ? document.cookie.includes('client_access_token') : null
+    });
+  }, [isAuthenticated, userLoading, user]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -132,8 +145,47 @@ export default function PlansPage() {
           )}
         </div>
 
+        {/* Debug Info */}
+        <div className="mb-4">
+          <Card className="max-w-4xl mx-auto">
+            <CardContent className="py-4">
+              <div className="text-sm space-y-2">
+                <div><strong>Auth Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
+                <div><strong>User Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
+                <div><strong>User ID:</strong> {user?.id || 'None'}</div>
+                <div><strong>Has Token:</strong> {user?.accessToken ? '✅ Yes' : '❌ No'}</div>
+                <div><strong>localStorage token:</strong> {typeof window !== 'undefined' && localStorage.getItem('access_token') ? '✅ Has token' : '❌ No token'}</div>
+                <div><strong>localStorage user_id:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_id') || 'None' : 'N/A'}</div>
+                <div><strong>localStorage identifier:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_identifier') || 'None' : 'N/A'}</div>
+                <div><strong>Cookies:</strong> {typeof window !== 'undefined' && document.cookie.includes('client_access_token') ? '✅ Has token' : '❌ No token'}</div>
+                <div className="pt-2">
+                  <Button
+                    onClick={() => {
+                      debugAuthState();
+                      window.location.reload();
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Debug & Refresh
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Current Subscription or Login Prompt */}
-        {isAuthenticated ? (
+        {userLoading ? (
+          <div className="mb-8">
+            <Card className="max-w-2xl mx-auto">
+              <CardContent className="text-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
+                <p className="text-muted-foreground">Loading authentication...</p>
+              </CardContent>
+            </Card>
+          </div>
+        ) : isAuthenticated ? (
           <div className="mb-8">
             <CurrentSubscription />
           </div>
@@ -198,6 +250,9 @@ export default function PlansPage() {
           </Card>
         </div>
       </div>
+
+      {/* Debug Component */}
+      <AuthDebug />
     </div>
   );
 }
