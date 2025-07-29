@@ -70,7 +70,7 @@ Complete implementation of Plans & Pricing functionality with Google OAuth integ
 ### Backend APIs Used:
 - `GET /api/v1/public/plans` - Fetch available plans
 - `POST /api/v1/subscriptions/{user_id}/create?plan_id={plan_id}` - Create subscription
-- `GET /api/v1/subscriptions/{user_id}/current` - Get current subscription
+- `GET /api/v1/subscriptions/my` - Get current user's subscription
 
 ### Frontend API Routes:
 - `GET /api/plans` - Proxy to backend plans API
