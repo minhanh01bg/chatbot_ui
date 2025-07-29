@@ -12,17 +12,25 @@ export default function AuthSuccessPage() {
   useEffect(() => {
     const processAuthSuccess = async () => {
       try {
-        // Lấy token từ URL params
+        // Lấy tất cả thông tin từ URL params
         const token = searchParams.get('token');
         const tokenType = searchParams.get('token_type');
         const expiredAt = searchParams.get('expired_at');
         const state = searchParams.get('state');
+        const userId = searchParams.get('id');
+        const identifier = searchParams.get('identifier');
+        const role = searchParams.get('role');
+        const isHidden = searchParams.get('is_hidden');
 
         console.log('Auth Success - Received params:', {
           hasToken: !!token,
           tokenType,
           expiredAt,
-          state
+          state,
+          userId,
+          identifier,
+          role,
+          isHidden
         });
 
         if (!token) {
@@ -33,18 +41,33 @@ export default function AuthSuccessPage() {
 
         console.log('Google Auth Success - Processing token...');
 
-        // Lưu token vào localStorage
+        // Lưu token và user info vào localStorage
         localStorage.setItem('access_token', token);
         if (expiredAt) {
           localStorage.setItem('token_expired_at', expiredAt);
+        }
+        if (userId) {
+          localStorage.setItem('user_id', userId);
+        }
+        if (identifier) {
+          localStorage.setItem('user_identifier', identifier);
+        }
+        if (role) {
+          localStorage.setItem('user_role', role);
         }
 
         // Set client-side cookies
         const maxAge = 60 * 60 * 24 * 7; // 7 days
         document.cookie = `client_access_token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-        
+
         if (expiredAt) {
           document.cookie = `token_expired_at=${expiredAt}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        }
+        if (userId) {
+          document.cookie = `user_id=${userId}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        }
+        if (identifier) {
+          document.cookie = `user_identifier=${identifier}; path=/; max-age=${maxAge}; SameSite=Lax`;
         }
 
         // Gọi API để set server-side cookies
