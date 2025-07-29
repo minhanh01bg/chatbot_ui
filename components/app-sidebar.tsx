@@ -7,6 +7,7 @@ import { PlusIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import { Button } from '@/components/ui/button';
+import PricingButton from '@/components/plans/PricingButton';
 import {
   Sidebar,
   SidebarContent,
@@ -61,7 +62,12 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+      <SidebarFooter>
+        <div className="space-y-2">
+          <PricingButton variant="ghost" size="sm" className="w-full justify-start" />
+          {user && <SidebarUserNav user={user} />}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

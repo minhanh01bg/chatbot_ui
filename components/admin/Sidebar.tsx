@@ -13,6 +13,7 @@ import {
   DocumentIcon,
   GlobeAltIcon,
   WrenchScrewdriverIcon,
+  CreditCardIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -33,18 +34,23 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-  { 
-    name: 'Sites', 
+  {
+    name: 'Sites',
     href: '/admin/sites',
     icon: GlobeAltIcon
   },
-  { 
-    name: 'Users Management', 
+  {
+    name: 'Plans & Pricing',
+    href: '/plans',
+    icon: CreditCardIcon
+  },
+  {
+    name: 'Users Management',
     icon: UserGroupIcon,
     subItems: [
       { name: 'User List', href: '/admin/users' },
       { name: 'User Roles', href: '/admin/users/roles' },
-    ] 
+    ]
   },
   { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
   { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
