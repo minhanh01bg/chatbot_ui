@@ -24,7 +24,7 @@ export const getPublicPlans = async (): Promise<Plan[]> => {
   }
 };
 
-export const subscribeToPlan = async (planId: string): Promise<any> => {
+export const subscribeToPlan = async (planId: string, userId?: string, accessToken?: string): Promise<any> => {
   try {
     // Use Next.js API route for better security and session handling
     const response = await fetch('/api/subscriptions', {
@@ -32,7 +32,11 @@ export const subscribeToPlan = async (planId: string): Promise<any> => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ planId }),
+      body: JSON.stringify({
+        planId,
+        userId,
+        accessToken
+      }),
     });
 
     if (!response.ok) {
