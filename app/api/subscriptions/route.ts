@@ -5,18 +5,8 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:800
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated session
-    const session = await auth();
-    
-    if (!session || !session.user || !session.user.id) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    const { planId, userId, accessToken } = await request.json();
 
-    const { planId } = await request.json();
-    
     if (!planId) {
       return NextResponse.json(
         { error: 'Plan ID is required' },
@@ -24,22 +14,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get access token from session
-    const accessToken = (session as any).accessToken;
-    
-    if (!accessToken) {
+    let finalUserId = userId;
+    let finalAccessToken = accessToken;
+
+    // Try to get from NextAuth session if not provided
+    if (!finalUserId || !finalAccessToken) {
+      const session = await auth();
+
+      if (session?.user?.id) {
+        finalUserId = session.user.id;
+        finalAccessToken = (session as any).accessToken;
+      }
+    }
+
+    // Try to get from cookies as fallback
+    if (!finalAccessToken) {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      finalAccessToken = cookieStore.get('access_token')?.value ||
+                        cookieStore.get('client_access_token')?.value;
+    }
+
+    if (!finalAccessToken) {
       return NextResponse.json(
         { error: 'Access token not found' },
         { status: 401 }
       );
     }
 
+    // For Google OAuth users, use a placeholder ID - backend will resolve from token
+    if (!finalUserId) {
+      finalUserId = 'oauth-user';
+    }
+
     // Make request to backend
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${session.user.id}/create?plan_id=${planId}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${finalUserId}/create?plan_id=${planId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${finalAccessToken}`,
       },
       body: '',
     });

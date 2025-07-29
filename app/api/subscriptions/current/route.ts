@@ -5,19 +5,24 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:800
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated session
+    let userId: string | undefined;
+    let accessToken: string | undefined;
+
+    // Try to get from NextAuth session first
     const session = await auth();
-    
-    if (!session || !session.user || !session.user.id) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    if (session?.user?.id) {
+      userId = session.user.id;
+      accessToken = (session as any).accessToken;
     }
 
-    // Get access token from session
-    const accessToken = (session as any).accessToken;
-    
+    // Try to get from cookies as fallback (for Google OAuth)
+    if (!accessToken) {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      accessToken = cookieStore.get('access_token')?.value ||
+                   cookieStore.get('client_access_token')?.value;
+    }
+
     if (!accessToken) {
       return NextResponse.json(
         { error: 'Access token not found' },
@@ -25,8 +30,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // For Google OAuth users, use a placeholder ID - backend will resolve from token
+    if (!userId) {
+      userId = 'oauth-user';
+    }
+
     // Make request to backend to get current subscription
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${session.user.id}/current`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${userId}/current`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
