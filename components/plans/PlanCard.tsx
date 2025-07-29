@@ -58,7 +58,7 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
 
     setIsSubscribing(true);
     try {
-      const result = await subscribeToPlan(plan.id);
+      const result = await subscribeToPlan(plan.id, user.id, user.accessToken);
       toast({
         title: 'Success!',
         description: `Successfully subscribed to ${plan.name} plan. Your subscription is now active.`,
