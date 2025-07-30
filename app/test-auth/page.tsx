@@ -5,10 +5,33 @@ import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SessionProvider from '@/components/providers/SessionProvider';
+import { useEffect, useState } from 'react';
 
 function TestAuthContent() {
   const { user, isLoading, isAuthenticated } = useCurrentUser();
   const { data: session, status } = useSession();
+  const [mounted, setMounted] = useState(false);
+  const [storageInfo, setStorageInfo] = useState({
+    hasLocalStorageToken: false,
+    hasCookieToken: false,
+    allCookies: ''
+  });
+
+  // Only run on client side after hydration
+  useEffect(() => {
+    setMounted(true);
+
+    // Get storage info safely on client side
+    const hasLocalStorageToken = !!localStorage.getItem('access_token');
+    const hasCookieToken = document.cookie.includes('client_access_token=');
+    const allCookies = document.cookie;
+
+    setStorageInfo({
+      hasLocalStorageToken,
+      hasCookieToken,
+      allCookies
+    });
+  }, []);
 
   return (
     <div className="container mx-auto p-8 space-y-6">
@@ -77,30 +100,20 @@ function TestAuthContent() {
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span>localStorage token:</span>
-              <Badge variant={
-                typeof window !== 'undefined' && localStorage.getItem('access_token') 
-                  ? 'default' : 'destructive'
-              }>
-                {typeof window !== 'undefined' && localStorage.getItem('access_token') 
-                  ? 'Yes' : 'No'}
+              <Badge variant={storageInfo.hasLocalStorageToken ? 'default' : 'destructive'}>
+                {storageInfo.hasLocalStorageToken ? 'Yes' : 'No'}
               </Badge>
             </div>
             <div className="flex justify-between">
               <span>Cookie token:</span>
-              <Badge variant={
-                typeof window !== 'undefined' && 
-                document.cookie.includes('client_access_token=') 
-                  ? 'default' : 'destructive'
-              }>
-                {typeof window !== 'undefined' && 
-                 document.cookie.includes('client_access_token=') 
-                  ? 'Yes' : 'No'}
+              <Badge variant={storageInfo.hasCookieToken ? 'default' : 'destructive'}>
+                {storageInfo.hasCookieToken ? 'Yes' : 'No'}
               </Badge>
             </div>
             <div>
               <span className="font-semibold">All Cookies:</span>
               <pre className="mt-2 p-2 bg-muted rounded text-sm">
-                {typeof window !== 'undefined' ? document.cookie : 'N/A'}
+                {mounted ? storageInfo.allCookies || 'No cookies' : 'Loading...'}
               </pre>
             </div>
           </CardContent>

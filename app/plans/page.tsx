@@ -21,8 +21,39 @@ export default function PlansPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'comparison'>('cards');
+  const [mounted, setMounted] = useState(false);
+  const [storageInfo, setStorageInfo] = useState({
+    hasLocalStorageToken: false,
+    hasLocalStorageUserId: false,
+    hasLocalStorageIdentifier: false,
+    hasCookieToken: false,
+    localStorageUserId: '',
+    localStorageIdentifier: ''
+  });
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
+
+  // Client-side storage info
+  useEffect(() => {
+    setMounted(true);
+
+    // Get storage info safely on client side
+    const hasLocalStorageToken = !!localStorage.getItem('access_token');
+    const hasLocalStorageUserId = !!localStorage.getItem('user_id');
+    const hasLocalStorageIdentifier = !!localStorage.getItem('user_identifier');
+    const hasCookieToken = document.cookie.includes('client_access_token');
+    const localStorageUserId = localStorage.getItem('user_id') || '';
+    const localStorageIdentifier = localStorage.getItem('user_identifier') || '';
+
+    setStorageInfo({
+      hasLocalStorageToken,
+      hasLocalStorageUserId,
+      hasLocalStorageIdentifier,
+      hasCookieToken,
+      localStorageUserId,
+      localStorageIdentifier
+    });
+  }, []);
 
   // Debug log
   useEffect(() => {
@@ -30,10 +61,9 @@ export default function PlansPage() {
       isAuthenticated,
       userLoading,
       user: user ? { id: user.id, name: user.name, hasToken: !!user.accessToken } : null,
-      localStorage: typeof window !== 'undefined' ? !!localStorage.getItem('access_token') : null,
-      cookies: typeof window !== 'undefined' ? document.cookie.includes('client_access_token') : null
+      storageInfo: mounted ? storageInfo : 'not mounted'
     });
-  }, [isAuthenticated, userLoading, user]);
+  }, [isAuthenticated, userLoading, user, mounted, storageInfo]);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -158,10 +188,10 @@ export default function PlansPage() {
                 <div><strong>Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
                 <div><strong>User ID:</strong> {user?.id || 'None'}</div>
                 <div><strong>Has Token:</strong> {user?.accessToken ? '✅ Yes' : '❌ No'}</div>
-                <div><strong>localStorage token:</strong> {typeof window !== 'undefined' && localStorage.getItem('access_token') ? '✅ Has token' : '❌ No token'}</div>
-                <div><strong>localStorage user_id:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_id') || 'None' : 'N/A'}</div>
-                <div><strong>localStorage identifier:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_identifier') || 'None' : 'N/A'}</div>
-                <div><strong>Cookies:</strong> {typeof window !== 'undefined' && document.cookie.includes('client_access_token') ? '✅ Has token' : '❌ No token'}</div>
+                <div><strong>localStorage token:</strong> {storageInfo.hasLocalStorageToken ? '✅ Has token' : '❌ No token'}</div>
+                <div><strong>localStorage user_id:</strong> {storageInfo.localStorageUserId || 'None'}</div>
+                <div><strong>localStorage identifier:</strong> {storageInfo.localStorageIdentifier || 'None'}</div>
+                <div><strong>Cookies:</strong> {storageInfo.hasCookieToken ? '✅ Has token' : '❌ No token'}</div>
                 <div className="pt-2 space-x-2">
                   <Button
                     onClick={() => {

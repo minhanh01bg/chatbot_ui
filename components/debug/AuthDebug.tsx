@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,8 +9,26 @@ import { useSession } from 'next-auth/react';
 
 export default function AuthDebug() {
   const [isVisible, setIsVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [storageInfo, setStorageInfo] = useState({
+    hasLocalStorageToken: false,
+    hasCookieToken: false
+  });
   const { user, isLoading, isAuthenticated } = useCurrentUser();
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    setMounted(true);
+
+    // Get storage info safely on client side
+    const hasLocalStorageToken = !!localStorage.getItem('access_token');
+    const hasCookieToken = document.cookie.includes('client_access_token=');
+
+    setStorageInfo({
+      hasLocalStorageToken,
+      hasCookieToken
+    });
+  }, []);
 
   if (!isVisible) {
     return (
@@ -107,24 +125,14 @@ export default function AuthDebug() {
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>localStorage token:</span>
-                <Badge variant={
-                  typeof window !== 'undefined' && localStorage.getItem('access_token') 
-                    ? 'default' : 'destructive'
-                }>
-                  {typeof window !== 'undefined' && localStorage.getItem('access_token') 
-                    ? 'Yes' : 'No'}
+                <Badge variant={storageInfo.hasLocalStorageToken ? 'default' : 'destructive'}>
+                  {storageInfo.hasLocalStorageToken ? 'Yes' : 'No'}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span>Cookie token:</span>
-                <Badge variant={
-                  typeof window !== 'undefined' && 
-                  document.cookie.includes('client_access_token=') 
-                    ? 'default' : 'destructive'
-                }>
-                  {typeof window !== 'undefined' && 
-                   document.cookie.includes('client_access_token=') 
-                    ? 'Yes' : 'No'}
+                <Badge variant={storageInfo.hasCookieToken ? 'default' : 'destructive'}>
+                  {storageInfo.hasCookieToken ? 'Yes' : 'No'}
                 </Badge>
               </div>
             </div>
@@ -137,10 +145,10 @@ export default function AuthDebug() {
                 console.log('Auth Debug Info:', {
                   useCurrentUser: { user, isLoading, isAuthenticated },
                   nextAuthSession: { session, status },
-                  localStorage: typeof window !== 'undefined' ? {
+                  localStorage: mounted ? {
                     access_token: localStorage.getItem('access_token'),
                   } : null,
-                  cookies: typeof window !== 'undefined' ? document.cookie : null,
+                  cookies: mounted ? document.cookie : null,
                 });
               }}
               variant="outline"
