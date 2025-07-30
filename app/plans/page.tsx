@@ -158,7 +158,7 @@ export default function PlansPage() {
                 <div><strong>localStorage user_id:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_id') || 'None' : 'N/A'}</div>
                 <div><strong>localStorage identifier:</strong> {typeof window !== 'undefined' ? localStorage.getItem('user_identifier') || 'None' : 'N/A'}</div>
                 <div><strong>Cookies:</strong> {typeof window !== 'undefined' && document.cookie.includes('client_access_token') ? '✅ Has token' : '❌ No token'}</div>
-                <div className="pt-2">
+                <div className="pt-2 space-x-2">
                   <Button
                     onClick={() => {
                       debugAuthState();
@@ -168,6 +168,19 @@ export default function PlansPage() {
                     size="sm"
                   >
                     Debug & Refresh
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      localStorage.clear();
+                      document.cookie.split(";").forEach(function(c) {
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                      });
+                      window.location.reload();
+                    }}
+                    variant="destructive"
+                    size="sm"
+                  >
+                    Clear Auth & Refresh
                   </Button>
                 </div>
               </div>

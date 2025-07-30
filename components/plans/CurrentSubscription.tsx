@@ -14,6 +14,11 @@ export default function CurrentSubscription() {
   const [error, setError] = useState<string | null>(null);
   const { user, isAuthenticated } = useCurrentUser();
 
+  // Early return if not authenticated to prevent unnecessary API calls
+  if (!isAuthenticated) {
+    return null;
+  }
+
   useEffect(() => {
     if (!isAuthenticated || !user) {
       setIsLoading(false);
@@ -24,22 +29,31 @@ export default function CurrentSubscription() {
       try {
         setIsLoading(true);
         const response = await fetch('/api/subscriptions/current');
-        
+
         if (response.status === 404) {
           // No subscription found
           setSubscription(null);
           setError(null);
           return;
         }
-        
+
         if (!response.ok) {
-          throw new Error('Failed to fetch subscription');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to fetch subscription');
         }
 
         const data = await response.json();
+
+        // Validate subscription data
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid subscription data received');
+        }
+
+        console.log('CurrentSubscription: Received data:', data);
         setSubscription(data);
         setError(null);
       } catch (err) {
+        console.error('CurrentSubscription: Error fetching subscription:', err);
         setError(err instanceof Error ? err.message : 'Failed to load subscription');
         setSubscription(null);
       } finally {
@@ -105,6 +119,8 @@ export default function CurrentSubscription() {
   }
 
   const getStatusIcon = () => {
+    if (!subscription?.status) return <Clock className="w-4 h-4 text-yellow-500" />;
+
     switch (subscription.status) {
       case 'active':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
@@ -116,6 +132,8 @@ export default function CurrentSubscription() {
   };
 
   const getStatusVariant = () => {
+    if (!subscription?.status) return 'secondary';
+
     switch (subscription.status) {
       case 'active':
         return 'default';
@@ -135,15 +153,19 @@ export default function CurrentSubscription() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-lg">{subscription.plan_name}</h3>
+              <h3 className="font-semibold text-lg">{subscription.plan_name || 'Unknown Plan'}</h3>
               <p className="text-sm text-muted-foreground">
-                {subscription.plan_price === 0 ? 'Free Plan' : `$${subscription.plan_price}`}
+                {subscription.plan_price === 0 ? 'Free Plan' :
+                 subscription.plan_price ? `$${subscription.plan_price}` : 'Price not available'}
               </p>
             </div>
             <div className="flex items-center gap-2">
               {getStatusIcon()}
               <Badge variant={getStatusVariant()}>
-                {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+                {subscription.status ?
+                  subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1) :
+                  'Unknown'
+                }
               </Badge>
             </div>
           </div>

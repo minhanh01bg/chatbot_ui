@@ -13,14 +13,22 @@ export default function AuthSuccessPage() {
     const processAuthSuccess = async () => {
       try {
         // Lấy tất cả thông tin từ URL params
-        const token = searchParams.get('token');
+        let token = searchParams.get('token');
         const tokenType = searchParams.get('token_type');
         const expiredAt = searchParams.get('expired_at');
         const state = searchParams.get('state');
         const userId = searchParams.get('id');
         const identifier = searchParams.get('identifier');
-        const role = searchParams.get('role');
+        let role = searchParams.get('role');
         const isHidden = searchParams.get('is_hidden');
+
+        // Fix for missing & between role and token
+        if (!token && role && role.includes('token=')) {
+          const parts = role.split('token=');
+          role = parts[0];
+          token = parts[1];
+          console.log('Fixed missing & between role and token:', { role, token });
+        }
 
         console.log('Auth Success - Received params:', {
           hasToken: !!token,
@@ -33,6 +41,10 @@ export default function AuthSuccessPage() {
           isHidden
         });
 
+        // Debug: log all URL params
+        console.log('All URL params:', Object.fromEntries(searchParams.entries()));
+        console.log('Raw URL:', window.location.href);
+
         if (!token) {
           toast.error('No authentication token received');
           router.push('/login?error=no_token');
@@ -40,6 +52,13 @@ export default function AuthSuccessPage() {
         }
 
         console.log('Google Auth Success - Processing token...');
+
+        // Clear any existing auth data first
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('token_expired_at');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_identifier');
+        localStorage.removeItem('user_role');
 
         // Lưu token và user info vào localStorage
         localStorage.setItem('access_token', token);
@@ -55,6 +74,13 @@ export default function AuthSuccessPage() {
         if (role) {
           localStorage.setItem('user_role', role);
         }
+
+        console.log('Stored in localStorage:', {
+          access_token: localStorage.getItem('access_token')?.substring(0, 20) + '...',
+          user_id: localStorage.getItem('user_id'),
+          user_identifier: localStorage.getItem('user_identifier'),
+          user_role: localStorage.getItem('user_role')
+        });
 
         // Set client-side cookies
         const maxAge = 60 * 60 * 24 * 7; // 7 days
