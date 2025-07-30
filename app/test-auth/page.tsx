@@ -13,7 +13,10 @@ function TestAuthContent() {
   return (
     <div className="container mx-auto p-8 space-y-6">
       <h1 className="text-3xl font-bold">Authentication Test</h1>
-      
+      <p className="text-muted-foreground">
+        Unified testing for all authentication methods (NextAuth, Google OAuth, etc.)
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* useCurrentUser Hook */}
         <Card>

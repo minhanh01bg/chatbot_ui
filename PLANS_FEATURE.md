@@ -6,11 +6,11 @@ Complete implementation of Plans & Pricing functionality with Google OAuth integ
 
 ## 🚀 Features Implemented
 
-### ✅ **Authentication Integration**
-- Google OAuth token handling from localStorage/cookies
+### ✅ **Unified Authentication System**
+- Support for multiple authentication methods (NextAuth, Google OAuth, etc.)
+- Token handling from localStorage/cookies with automatic fallback
 - User info storage (id, identifier) during auth success
-- Flexible authentication detection (NextAuth + Google OAuth)
-- No dependency on backend `/users/me` API
+- Flexible authentication detection without backend dependency
 
 ### ✅ **Plan Management**
 - Fetch plans from backend API `/api/v1/public/plans`
@@ -94,22 +94,23 @@ Complete implementation of Plans & Pricing functionality with Google OAuth integ
 ## 🐛 Debugging
 
 ### Authentication Issues:
-1. Visit `/test-auth` to see detailed auth state
+1. Visit `/test-auth` to see comprehensive auth state testing
 2. Check browser console for `useCurrentUser` logs
 3. Verify localStorage has `access_token`, `user_id`, `user_identifier`
-4. Use AuthDebug component on plans page
+4. Use AuthDebug component on plans page for real-time monitoring
 
 ### Common Issues:
-- **"Login Required"**: Check if Google OAuth stored user info correctly
+- **"Login Required"**: Check if authentication stored user info correctly
 - **Subscription Fails**: Verify user_id and token are valid
 - **Plans Not Loading**: Check backend API connectivity
+- **Token Issues**: Use "Clear Auth & Refresh" button to reset auth state
 
 ## 🔄 Git Commits
 
 The feature was implemented in 7 logical commits:
 
 1. **feat: add plan types and subscription service** - Core types and services
-2. **feat: improve authentication handling for Google OAuth** - Auth utilities and user management
+2. **feat: improve authentication handling for unified auth system** - Auth utilities and user management
 3. **feat: add API routes for plans and subscriptions** - Backend integration
 4. **feat: add plan and subscription UI components** - React components
 5. **feat: add plans page with dual view modes** - Main page implementation
@@ -139,3 +140,4 @@ For issues or questions about the Plans & Pricing feature:
 2. Review console logs for detailed error information
 3. Verify backend API endpoints are accessible
 4. Check authentication flow is working correctly
+

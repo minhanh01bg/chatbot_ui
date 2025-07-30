@@ -44,7 +44,7 @@ export default function AuthDebug() {
         <CardContent className="space-y-3 text-xs">
           {/* useCurrentUser Hook */}
           <div>
-            <h4 className="font-semibold mb-1">useCurrentUser Hook:</h4>
+            <h4 className="font-semibold mb-1">Current Authentication State:</h4>
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>isLoading:</span>
@@ -81,7 +81,7 @@ export default function AuthDebug() {
 
           {/* NextAuth Session */}
           <div>
-            <h4 className="font-semibold mb-1">NextAuth Session:</h4>
+            <h4 className="font-semibold mb-1">Session Details:</h4>
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>Status:</span>
@@ -103,7 +103,7 @@ export default function AuthDebug() {
 
           {/* Browser Storage */}
           <div>
-            <h4 className="font-semibold mb-1">Browser Storage:</h4>
+            <h4 className="font-semibold mb-1">Storage & Tokens:</h4>
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span>localStorage token:</span>

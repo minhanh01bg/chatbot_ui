@@ -48,7 +48,8 @@ This directory contains components for displaying and managing subscription plan
 
 The backend should provide:
 - `GET /api/v1/public/plans` - Returns array of plans
-- `POST /api/v1/subscribe` - Handles plan subscription
+- `POST /api/v1/subscriptions/{user_id}/create?plan_id={plan_id}` - Create subscription
+- `GET /api/v1/subscriptions/my` - Get current user's subscription
 
 ## Plan Data Structure
 

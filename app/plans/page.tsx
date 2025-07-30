@@ -145,13 +145,16 @@ export default function PlansPage() {
           )}
         </div>
 
-        {/* Debug Info */}
+        {/* Authentication Debug Info */}
         <div className="mb-4">
           <Card className="max-w-4xl mx-auto">
+            <CardHeader>
+              <CardTitle className="text-lg">Authentication Status</CardTitle>
+            </CardHeader>
             <CardContent className="py-4">
               <div className="text-sm space-y-2">
-                <div><strong>Auth Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
-                <div><strong>User Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
+                <div><strong>Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
+                <div><strong>Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
                 <div><strong>User ID:</strong> {user?.id || 'None'}</div>
                 <div><strong>Has Token:</strong> {user?.accessToken ? '✅ Yes' : '❌ No'}</div>
                 <div><strong>localStorage token:</strong> {typeof window !== 'undefined' && localStorage.getItem('access_token') ? '✅ Has token' : '❌ No token'}</div>
