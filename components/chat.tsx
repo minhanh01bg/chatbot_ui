@@ -46,7 +46,7 @@ export function Chat({
     initialMessages,
     experimental_throttle: 100,
     onFinish: () => {
-      mutate('/api/history');
+      mutate('/api/chat/history');
     },
   });
 

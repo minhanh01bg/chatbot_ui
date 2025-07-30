@@ -113,7 +113,7 @@ function PureBlock({
     mutate: mutateDocuments,
   } = useSWR<Array<Document>>(
     block.documentId !== 'init' && block.status !== 'streaming'
-      ? `/api/document?id=${block.documentId}`
+      ? `/api/documents?id=${block.documentId}`
       : null,
     fetcher,
   );

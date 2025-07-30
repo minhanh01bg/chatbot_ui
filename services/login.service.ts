@@ -8,7 +8,7 @@ export const login = async (identifier: string, password: string) => {
     console.log('Login attempt initiated');
     try {
         // Sử dụng đường dẫn tương đối đơn giản - đã được loại trừ khỏi middleware
-        const response = await fetch("http://localhost:3000/api/login", {
+        const response = await fetch("/api/auth/login", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export const register = async (identifier: string, password: string) => {
 
     try {
         // Sử dụng đường dẫn tương đối đơn giản - đã được loại trừ khỏi middleware
-        const response = await fetch("/api/register", {
+        const response = await fetch("/api/auth/register", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ export const register = async (identifier: string, password: string) => {
 export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, session: any) => {
     try {
         // Sử dụng đường dẫn tương đối đơn giản
-        const proxyUrl = '/api/auth-proxy';
+        const proxyUrl = '/api/auth/proxy';
         console.log('Making authenticated request via proxy to endpoint:', endpoint);
         
         // Create proxy request payload

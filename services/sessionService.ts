@@ -17,7 +17,7 @@ export const getSessions = async (page = 1, pageSize = 10): Promise<SessionRespo
 };
 
 export const getChatHistory = async (sessionId: string): Promise<ChatHistoryResponse> => {
-  const response = await fetch(`/api/history?session_id=${sessionId}`, {
+  const response = await fetch(`/api/chat/history?session_id=${sessionId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export const getChatHistory = async (sessionId: string): Promise<ChatHistoryResp
 };
 
 export const createSession = async (): Promise<SessionData> => {
-    const response = await fetch(`/api/sessions`, {
+    const response = await fetch(`/api/chat/sessions`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -7,6 +7,9 @@ This directory contains all API routes organized by model/feature for better mai
 ```
 app/api/
 ├── auth/                     # Authentication endpoints
+│   ├── login/route.ts        # POST /api/auth/login - User login
+│   ├── register/route.ts     # POST /api/auth/register - User registration
+│   ├── proxy/route.ts        # POST /api/auth/proxy - Authenticated proxy
 │   ├── token/route.ts        # POST /api/auth/token - Set auth token
 │   └── session/route.ts      # GET /api/auth/session - Debug session info
 ├── plans/                    # Plan management endpoints
@@ -19,13 +22,47 @@ app/api/
 │       └── route.ts          # GET, PUT, DELETE /api/subscriptions/[id]
 ├── users/                    # User management endpoints
 │   └── me/route.ts           # GET /api/users/me - Get current user info
-└── documents/                # Document management endpoints (existing)
-    └── ...
+├── documents/                # Document management endpoints
+│   └── route.ts              # GET, POST, PATCH /api/documents - Document CRUD
+├── chat/                     # Chat-related endpoints
+│   ├── route.ts              # POST /api/chat - Send chat message
+│   ├── history/route.ts      # GET /api/chat/history - Get chat history
+│   └── sessions/route.ts     # GET, POST, DELETE /api/chat/sessions - Session management
+└── admin/                    # Admin-specific endpoints (existing)
+    └── sites/api/...
 ```
 
 ## 🔗 API Endpoints
 
 ### Authentication (`/api/auth/`)
+
+#### `POST /api/auth/login`
+User login with credentials.
+```json
+{
+  "identifier": "username_or_email",
+  "password": "user_password"
+}
+```
+
+#### `POST /api/auth/register`
+User registration.
+```json
+{
+  "identifier": "username_or_email",
+  "password": "user_password"
+}
+```
+
+#### `POST /api/auth/proxy`
+General-purpose authenticated proxy for backend requests.
+```json
+{
+  "endpoint": "/api/v1/some-endpoint",
+  "method": "GET|POST|PUT|DELETE",
+  "body": { "optional": "data" }
+}
+```
 
 #### `POST /api/auth/token`
 Set authentication token in server-side cookies.
@@ -75,6 +112,53 @@ Cancel/delete subscription.
 
 #### `GET /api/users/me`
 Get current authenticated user's information.
+
+### Documents (`/api/documents/`)
+
+#### `GET /api/documents?id={document_id}`
+Get document by ID.
+
+#### `POST /api/documents?id={document_id}`
+Create/save document.
+```json
+{
+  "content": "document_content",
+  "title": "document_title",
+  "kind": "text|code"
+}
+```
+
+#### `PATCH /api/documents?id={document_id}`
+Delete document versions after timestamp.
+```json
+{
+  "timestamp": "2025-07-30T23:36:40.000Z"
+}
+```
+
+### Chat (`/api/chat/`)
+
+#### `POST /api/chat`
+Send chat message and get streaming response.
+```json
+{
+  "question": "user_message",
+  "chat_history": [...],
+  "session_id": "session_id"
+}
+```
+
+#### `GET /api/chat/history?session_id={session_id}`
+Get chat history for a session.
+
+#### `GET /api/chat/sessions?page={page}&pageSize={size}`
+Get paginated list of chat sessions.
+
+#### `POST /api/chat/sessions`
+Create new chat session.
+
+#### `DELETE /api/chat/sessions?session_id={session_id}`
+Delete chat session.
 
 ## 🔐 Authentication
 
