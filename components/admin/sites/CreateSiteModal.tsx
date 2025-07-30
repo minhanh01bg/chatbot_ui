@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Plus, Loader2 } from 'lucide-react';
 import { LanguageSelector } from '@/components/ui/language-selector';
 import { createSite, CreateSiteData } from '@/services/site.service';
@@ -179,18 +177,22 @@ export default function CreateSiteModal({ onSiteCreated }: CreateSiteModalProps)
           </div>
 
           {/* Force Language */}
-          <div className="flex items-center space-x-2">
-            <Switch
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
               id="force_language"
               checked={formData.force_language}
-              onCheckedChange={(checked) => handleInputChange('force_language', checked)}
+              onChange={(e) => handleInputChange('force_language', e.target.checked)}
+              className="mt-1 h-4 w-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
             />
-            <Label htmlFor="force_language" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Force Language
-            </Label>
-            <p className="text-xs text-muted-foreground ml-2">
-              Bot will only respond in the selected language
-            </p>
+            <div className="flex flex-col">
+              <Label htmlFor="force_language" className="text-sm font-medium leading-none cursor-pointer">
+                Force Language
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Bot will only respond in the selected language
+              </p>
+            </div>
           </div>
 
           <DialogFooter>
