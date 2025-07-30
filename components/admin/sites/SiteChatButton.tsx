@@ -15,9 +15,19 @@ export default function SiteChatButton({ site }: SiteChatButtonProps) {
   const { setSiteChat } = useSiteChat();
 
   const handleChatClick = () => {
+    // Check if required fields exist
+    if (!site.id || !site.chat_token || !site.name) {
+      console.error('Missing required site data for chat:', {
+        id: site.id,
+        hasToken: !!site.chat_token,
+        name: site.name
+      });
+      return;
+    }
+
     // Set the site context for chat
     setSiteChat(site.id, site.chat_token, site.name);
-    
+
     // Navigate to chat page
     router.push('/');
   };

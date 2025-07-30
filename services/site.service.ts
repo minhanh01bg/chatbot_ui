@@ -89,22 +89,35 @@ export interface CreateSiteData {
 // New create site function using the new API
 export const createSite = async (siteData: CreateSiteData) => {
   try {
+    console.log('Client: Starting createSite request with data:', siteData);
+
     const response = await fetch('/api/admin/sites/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(siteData),
+      credentials: 'include', // Ensure cookies are sent
+    });
+
+    console.log('Client: Received response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('Client: Error response data:', errorData);
       throw new Error(errorData.error || `Error creating site: ${response.statusText}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('Client: Success response data:', result);
+    return result;
   } catch (error) {
-    console.error('Failed to create site:', error);
+    console.error('Client: Failed to create site:', error);
     throw error;
   }
 }

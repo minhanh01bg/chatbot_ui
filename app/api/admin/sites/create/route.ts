@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.accessToken) {
+    // Get access token from cookies (same pattern as other APIs)
+    const accessToken = request.cookies.get('access_token')?.value;
+    const clientToken = request.cookies.get('client_access_token')?.value;
+    const token = accessToken || clientToken;
+
+    // Debug logging
+    console.log('Create site API: Token check:', {
+      hasAccessToken: !!accessToken,
+      hasClientToken: !!clientToken,
+      tokenLength: token?.length || 0,
+      allCookies: Array.from(request.cookies.entries()).map(([name, cookie]) => ({ name, hasValue: !!cookie.value }))
+    });
+
+    if (!token) {
+      console.error('Create site API: No access token found in cookies');
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Authentication required - No token provided' },
         { status: 401 }
       );
     }
@@ -27,11 +37,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Forward request to backend
+    console.log('Create site API: Making request to backend:', {
+      url: `${BACKEND_URL}/api/v1/create_site`,
+      hasToken: !!token,
+      tokenPrefix: token?.substring(0, 20) + '...',
+      requestData: { name, domain, model_type, language }
+    });
+
     const response = await fetch(`${BACKEND_URL}/api/v1/create_site`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.accessToken}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         name,
@@ -43,8 +60,15 @@ export async function POST(request: NextRequest) {
       }),
     });
 
+    console.log('Create site API: Backend response status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('Create site API: Backend error:', {
+        status: response.status,
+        errorData,
+        statusText: response.statusText
+      });
       return NextResponse.json(
         { error: errorData.detail || 'Failed to create site' },
         { status: response.status }
