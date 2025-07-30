@@ -28,8 +28,16 @@ app/api/
 │   ├── route.ts              # POST /api/chat - Send chat message
 │   ├── history/route.ts      # GET /api/chat/history - Get chat history
 │   └── sessions/route.ts     # GET, POST, DELETE /api/chat/sessions - Session management
-└── admin/                    # Admin-specific endpoints (existing)
-    └── sites/api/...
+└── sites/                    # Site management endpoints
+    ├── route.ts              # GET /api/sites - List all sites
+    ├── [id]/route.ts         # PUT, DELETE /api/sites/[id] - Site CRUD
+    ├── documents/            # Site document management
+    │   ├── route.ts          # GET /api/sites/documents - Get site documents
+    │   ├── upload/route.ts   # POST /api/sites/documents/upload - Upload documents
+    │   └── delete/route.ts   # DELETE /api/sites/documents/delete - Delete documents
+    └── crawler/              # Site crawler management
+        ├── route.ts          # POST /api/sites/crawler - Start crawler
+        └── stop/route.ts     # POST /api/sites/crawler/stop - Stop crawler
 ```
 
 ## 🔗 API Endpoints
@@ -159,6 +167,45 @@ Create new chat session.
 
 #### `DELETE /api/chat/sessions?session_id={session_id}`
 Delete chat session.
+
+### Sites (`/api/sites/`)
+
+#### `GET /api/sites?skip={skip}&limit={limit}`
+Get paginated list of sites.
+
+#### `PUT /api/sites/[id]`
+Update site information.
+```json
+{
+  "name": "Site Name",
+  "description": "Site Description",
+  "url": "https://example.com"
+}
+```
+
+#### `DELETE /api/sites/[id]`
+Delete a site.
+
+#### `GET /api/sites/documents?skip={skip}&limit={limit}&format={format}`
+Get site documents with pagination and format filtering.
+
+#### `POST /api/sites/documents/upload`
+Upload document to site.
+```
+Content-Type: multipart/form-data
+Authorization: Bearer {site_chat_token}
+
+file: [File]
+```
+
+#### `DELETE /api/sites/documents/delete?documentId={document_id}`
+Delete site document.
+
+#### `POST /api/sites/crawler?url={url}`
+Start crawler for a website URL.
+
+#### `POST /api/sites/crawler/stop`
+Stop running crawler process.
 
 ## 🔐 Authentication
 
