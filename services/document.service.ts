@@ -71,7 +71,7 @@ export const get_site_documents_with_token = async (
 ): Promise<DocumentsResponse> => {
   try {
     // Call Next.js API route in admin/sites/api instead of backend directly
-    const response = await fetch(`/admin/sites/api/documents?skip=${skip}&limit=${limit}&format=${format}`, {
+    const response = await fetch(`/api/sites/documents?skip=${skip}&limit=${limit}&format=${format}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const get_site_documents_with_token = async (
 export const crawler_data_automatic = async (url: string, chatToken: string): Promise<any> => {
   try {
     // Call Next.js API route in admin/sites/api instead of backend directly
-    const response = await fetch(`/admin/sites/api/crawler?url=${encodeURIComponent(url)}`, {
+    const response = await fetch(`/api/sites/crawler?url=${encodeURIComponent(url)}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export const crawler_data_automatic = async (url: string, chatToken: string): Pr
 export const stop_crawler = async (chatToken: string): Promise<any> => {
   try {
     // Call Next.js API route in admin/sites/api to stop crawler
-    const response = await fetch('/admin/sites/api/crawler/stop', {
+    const response = await fetch('/api/sites/crawler/stop', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

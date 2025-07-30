@@ -17,7 +17,7 @@ interface SitesResponse {
 
 export const get_sites = async (): Promise<SitesResponse> => {
   try {
-    const response = await fetch(`/admin/sites/api`, {
+    const response = await fetch(`/api/sites`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export const get_sites = async (): Promise<SitesResponse> => {
 
 export const get_site_by_id = async (id: string): Promise<Site> => {
   try {
-    const response = await fetch(`/admin/sites/api/${id}`, {
+    const response = await fetch(`/api/sites/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const get_site_by_id = async (id: string): Promise<Site> => {
 // Lấy tất cả documents thuộc về một site cụ thể
 export const get_site_documents = async (siteId: string, skip: number = 0, limit: number = 10) => {
   try {
-    const response = await fetch(`/admin/sites/api/${siteId}/documents?skip=${skip}&limit=${limit}`, {
+    const response = await fetch(`/api/sites/${siteId}/documents?skip=${skip}&limit=${limit}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const create_site = async (siteData: Omit<Site, '_id' | 'created_at' | 'u
 // Cập nhật site
 export const update_site = async (id: string, siteData: Partial<Omit<Site, '_id' | 'created_at' | 'updated_at'>>) => {
   try {
-    const response = await fetch(`/admin/sites/api/${id}`, {
+    const response = await fetch(`/api/sites/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export const update_site = async (id: string, siteData: Partial<Omit<Site, '_id'
 // Xóa site
 export const delete_site = async (id: string) => {
   try {
-    const response = await fetch(`/admin/sites/api/${id}`, {
+    const response = await fetch(`/api/sites/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
