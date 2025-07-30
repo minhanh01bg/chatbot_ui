@@ -76,7 +76,40 @@ export const get_site_documents = async (siteId: string, skip: number = 0, limit
   }
 }
 
-// Thêm site mới
+// Create site data interface for new API
+export interface CreateSiteData {
+  name: string;
+  domain: string;
+  openai_api_key?: string;
+  model_type?: string;
+  language?: string;
+  force_language?: boolean;
+}
+
+// New create site function using the new API
+export const createSite = async (siteData: CreateSiteData) => {
+  try {
+    const response = await fetch('/api/admin/sites/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(siteData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error creating site: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to create site:', error);
+    throw error;
+  }
+}
+
+// Thêm site mới (legacy function)
 export const create_site = async (siteData: Omit<Site, '_id' | 'created_at' | 'updated_at' | 'document_count'>) => {
   try {
     const response = await fetch('/admin/sites/api', {

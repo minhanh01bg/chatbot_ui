@@ -16,6 +16,7 @@ import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail, MessageCir
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import SiteChatButton from './SiteChatButton';
+import CreateSiteModal from './CreateSiteModal';
 
 // Define site type - flexible to match multiple API response formats
 interface Site {
@@ -48,47 +49,47 @@ export default function SitesTable() {
   
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    const fetchSites = async () => {
-      try {
-        setLoading(true);
-        const skip = (currentPage - 1) * itemsPerPage;
-        
-        // Use the new API route that proxies to the backend
-        const response = await fetch(`/api/sites?skip=${skip}&limit=${itemsPerPage}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include' // Make sure cookies are sent
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Error fetching sites: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Sites data received:', data);
-        
-        // Ensure data has the expected structure
-        if (data.sites && Array.isArray(data.sites)) {
-          setSites(data.sites);
-          setTotalItems(data.total || data.sites.length);
-          setError(null);
-        } else {
-          console.error('Unexpected data format:', data);
-          setError('Received unexpected data format from server');
-          setSites([]);
-        }
-      } catch (err) {
-        console.error('Error fetching sites:', err);
-        setError('Failed to load sites. Please try again later.');
-        setSites([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSites = async () => {
+    try {
+      setLoading(true);
+      const skip = (currentPage - 1) * itemsPerPage;
 
+      // Use the new API route that proxies to the backend
+      const response = await fetch(`/api/sites?skip=${skip}&limit=${itemsPerPage}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include' // Make sure cookies are sent
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching sites: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Sites data received:', data);
+
+      // Ensure data has the expected structure
+      if (data.sites && Array.isArray(data.sites)) {
+        setSites(data.sites);
+        setTotalItems(data.total || data.sites.length);
+        setError(null);
+      } else {
+        console.error('Unexpected data format:', data);
+        setError('Received unexpected data format from server');
+        setSites([]);
+      }
+    } catch (err) {
+      console.error('Error fetching sites:', err);
+      setError('Failed to load sites. Please try again later.');
+      setSites([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchSites();
   }, [currentPage]);
 
@@ -171,10 +172,7 @@ export default function SitesTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button className="flex items-center gap-1">
-            <Plus className="h-4 w-4" />
-            <span>New Site</span>
-          </Button>
+          <CreateSiteModal onSiteCreated={fetchSites} />
         </div>
       </div>
 
