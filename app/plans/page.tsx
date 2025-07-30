@@ -28,7 +28,9 @@ export default function PlansPage() {
     hasLocalStorageIdentifier: false,
     hasCookieToken: false,
     localStorageUserId: '',
-    localStorageIdentifier: ''
+    localStorageIdentifier: '',
+    localStorageToken: '',
+    clientAccessToken: ''
   });
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
@@ -44,6 +46,11 @@ export default function PlansPage() {
     const hasCookieToken = document.cookie.includes('client_access_token');
     const localStorageUserId = localStorage.getItem('user_id') || '';
     const localStorageIdentifier = localStorage.getItem('user_identifier') || '';
+    const localStorageToken = localStorage.getItem('access_token') || '';
+    const clientAccessToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('client_access_token='))
+      ?.split('=')[1] || '';
 
     setStorageInfo({
       hasLocalStorageToken,
@@ -51,7 +58,9 @@ export default function PlansPage() {
       hasLocalStorageIdentifier,
       hasCookieToken,
       localStorageUserId,
-      localStorageIdentifier
+      localStorageIdentifier,
+      localStorageToken,
+      clientAccessToken
     });
   }, []);
 
@@ -197,6 +206,29 @@ export default function PlansPage() {
                 <div><strong>localStorage user_id:</strong> {storageInfo.localStorageUserId || 'None'}</div>
                 <div><strong>localStorage identifier:</strong> {storageInfo.localStorageIdentifier || 'None'}</div>
                 <div><strong>Cookies:</strong> {storageInfo.hasCookieToken ? '✅ Has token' : '❌ No token'}</div>
+
+                {/* Token Details */}
+                {mounted && (storageInfo.localStorageToken || storageInfo.clientAccessToken) && (
+                  <div className="mt-3 pt-3 border-t">
+                    <div><strong>Token Details:</strong></div>
+                    {storageInfo.localStorageToken && (
+                      <div className="mt-1">
+                        <span className="text-xs">localStorage:</span>
+                        <div className="font-mono text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded mt-1 break-all">
+                          {formatTokenForDisplay(storageInfo.localStorageToken)}
+                        </div>
+                      </div>
+                    )}
+                    {storageInfo.clientAccessToken && (
+                      <div className="mt-2">
+                        <span className="text-xs">client_access_token:</span>
+                        <div className="font-mono text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded mt-1 break-all">
+                          {formatTokenForDisplay(storageInfo.clientAccessToken)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="pt-2 space-x-2">
                   <Button
                     onClick={() => {

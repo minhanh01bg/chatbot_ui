@@ -13,7 +13,9 @@ export default function AuthDebug() {
   const [mounted, setMounted] = useState(false);
   const [storageInfo, setStorageInfo] = useState({
     hasLocalStorageToken: false,
-    hasCookieToken: false
+    hasCookieToken: false,
+    localStorageToken: '',
+    clientAccessToken: ''
   });
   const { user, isLoading, isAuthenticated } = useCurrentUser();
   const { data: session, status } = useSession();
@@ -24,10 +26,17 @@ export default function AuthDebug() {
     // Get storage info safely on client side
     const hasLocalStorageToken = !!localStorage.getItem('access_token');
     const hasCookieToken = document.cookie.includes('client_access_token=');
+    const localStorageToken = localStorage.getItem('access_token') || '';
+    const clientAccessToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('client_access_token='))
+      ?.split('=')[1] || '';
 
     setStorageInfo({
       hasLocalStorageToken,
-      hasCookieToken
+      hasCookieToken,
+      localStorageToken,
+      clientAccessToken
     });
   }, []);
 
@@ -136,6 +145,28 @@ export default function AuthDebug() {
                   {storageInfo.hasCookieToken ? 'Yes' : 'No'}
                 </Badge>
               </div>
+              {mounted && (storageInfo.localStorageToken || storageInfo.clientAccessToken) && (
+                <div className="mt-2 pt-2 border-t">
+                  <div className="text-xs space-y-1">
+                    {storageInfo.localStorageToken && (
+                      <div>
+                        <span className="font-medium">localStorage:</span>
+                        <div className="font-mono text-xs break-all bg-gray-100 dark:bg-gray-700 p-1 rounded mt-1">
+                          {formatTokenForDisplay(storageInfo.localStorageToken)}
+                        </div>
+                      </div>
+                    )}
+                    {storageInfo.clientAccessToken && (
+                      <div>
+                        <span className="font-medium">Cookie:</span>
+                        <div className="font-mono text-xs break-all bg-gray-100 dark:bg-gray-700 p-1 rounded mt-1">
+                          {formatTokenForDisplay(storageInfo.clientAccessToken)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -15,7 +15,9 @@ function TestAuthContent() {
   const [storageInfo, setStorageInfo] = useState({
     hasLocalStorageToken: false,
     hasCookieToken: false,
-    allCookies: ''
+    allCookies: '',
+    localStorageToken: '',
+    clientAccessToken: ''
   });
 
   // Only run on client side after hydration
@@ -26,11 +28,18 @@ function TestAuthContent() {
     const hasLocalStorageToken = !!localStorage.getItem('access_token');
     const hasCookieToken = document.cookie.includes('client_access_token=');
     const allCookies = document.cookie;
+    const localStorageToken = localStorage.getItem('access_token') || '';
+    const clientAccessToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('client_access_token='))
+      ?.split('=')[1] || '';
 
     setStorageInfo({
       hasLocalStorageToken,
       hasCookieToken,
-      allCookies
+      allCookies,
+      localStorageToken,
+      clientAccessToken
     });
   }, []);
 
@@ -118,10 +127,21 @@ function TestAuthContent() {
               </Badge>
             </div>
             <div>
-              <span className="font-semibold">All Cookies:</span>
-              <pre className="mt-2 p-2 bg-muted rounded text-sm">
-                {mounted ? storageInfo.allCookies || 'No cookies' : 'Loading...'}
-              </pre>
+              <span className="font-semibold">Token Details:</span>
+              <div className="mt-2 space-y-2 text-sm">
+                <div>
+                  <strong>localStorage token:</strong>
+                  <pre className="mt-1 p-2 bg-muted rounded text-xs break-all">
+                    {mounted ? formatTokenForDisplay(storageInfo.localStorageToken) || 'No token' : 'Loading...'}
+                  </pre>
+                </div>
+                <div>
+                  <strong>client_access_token cookie:</strong>
+                  <pre className="mt-1 p-2 bg-muted rounded text-xs break-all">
+                    {mounted ? formatTokenForDisplay(storageInfo.clientAccessToken) || 'No token' : 'Loading...'}
+                  </pre>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
