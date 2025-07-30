@@ -12,9 +12,10 @@ import {
 } from '../../../components/ui/table';
 import { Pagination } from '../../../components/ui/pagination';
 import { Button } from '../../../components/ui/button';
-import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail } from 'lucide-react';
+import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail, MessageCircle } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
+import SiteChatButton from './SiteChatButton';
 
 // Define site type - flexible to match multiple API response formats
 interface Site {
@@ -255,9 +256,10 @@ export default function SitesTable() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <SiteChatButton site={site} />
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="h-8 w-8 p-0"
                           onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
                           title="View Details"

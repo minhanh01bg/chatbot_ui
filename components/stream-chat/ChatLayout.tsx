@@ -8,12 +8,19 @@ import { SessionData } from '@/types/session';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/icons';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Globe, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 interface Message {
   content: string;
   isBot: boolean;
+}
+
+interface SiteInfo {
+  siteId: string;
+  siteName: string;
+  onClearSite: () => void;
 }
 
 interface ChatLayoutProps {
@@ -28,6 +35,7 @@ interface ChatLayoutProps {
   sessions: SessionData[];
   setSessions: (sessions: SessionData[] | ((prev: SessionData[]) => SessionData[])) => void;
   onNewChat: () => void;
+  siteInfo?: SiteInfo;
 }
 
 const ChatLayout = ({
@@ -41,7 +49,8 @@ const ChatLayout = ({
   refreshTrigger,
   sessions,
   setSessions,
-  onNewChat
+  onNewChat,
+  siteInfo
 }: ChatLayoutProps) => {
   const { state: sidebarState } = useSidebar();
   const isSidebarOpen = sidebarState === 'expanded';
@@ -80,8 +89,31 @@ const ChatLayout = ({
                 <TooltipContent align="end">New Chat</TooltipContent>
               </Tooltip>
             )}
+
+            {/* Site Info */}
+            {siteInfo && (
+              <div className="flex items-center gap-2 ml-2">
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Globe className="h-3 w-3" />
+                  {siteInfo.siteName}
+                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      onClick={siteInfo.onClearSite}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Switch Site</TooltipContent>
+                </Tooltip>
+              </div>
+            )}
           </div>
-          
+
           {/* Admin access button */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -105,8 +137,18 @@ const ChatLayout = ({
             {messages.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4 px-4 max-w-3xl">
-                  <h2 className="text-2xl font-bold">Welcome to chatbot for 12th grade biology</h2>
-                  <p className="text-muted-foreground">Start a conversation with the AI assistant by typing a message below.</p>
+                  <h2 className="text-2xl font-bold">
+                    Welcome to {siteInfo?.siteName || 'Chat'}
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Start a conversation with the AI assistant by typing a message below.
+                  </p>
+                  {siteInfo && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                      <Globe className="h-4 w-4" />
+                      <span>Chatting with {siteInfo.siteName}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
