@@ -14,11 +14,6 @@ export default function CurrentSubscription() {
   const [error, setError] = useState<string | null>(null);
   const { user, isAuthenticated } = useCurrentUser();
 
-  // Early return if not authenticated to prevent unnecessary API calls
-  if (!isAuthenticated) {
-    return null;
-  }
-
   useEffect(() => {
     if (!isAuthenticated || !user) {
       setIsLoading(false);
