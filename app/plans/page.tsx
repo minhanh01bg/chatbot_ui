@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import AuthDebug from '@/components/debug/AuthDebug';
 import { debugAuthState } from '@/lib/auth-utils';
+import { clearAuthData } from '@/services/auth.service';
 import Link from 'next/link';
 
 export default function PlansPage() {
@@ -174,10 +175,7 @@ export default function PlansPage() {
                   </Button>
                   <Button
                     onClick={() => {
-                      localStorage.clear();
-                      document.cookie.split(";").forEach(function(c) {
-                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-                      });
+                      clearAuthData();
                       window.location.reload();
                     }}
                     variant="destructive"

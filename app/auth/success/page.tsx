@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { setAuthToken } from '@/services/auth.service';
 
 export default function AuthSuccessPage() {
   const router = useRouter();
@@ -98,19 +99,8 @@ export default function AuthSuccessPage() {
 
         // Gọi API để set server-side cookies
         try {
-          const response = await fetch('/api/set-token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              token,
-              expired_at: expiredAt 
-            }),
-          });
-
-          const result = await response.json();
-          console.log('Server-side token sync result:', result.success ? 'Success' : 'Failed');
+          await setAuthToken(token, expiredAt);
+          console.log('Server-side token sync result: Success');
         } catch (error) {
           console.error('Failed to sync token with server:', error);
         }

@@ -1,6 +1,6 @@
 import { Plan } from '@/types/plan';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+// All API calls go through Next.js API routes for better security
 
 export const getPublicPlans = async (): Promise<Plan[]> => {
   try {
@@ -24,6 +24,28 @@ export const getPublicPlans = async (): Promise<Plan[]> => {
   }
 };
 
+export const getPlan = async (planId: string): Promise<Plan> => {
+  try {
+    const response = await fetch(`/api/plans/${planId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error fetching plan: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch plan:', error);
+    throw error;
+  }
+};
+
+// Legacy function - use subscription.service.ts for new code
 export const subscribeToPlan = async (planId: string, userId?: string, accessToken?: string): Promise<any> => {
   try {
     // Use Next.js API route for better security and session handling
