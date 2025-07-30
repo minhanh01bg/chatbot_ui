@@ -149,7 +149,7 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
       formData.append('file', file);
 
       // Call Next.js API route in admin/sites/api instead of backend directly
-      const response = await fetch('/admin/sites/api/documents/upload', {
+      const response = await fetch('/api/sites/documents/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${site.chat_token}`
@@ -192,7 +192,7 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
 
     try {
       // Call Next.js API route in admin/sites/api instead of backend directly
-      const response = await fetch(`/admin/sites/api/documents/delete?documentId=${documentToDelete}`, {
+      const response = await fetch(`/api/sites/documents/delete?documentId=${documentToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

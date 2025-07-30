@@ -280,7 +280,7 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
 
     try {
       // Call Next.js API route in admin/sites/api instead of backend directly
-      const response = await fetch(`/admin/sites/api/documents/delete?documentId=${documentToDelete}`, {
+      const response = await fetch(`/api/sites/documents/delete?documentId=${documentToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

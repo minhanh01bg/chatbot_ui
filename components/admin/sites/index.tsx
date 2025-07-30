@@ -54,7 +54,7 @@ export default function SitesTable() {
         const skip = (currentPage - 1) * itemsPerPage;
         
         // Use the new API route that proxies to the backend
-        const response = await fetch(`/admin/sites/api?skip=${skip}&limit=${itemsPerPage}`, {
+        const response = await fetch(`/api/sites?skip=${skip}&limit=${itemsPerPage}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
