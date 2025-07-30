@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SessionProvider from '@/components/providers/SessionProvider';
 import { useEffect, useState } from 'react';
+import { formatTokenForDisplay } from '@/lib/auth-utils';
 
 function TestAuthContent() {
   const { user, isLoading, isAuthenticated } = useCurrentUser();
@@ -62,7 +63,10 @@ function TestAuthContent() {
             <div>
               <span className="font-semibold">User:</span>
               <pre className="mt-2 p-2 bg-muted rounded text-sm">
-                {JSON.stringify(user, null, 2)}
+                {JSON.stringify(user ? {
+                  ...user,
+                  accessToken: formatTokenForDisplay(user.accessToken)
+                } : null, null, 2)}
               </pre>
             </div>
           </CardContent>
@@ -86,7 +90,10 @@ function TestAuthContent() {
             <div>
               <span className="font-semibold">Session:</span>
               <pre className="mt-2 p-2 bg-muted rounded text-sm">
-                {JSON.stringify(session, null, 2)}
+                {JSON.stringify(session ? {
+                  ...session,
+                  accessToken: formatTokenForDisplay((session as any).accessToken)
+                } : null, null, 2)}
               </pre>
             </div>
           </CardContent>

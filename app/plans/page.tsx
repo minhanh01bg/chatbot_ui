@@ -12,7 +12,7 @@ import CurrentSubscription from '@/components/plans/CurrentSubscription';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import AuthDebug from '@/components/debug/AuthDebug';
-import { debugAuthState } from '@/lib/auth-utils';
+import { debugAuthState, formatTokenForDisplay } from '@/lib/auth-utils';
 import { clearAuthData } from '@/services/auth.service';
 import Link from 'next/link';
 
@@ -60,7 +60,12 @@ export default function PlansPage() {
     console.log('Plans page - Auth state:', {
       isAuthenticated,
       userLoading,
-      user: user ? { id: user.id, name: user.name, hasToken: !!user.accessToken } : null,
+      user: user ? {
+        id: user.id,
+        name: user.name,
+        hasToken: !!user.accessToken,
+        accessToken: formatTokenForDisplay(user.accessToken)
+      } : null,
       storageInfo: mounted ? storageInfo : 'not mounted'
     });
   }, [isAuthenticated, userLoading, user, mounted, storageInfo]);

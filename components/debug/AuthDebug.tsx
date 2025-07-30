@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useSession } from 'next-auth/react';
+import { formatTokenForDisplay } from '@/lib/auth-utils';
 
 export default function AuthDebug() {
   const [isVisible, setIsVisible] = useState(false);
@@ -143,10 +144,23 @@ export default function AuthDebug() {
             <Button
               onClick={() => {
                 console.log('Auth Debug Info:', {
-                  useCurrentUser: { user, isLoading, isAuthenticated },
-                  nextAuthSession: { session, status },
+                  useCurrentUser: {
+                    user: user ? {
+                      ...user,
+                      accessToken: formatTokenForDisplay(user.accessToken)
+                    } : null,
+                    isLoading,
+                    isAuthenticated
+                  },
+                  nextAuthSession: {
+                    session: session ? {
+                      ...session,
+                      accessToken: formatTokenForDisplay((session as any).accessToken)
+                    } : null,
+                    status
+                  },
                   localStorage: mounted ? {
-                    access_token: localStorage.getItem('access_token'),
+                    access_token: formatTokenForDisplay(localStorage.getItem('access_token')),
                   } : null,
                   cookies: mounted ? document.cookie : null,
                 });
