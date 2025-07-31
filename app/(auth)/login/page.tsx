@@ -54,7 +54,6 @@ export default function Page() {
       toast.success('Login successful!');
       console.log(state);
       setIsSuccessful(true);
-      router.refresh();
       
       // Save access token to localStorage if available and sync with server cookies
       const syncTokenWithServer = async () => {
@@ -93,24 +92,21 @@ export default function Page() {
             }
             
             // Verify client-side cookies
-            setTimeout(() => {
-              const clientCookies = document.cookie.split(';').map(c => c.trim());
-              console.log('Client: All client-accessible cookies:', clientCookies);
-              const hasToken = clientCookies.some(c => c.startsWith('client_access_token='));
-              console.log('Client: client_access_token cookie exists:', hasToken);
-            }, 100);
-            
-            // Redirect to admin dashboard after successful login and token setup
-            setTimeout(() => {
-              router.push('/admin');
-            }, 300);
+            const clientCookies = document.cookie.split(';').map(c => c.trim());
+            console.log('Client: All client-accessible cookies:', clientCookies);
+            const hasToken = clientCookies.some(c => c.startsWith('client_access_token='));
+            console.log('Client: client_access_token cookie exists:', hasToken);
           }
         } catch (err) {
           console.error('Error syncing token:', err);
         }
       };
       
+      // Start token sync in background
       syncTokenWithServer();
+      
+      // Redirect immediately to admin dashboard
+      router.push('/admin');
     }
   }, [state, router, searchParams]);
 
