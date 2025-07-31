@@ -7,8 +7,15 @@
 export const login = async (identifier: string, password: string) => {
     console.log('Login attempt initiated');
     try {
-        // Sử dụng đường dẫn tương đối đơn giản - đã được loại trừ khỏi middleware
-        const response = await fetch("/api/auth/login", {
+        // Determine the base URL based on environment
+        const baseUrl = typeof window !== 'undefined'
+            ? '' // Client-side: use relative URL
+            : process.env.NEXTAUTH_URL || 'http://localhost:3000'; // Server-side: use absolute URL
+
+        const loginUrl = `${baseUrl}/api/auth/login`;
+        console.log('Login service: Making request to:', loginUrl);
+
+        const response = await fetch(loginUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,8 +88,15 @@ export const register = async (identifier: string, password: string) => {
     console.log('Registration attempt initiated');
 
     try {
-        // Sử dụng đường dẫn tương đối đơn giản - đã được loại trừ khỏi middleware
-        const response = await fetch("/api/auth/register", {
+        // Determine the base URL based on environment
+        const baseUrl = typeof window !== 'undefined'
+            ? '' // Client-side: use relative URL
+            : process.env.NEXTAUTH_URL || 'http://localhost:3000'; // Server-side: use absolute URL
+
+        const registerUrl = `${baseUrl}/api/auth/register`;
+        console.log('Register service: Making request to:', registerUrl);
+
+        const response = await fetch(registerUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -158,8 +172,12 @@ export const register = async (identifier: string, password: string) => {
  */
 export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}, session: any) => {
     try {
-        // Sử dụng đường dẫn tương đối đơn giản
-        const proxyUrl = '/api/auth/proxy';
+        // Determine the base URL based on environment
+        const baseUrl = typeof window !== 'undefined'
+            ? '' // Client-side: use relative URL
+            : process.env.NEXTAUTH_URL || 'http://localhost:3000'; // Server-side: use absolute URL
+
+        const proxyUrl = `${baseUrl}/api/auth/proxy`;
         console.log('Making authenticated request via proxy to endpoint:', endpoint);
         
         // Create proxy request payload

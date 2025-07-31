@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       hasAccessToken: !!accessToken,
       hasClientToken: !!clientToken,
       tokenLength: token?.length || 0,
-      allCookies: Array.from(request.cookies.entries()).map(([name, cookie]) => ({ name, hasValue: !!cookie.value }))
+      allCookies: request.cookies.getAll().map(cookie => ({ name: cookie.name, hasValue: !!cookie.value }))
     });
 
     if (!token) {
