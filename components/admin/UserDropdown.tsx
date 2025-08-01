@@ -23,13 +23,27 @@ import {
 
 export default function UserDropdown() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const handleLogout = async (): Promise<void> => {
     await signOut({ redirect: false });
     router.push('/login');
     router.refresh();
   };
+
+  // Show loading state while session is loading
+  if (status === 'loading') {
+    return (
+      <Button variant="ghost" className="h-9 px-2 gap-2" disabled>
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>...</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col items-start">
+          <span className="hidden md:inline font-medium text-sm">Loading...</span>
+        </div>
+      </Button>
+    );
+  }
 
   // Get user info from session or fallback to defaults
   const userIdentifier = (session?.user as any)?.identifier || session?.user?.name || 'Administrator';

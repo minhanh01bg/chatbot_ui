@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
     // Set access token to cookie if login was successful
     if (response.ok && data.access_token) {
       console.log("Setting access_token cookie, token length:", data.access_token.length);
+      console.log("User data from backend:", JSON.stringify(data.user));
       
       // Critical settings for proper cookie functioning:
       // 1. path='/' ensures cookie is available across the entire site
@@ -79,11 +80,34 @@ export async function POST(request: NextRequest) {
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 1 week
       });
+
+      // Set user information cookies for client-side access
+      if (data.user) {
+        if (data.user.id) {
+          res.cookies.set('user_id', data.user.id.toString(), {
+            path: '/',
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7 // 1 week
+          });
+        }
+        
+        if (data.user.identifier) {
+          res.cookies.set('user_identifier', data.user.identifier, {
+            path: '/',
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7 // 1 week
+          });
+        }
+      }
       
       // Add debugging header
       res.headers.set('X-Set-Cookies', 'true');
       
-      console.log("Access token cookies set successfully");
+      console.log("Access token and user info cookies set successfully");
     } else {
       console.error("Failed to set access_token cookie - token not available in response");
     }

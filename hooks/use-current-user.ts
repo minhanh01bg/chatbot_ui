@@ -19,25 +19,17 @@ export function useCurrentUser() {
 
   useEffect(() => {
     const checkAuth = () => {
-      console.log('useCurrentUser: Checking auth...', { status, hasSession: !!session });
+      console.log('useCurrentUser: Checking auth...', {
+        status,
+        hasSession: !!session,
+        sessionUser: session?.user,
+        sessionUserId: session?.user?.id,
+        sessionAccessToken: !!(session as any)?.accessToken
+      });
 
-      // Check NextAuth session first
-      if (status === 'authenticated' && session?.user) {
-        console.log('useCurrentUser: Found NextAuth session');
-        setUser({
-          id: session.user.id!,
-          name: session.user.name || undefined,
-          email: session.user.email || undefined,
-          accessToken: (session as any).accessToken,
-        });
-        setIsLoading(false);
-        setHasCheckedStorage(true);
-        return;
-      }
-
-      // Only check localStorage after NextAuth has finished loading
-      if (status !== 'loading' && !hasCheckedStorage) {
-        console.log('useCurrentUser: Checking localStorage/cookies...');
+      // Check localStorage/cookies first (immediate after login)
+      if (!hasCheckedStorage && typeof window !== 'undefined') {
+        console.log('useCurrentUser: Checking localStorage/cookies first...');
         debugAuthState();
         setHasCheckedStorage(true);
 
@@ -49,7 +41,7 @@ export function useCurrentUser() {
         });
 
         if (token) {
-          console.log('useCurrentUser: Creating user with token');
+          console.log('useCurrentUser: Creating user with token from storage');
 
           // Get user info from localStorage/cookies
           const userId = localStorage.getItem('user_id') ||
@@ -61,21 +53,45 @@ export function useCurrentUser() {
           console.log('useCurrentUser: User info from storage:', { userId, userIdentifier });
 
           setUser({
-            id: userId || 'google-user',
-            name: userIdentifier || 'Google User',
-            email: userIdentifier || 'user@gmail.com',
+            id: userId || 'authenticated-user',
+            name: userIdentifier || 'User',
+            email: userIdentifier || 'user@example.com',
             accessToken: token,
           });
           setIsLoading(false);
           return;
         }
+      }
 
+      // Check NextAuth session as fallback
+      if (status === 'authenticated' && session?.user) {
+        console.log('useCurrentUser: Found NextAuth session', {
+          userId: session.user.id,
+          userName: session.user.name,
+          userEmail: session.user.email,
+          hasAccessToken: !!(session as any).accessToken
+        });
+
+        setUser({
+          id: session.user.id!,
+          name: session.user.name || undefined,
+          email: session.user.email || undefined,
+          accessToken: (session as any).accessToken,
+        });
+        setIsLoading(false);
+        return;
       }
 
       // No authentication found
-      if (status === 'unauthenticated') {
+      if (status === 'unauthenticated' && hasCheckedStorage) {
         console.log('useCurrentUser: No authentication found');
         setUser(null);
+        setIsLoading(false);
+      }
+
+      // Ensure loading is stopped if NextAuth is not loading and we've checked storage
+      if (status !== 'loading' && hasCheckedStorage && isLoading) {
+        console.log('useCurrentUser: NextAuth finished loading, stopping our loading state');
         setIsLoading(false);
       }
     };
@@ -90,6 +106,18 @@ export function useCurrentUser() {
       setHasCheckedStorage(false); // Trigger re-check
     }
   }, [hasCheckedStorage, status]);
+
+  // Timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.log('useCurrentUser: Timeout reached, stopping loading state');
+        setIsLoading(false);
+      }
+    }, 5000); // 5 seconds timeout
+
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
 
   return {
     user,

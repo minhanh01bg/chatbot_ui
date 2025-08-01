@@ -60,11 +60,22 @@ export const login = async (identifier: string, password: string) => {
             throw new Error('Invalid response format - missing access_token');
         }
         
-        // Store token client-side
+        // Store token and user info client-side
         if (typeof window !== 'undefined') {
             localStorage.setItem('access_token', data.access_token);
             document.cookie = `client_access_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
-            console.log('Login service: saved access token to localStorage and client cookie');
+            
+            // Store user information if available
+            if (data.user) {
+                if (data.user.id) {
+                    localStorage.setItem('user_id', data.user.id.toString());
+                }
+                if (data.user.identifier) {
+                    localStorage.setItem('user_identifier', data.user.identifier);
+                }
+            }
+            
+            console.log('Login service: saved access token and user info to localStorage and cookies');
         }
         
         return data;

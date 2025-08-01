@@ -56,10 +56,18 @@ export const clearAuthData = () => {
     localStorage.removeItem('user_role');
   }
 
-  // Clear cookies
+  // Clear specific cookies
   if (typeof document !== 'undefined') {
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    const cookiesToClear = [
+      'access_token',
+      'client_access_token',
+      'user_id',
+      'user_identifier',
+      'token_expired_at'
+    ];
+    
+    cookiesToClear.forEach(cookieName => {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     });
   }
 };

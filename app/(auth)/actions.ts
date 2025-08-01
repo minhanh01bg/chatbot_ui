@@ -52,38 +52,41 @@ export const login = async (
       // Added manual cookie setting - get session access token and store it
       if (signInResult?.ok) {
         try {
-          console.log('Fetching session data to set access token cookie');
-          const session = await fetch('/api/auth/session');
-          const sessionData = await session.json();
-          
+          console.log('Getting session data directly from auth() to set access token cookie');
+
+          // Import auth function to get session directly
+          const { auth } = await import('./auth');
+          const session = await auth();
+
           console.log('Session data received:', JSON.stringify({
-            hasAccessToken: !!sessionData?.accessToken,
-            tokenFirstChars: sessionData?.accessToken ? sessionData.accessToken.substring(0, 10) + '...' : 'none'
+            hasSession: !!session,
+            hasAccessToken: !!(session as any)?.accessToken,
+            tokenFirstChars: (session as any)?.accessToken ? (session as any).accessToken.substring(0, 10) + '...' : 'none'
           }));
-          
-          if (sessionData?.accessToken) {
+
+          if (session && (session as any)?.accessToken) {
             try {
               const { cookies } = await import('next/headers');
               const cookieStore = await cookies();
-              
+
               // Check existing cookies
               const existingCookies = cookieStore.getAll();
               console.log('Existing cookies before setting:', JSON.stringify(existingCookies.map(c => c.name)));
-              
+
               // Set the cookie
-              cookieStore.set('access_token', sessionData.accessToken, { 
-                httpOnly: true, 
+              cookieStore.set('access_token', (session as any).accessToken, {
+                httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'lax',
                 path: '/',
                 maxAge: 60 * 60 * 24 * 7 // 1 week
               });
-              
+
               // Also set a non-httpOnly cookie for client-side access
-              cookieStore.set('client_access_token', sessionData.accessToken, { 
-                httpOnly: false, 
+              cookieStore.set('client_access_token', (session as any).accessToken, {
+                httpOnly: false,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'lax',
                 path: '/',
                 maxAge: 60 * 60 * 24 * 7 // 1 week
               });

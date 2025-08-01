@@ -11,9 +11,7 @@ import PlanComparison from '@/components/plans/PlanComparison';
 import CurrentSubscription from '@/components/plans/CurrentSubscription';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import AuthDebug from '@/components/debug/AuthDebug';
-import { debugAuthState, formatTokenForDisplay } from '@/lib/auth-utils';
-import { clearAuthData } from '@/services/auth.service';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function PlansPage() {
@@ -21,63 +19,120 @@ export default function PlansPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'comparison'>('cards');
-  const [mounted, setMounted] = useState(false);
-  const [storageInfo, setStorageInfo] = useState({
-    hasLocalStorageToken: false,
-    hasLocalStorageUserId: false,
-    hasLocalStorageIdentifier: false,
-    hasCookieToken: false,
-    localStorageUserId: '',
-    localStorageIdentifier: '',
-    localStorageToken: '',
-    clientAccessToken: ''
-  });
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
-
-  // Client-side storage info
-  useEffect(() => {
-    setMounted(true);
-
-    // Get storage info safely on client side
-    const hasLocalStorageToken = !!localStorage.getItem('access_token');
-    const hasLocalStorageUserId = !!localStorage.getItem('user_id');
-    const hasLocalStorageIdentifier = !!localStorage.getItem('user_identifier');
-    const hasCookieToken = document.cookie.includes('client_access_token');
-    const localStorageUserId = localStorage.getItem('user_id') || '';
-    const localStorageIdentifier = localStorage.getItem('user_identifier') || '';
-    const localStorageToken = localStorage.getItem('access_token') || '';
-    const clientAccessToken = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('client_access_token='))
-      ?.split('=')[1] || '';
-
-    setStorageInfo({
-      hasLocalStorageToken,
-      hasLocalStorageUserId,
-      hasLocalStorageIdentifier,
-      hasCookieToken,
-      localStorageUserId,
-      localStorageIdentifier,
-      localStorageToken,
-      clientAccessToken
-    });
-  }, []);
+  const { data: session, status: sessionStatus } = useSession();
 
   // Debug log
+  console.log('Plans page - Auth state:', {
+    // Custom hook
+    isAuthenticated,
+    userLoading,
+    user: user ? {
+      id: user.id,
+      name: user.name,
+      hasToken: !!user.accessToken
+    } : null,
+    // NextAuth session
+    sessionStatus,
+    hasSession: !!session,
+    sessionUser: session?.user,
+    sessionAccessToken: !!(session as any)?.accessToken,
+    // Full session object for debugging
+    fullSession: session
+  });
+
+  // Simple client-side auth check
+  const [clientAuth, setClientAuth] = useState({ isAuthenticated: false, isLoading: true });
+
   useEffect(() => {
-    console.log('Plans page - Auth state:', {
-      isAuthenticated,
-      userLoading,
-      user: user ? {
-        id: user.id,
-        name: user.name,
-        hasToken: !!user.accessToken,
-        accessToken: formatTokenForDisplay(user.accessToken)
-      } : null,
-      storageInfo: mounted ? storageInfo : 'not mounted'
-    });
-  }, [isAuthenticated, userLoading, user, mounted, storageInfo]);
+    // Check client-side authentication
+    const checkClientAuth = () => {
+      if (typeof window === 'undefined') return;
+
+      const hasLocalStorageToken = !!localStorage.getItem('access_token');
+      const hasCookieToken = document.cookie.includes('client_access_token');
+      const isAuth = hasLocalStorageToken || hasCookieToken;
+
+      console.log('Client auth check:', { hasLocalStorageToken, hasCookieToken, isAuth });
+
+      setClientAuth({ isAuthenticated: isAuth, isLoading: false });
+    };
+
+    // Check immediately
+    checkClientAuth();
+
+    // Also check after a short delay for hydration
+    const timeout = setTimeout(checkClientAuth, 1000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Sync token from NextAuth session to localStorage/cookies
+  useEffect(() => {
+    const syncTokenFromSession = async () => {
+      if (sessionStatus === 'authenticated' && session) {
+        // Try to get token from session
+        const token = (session as any).accessToken;
+
+        if (token) {
+          // Check if token is already synced
+          const hasLocalStorageToken = !!localStorage.getItem('access_token');
+          const hasCookieToken = document.cookie.includes('client_access_token');
+
+          if (!hasLocalStorageToken || !hasCookieToken) {
+            console.log('Syncing token from NextAuth session to localStorage/cookies');
+
+            // Store in localStorage
+            localStorage.setItem('access_token', token);
+
+            // Set client-side cookie
+            document.cookie = `client_access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+
+            // Update client auth state
+            setClientAuth({ isAuthenticated: true, isLoading: false });
+
+            console.log('Token synced successfully');
+          } else {
+            // Token already exists, just update client auth state
+            setClientAuth({ isAuthenticated: true, isLoading: false });
+          }
+        } else {
+          // Session is authenticated but no token yet, try to fetch session again
+          console.log('Session authenticated but no token, trying to fetch session...');
+          try {
+            const response = await fetch('/api/auth/session');
+            const sessionData = await response.json();
+
+            if (sessionData?.accessToken) {
+              console.log('Got token from session API, storing...');
+              localStorage.setItem('access_token', sessionData.accessToken);
+              document.cookie = `client_access_token=${sessionData.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+              setClientAuth({ isAuthenticated: true, isLoading: false });
+            } else {
+              // Still no token, but session is authenticated, so consider as authenticated
+              console.log('No token available but session is authenticated');
+              setClientAuth({ isAuthenticated: true, isLoading: false });
+            }
+          } catch (error) {
+            console.error('Failed to fetch session:', error);
+            // Still consider authenticated if NextAuth says so
+            setClientAuth({ isAuthenticated: true, isLoading: false });
+          }
+        }
+      } else if (sessionStatus === 'unauthenticated') {
+        // Clear auth state if session is unauthenticated
+        setClientAuth({ isAuthenticated: false, isLoading: false });
+      }
+    };
+
+    syncTokenFromSession();
+  }, [session, sessionStatus]);
+
+  // Use NextAuth session as primary since it's working
+  const finalUserLoading = clientAuth.isLoading && userLoading && sessionStatus === 'loading';
+  const finalIsAuthenticated = clientAuth.isAuthenticated || isAuthenticated || sessionStatus === 'authenticated';
+
+
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -190,74 +245,36 @@ export default function PlansPage() {
           )}
         </div>
 
-        {/* Authentication Debug Info */}
+        {/* Debug Authentication Status */}
         <div className="mb-4">
           <Card className="max-w-4xl mx-auto">
             <CardHeader>
-              <CardTitle className="text-lg">Authentication Status</CardTitle>
+              <CardTitle className="text-lg">Debug: Authentication Status</CardTitle>
             </CardHeader>
             <CardContent className="py-4">
               <div className="text-sm space-y-2">
-                <div><strong>Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
-                <div><strong>Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
-                <div><strong>User ID:</strong> {user?.id || 'None'}</div>
-                <div><strong>Has Token:</strong> {user?.accessToken ? '✅ Yes' : '❌ No'}</div>
-                <div><strong>localStorage token:</strong> {storageInfo.hasLocalStorageToken ? '✅ Has token' : '❌ No token'}</div>
-                <div><strong>localStorage user_id:</strong> {storageInfo.localStorageUserId || 'None'}</div>
-                <div><strong>localStorage identifier:</strong> {storageInfo.localStorageIdentifier || 'None'}</div>
-                <div><strong>Cookies:</strong> {storageInfo.hasCookieToken ? '✅ Has token' : '❌ No token'}</div>
+                <div><strong>Client Auth Loading:</strong> {clientAuth.isLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
+                <div><strong>Client Auth Status:</strong> {clientAuth.isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
+                <div><strong>Custom Hook Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
+                <div><strong>Custom Hook Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
+                <div><strong>NextAuth Status:</strong> {sessionStatus}</div>
+                <div><strong>Final Loading:</strong> {finalUserLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
+                <div><strong>Final Authenticated:</strong> {finalIsAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
 
-                {/* Token Details */}
-                {mounted && (storageInfo.localStorageToken || storageInfo.clientAccessToken) && (
-                  <div className="mt-3 pt-3 border-t">
-                    <div><strong>Token Details:</strong></div>
-                    {storageInfo.localStorageToken && (
-                      <div className="mt-1">
-                        <span className="text-xs">localStorage:</span>
-                        <div className="font-mono text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded mt-1 break-all">
-                          {formatTokenForDisplay(storageInfo.localStorageToken)}
-                        </div>
-                      </div>
-                    )}
-                    {storageInfo.clientAccessToken && (
-                      <div className="mt-2">
-                        <span className="text-xs">client_access_token:</span>
-                        <div className="font-mono text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded mt-1 break-all">
-                          {formatTokenForDisplay(storageInfo.clientAccessToken)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                {typeof window !== 'undefined' && (
+                  <>
+                    <div><strong>localStorage token:</strong> {localStorage.getItem('access_token') ? '✅ Has token' : '❌ No token'}</div>
+                    <div><strong>Cookie token:</strong> {document.cookie.includes('client_access_token') ? '✅ Has token' : '❌ No token'}</div>
+                    <div><strong>All cookies:</strong> {document.cookie || 'No cookies'}</div>
+                  </>
                 )}
-                <div className="pt-2 space-x-2">
-                  <Button
-                    onClick={() => {
-                      debugAuthState();
-                      window.location.reload();
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Debug & Refresh
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      clearAuthData();
-                      window.location.reload();
-                    }}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    Clear Auth & Refresh
-                  </Button>
-                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Current Subscription or Login Prompt */}
-        {userLoading ? (
+        {finalUserLoading ? (
           <div className="mb-8">
             <Card className="max-w-2xl mx-auto">
               <CardContent className="text-center py-6">
@@ -266,7 +283,7 @@ export default function PlansPage() {
               </CardContent>
             </Card>
           </div>
-        ) : isAuthenticated ? (
+        ) : finalIsAuthenticated ? (
           <div className="mb-8">
             <CurrentSubscription />
           </div>
@@ -332,8 +349,7 @@ export default function PlansPage() {
         </div>
       </div>
 
-      {/* Debug Component */}
-      <AuthDebug />
+
     </div>
   );
 }

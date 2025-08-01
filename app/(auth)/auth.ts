@@ -46,8 +46,14 @@ export const {
           }
 
           const loginResponse = await loginService(username, password);
-          
-          console.log('Login service response received:', !!loginResponse);
+
+          console.log('Login service response received:', {
+            hasResponse: !!loginResponse,
+            hasAccessToken: !!loginResponse?.access_token,
+            hasUser: !!loginResponse?.user,
+            userId: loginResponse?.user?.id,
+            userIdentifier: loginResponse?.user?.identifier
+          });
           
           if (!loginResponse) {
             console.error('Authentication failed: No response from login service');
@@ -91,6 +97,13 @@ export const {
   callbacks: {
     // Add timestamp to ensure token is always refreshed
     async jwt({ token, user }) {
+      console.log('JWT callback called with:', {
+        hasUser: !!user,
+        hasToken: !!token,
+        tokenId: token?.id,
+        tokenAccessToken: token?.accessToken ? 'exists' : 'none'
+      });
+
       if (user) {
         const customUser = user as CustomUser;
         token.id = customUser.id;
@@ -99,9 +112,13 @@ export const {
         token.tokenType = customUser.tokenType;
         // Add timestamp to mark token creation time
         token.createdAt = Date.now();
-        
+
         // For debugging
-        console.log('JWT callback called, access token stored in token object');
+        console.log('JWT callback: User provided, access token stored in token object', {
+          userId: customUser.id,
+          hasAccessToken: !!customUser.accessToken,
+          tokenType: customUser.tokenType
+        });
       }
 
       // Check if token needs refresh
@@ -120,6 +137,13 @@ export const {
       session: ExtendedSession;
       token: any;
     }) {
+      console.log('Session callback called with:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        hasToken: !!token,
+        tokenAccessToken: token?.accessToken ? 'exists' : 'none'
+      });
+
       if (session.user) {
         session.user.id = token.id as string;
         // Add token information to session
@@ -128,9 +152,13 @@ export const {
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
-        
+
         // For debugging
-        console.log('Session callback called, access token available in session');
+        console.log('Session callback: Token added to session', {
+          userId: session.user.id,
+          hasAccessToken: !!token.accessToken,
+          tokenType: token.tokenType
+        });
       }
 
       return session;

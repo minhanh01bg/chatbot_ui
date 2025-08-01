@@ -56,41 +56,41 @@ export default function Page() {
       setIsSuccessful(true);
       
       // Save access token to localStorage if available and sync with server cookies
-      const syncTokenWithServer = async () => {
+      const syncTokenWithServer = async (): Promise<void> => {
         try {
           console.log('Client: Fetching session data after login');
           const res = await fetch('/api/auth/session');
           const session = await res.json();
-          
+
           console.log('Client: Session data received:', JSON.stringify({
             hasAccessToken: !!session?.accessToken,
             tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none'
           }));
-          
+
           if (session?.accessToken) {
             // Store in localStorage
             localStorage.setItem('access_token', session.accessToken);
             console.log('Client: Access token saved to localStorage');
-            
+
             // Set client-side cookie
             document.cookie = `client_access_token=${session.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-            
+
             // Call the server API to ensure cookies are set server-side too
             try {
-              const tokenResponse = await fetch('/api/set-token', {
+              const tokenResponse = await fetch('/api/auth/token', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ token: session.accessToken }),
               });
-              
+
               const tokenResult = await tokenResponse.json();
               console.log('Client: Server-side token syncing result:', tokenResult.success ? 'Success' : 'Failed');
             } catch (error) {
               console.error('Client: Failed to sync token with server:', error);
             }
-            
+
             // Verify client-side cookies
             const clientCookies = document.cookie.split(';').map(c => c.trim());
             console.log('Client: All client-accessible cookies:', clientCookies);
@@ -99,12 +99,15 @@ export default function Page() {
           }
         } catch (err) {
           console.error('Error syncing token:', err);
+          throw err; // Re-throw to handle in the calling code
         }
       };
       
-      // Start token sync in background
-      syncTokenWithServer();
-      
+      // Start token sync in background and redirect immediately
+      syncTokenWithServer().catch((error) => {
+        console.error('Token sync failed:', error);
+      });
+
       // Redirect immediately to admin dashboard
       router.push('/admin');
     }

@@ -16,25 +16,28 @@ export async function GET(request: NextRequest) {
     const userId = cookieStore.get('user_id')?.value;
     const userIdentifier = cookieStore.get('user_identifier')?.value;
 
-    return NextResponse.json({
-      session: {
-        exists: !!session,
-        user: session?.user ? {
-          id: session.user.id,
-          name: session.user.name,
-          email: session.user.email,
-        } : null,
-        accessToken: (session as any)?.accessToken ? 'exists' : null,
-      },
-      cookies: {
-        access_token: accessToken ? 'exists' : null,
-        client_access_token: clientAccessToken ? 'exists' : null,
-        token_expired_at: tokenExpiredAt,
-        user_id: userId,
-        user_identifier: userIdentifier,
-      },
-      timestamp: new Date().toISOString(),
-    });
+    // Return the actual session data with token if available
+    const responseData = {
+      user: session?.user ? {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+      } : null,
+      accessToken: (session as any)?.accessToken || clientAccessToken || accessToken,
+      expires: session?.expires,
+      // Debug info
+      debug: {
+        sessionExists: !!session,
+        sessionAccessToken: (session as any)?.accessToken ? 'exists' : null,
+        cookieAccessToken: accessToken ? 'exists' : null,
+        clientCookieToken: clientAccessToken ? 'exists' : null,
+        userId: userId,
+        userIdentifier: userIdentifier,
+        timestamp: new Date().toISOString(),
+      }
+    };
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('Error getting session debug info:', error);
     return NextResponse.json(
