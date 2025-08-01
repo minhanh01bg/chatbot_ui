@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:800
 
 export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/v1/public/plans`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/public/products`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
