@@ -29,7 +29,7 @@ export default function SiteChatButton({ site }: SiteChatButtonProps) {
     setSiteChat(site.id, site.chat_token, site.name);
 
     // Navigate to chat page
-    router.push('/');
+    router.push('/chat');
   };
 
   return (
