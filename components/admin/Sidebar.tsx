@@ -45,6 +45,11 @@ const navigation: NavItem[] = [
     icon: CreditCardIcon
   },
   {
+    name: 'My Subscription',
+    href: '/subscriptions',
+    icon: CreditCardIcon
+  },
+  {
     name: 'Users Management',
     icon: UserGroupIcon,
     subItems: [

@@ -208,13 +208,21 @@ export default function PlansPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-between mb-6">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="mr-4">
+              <Button variant="ghost" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
               </Button>
             </Link>
+
+            {finalIsAuthenticated && (
+              <Link href="/subscriptions">
+                <Button variant="outline" size="sm">
+                  My Subscription
+                </Button>
+              </Link>
+            )}
           </div>
           
           <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>

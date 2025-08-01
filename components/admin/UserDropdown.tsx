@@ -18,6 +18,7 @@ import {
   Settings,
   HelpCircle,
   LayoutDashboard,
+  CreditCard,
   LogOut
 } from 'lucide-react';
 
@@ -88,6 +89,12 @@ export default function UserDropdown() {
           <Link href="/admin/profile" className="cursor-pointer flex w-full items-center">
             <UserIcon className="mr-2 h-4 w-4" />
             <span>My Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/subscriptions" className="cursor-pointer flex w-full items-center">
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>My Subscription</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

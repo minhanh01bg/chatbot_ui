@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, ExternalLink } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Subscription } from '@/types/plan';
+import Link from 'next/link';
 
 export default function CurrentSubscription() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -23,7 +24,7 @@ export default function CurrentSubscription() {
     const fetchSubscription = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/subscriptions/current');
+        const response = await fetch('/api/subscriptions/my');
 
         if (response.status === 404) {
           // No subscription found
@@ -178,13 +179,21 @@ export default function CurrentSubscription() {
             )}
           </div>
 
-          {subscription.status === 'expired' && (
-            <div className="pt-2">
+          <div className="pt-2 flex gap-2">
+            <Link href="/subscriptions" className="flex-1">
               <Button variant="outline" size="sm" className="w-full">
-                Renew Subscription
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Manage Subscription
               </Button>
-            </div>
-          )}
+            </Link>
+            {subscription.status === 'expired' && (
+              <Link href="/plans" className="flex-1">
+                <Button size="sm" className="w-full">
+                  Renew
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
