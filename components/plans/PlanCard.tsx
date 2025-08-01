@@ -9,6 +9,7 @@ import { Plan } from '@/types/plan';
 import { subscribeToPlan } from '@/services/plan.service';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import PaymentModal from './PaymentModal';
 
 interface PlanCardProps {
   plan: Plan;
@@ -17,6 +18,7 @@ interface PlanCardProps {
 
 export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const { toast } = useToast();
   const { user, isLoading: isUserLoading, isAuthenticated } = useCurrentUser();
 
@@ -159,7 +161,31 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
       <CardFooter>
         <Button
           className="w-full"
-          onClick={handleSubscribe}
+          onClick={() => {
+            if (!plan.is_self_sigup_allowed) {
+              toast({
+                title: 'Contact Required',
+                description: 'This plan requires contacting our sales team.',
+                variant: 'default',
+              });
+              return;
+            }
+
+            if (!isAuthenticated) {
+              toast({
+                title: 'Authentication Required',
+                description: 'Please log in to subscribe to a plan.',
+                variant: 'destructive',
+              });
+              return;
+            }
+
+            if (plan.price === 0) {
+              handleSubscribe();
+            } else {
+              setShowPaymentModal(true);
+            }
+          }}
           disabled={isSubscribing || isUserLoading || (!isAuthenticated && plan.is_self_sigup_allowed)}
           variant={isPopular ? 'default' : 'outline'}
         >
@@ -169,6 +195,16 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
            (plan.price === 0 ? 'Get Started' : 'Subscribe Now') :
            'Contact Sales'}
         </Button>
+
+        {/* Payment Modal */}
+        <PaymentModal
+          plan={plan}
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onDirectSubscribe={handleSubscribe}
+          isSubscribing={isSubscribing}
+          isPopular={isPopular}
+        />
       </CardFooter>
     </Card>
   );
