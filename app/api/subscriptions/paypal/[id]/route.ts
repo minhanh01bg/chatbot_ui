@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authConfig } from '@/app/(auth)/auth.config';
+import { auth } from '@/app/(auth)/auth';
 
 export async function GET(
   request: NextRequest,
@@ -8,7 +7,7 @@ export async function GET(
 ) {
   try {
     // Get the session to verify authentication
-    const session = await getServerSession(authConfig);
+    const session = await auth();
     
     if (!session || !session.user) {
       return NextResponse.json(
