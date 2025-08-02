@@ -16,7 +16,15 @@ export default function CurrentSubscription() {
   const { user, isAuthenticated } = useCurrentUser();
 
   useEffect(() => {
+    console.log('CurrentSubscription: useEffect triggered', {
+      isAuthenticated,
+      hasUser: !!user,
+      userAccessToken: !!user?.accessToken,
+      tokenLength: user?.accessToken?.length
+    });
+    
     if (!isAuthenticated || !user) {
+      console.log('CurrentSubscription: Not authenticated or no user, stopping');
       setIsLoading(false);
       return;
     }
@@ -24,7 +32,19 @@ export default function CurrentSubscription() {
     const fetchSubscription = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/subscriptions/my');
+        console.log('CurrentSubscription: Fetching subscription with token:', {
+          hasToken: !!user.accessToken,
+          tokenLength: user.accessToken?.length,
+          tokenStart: user.accessToken?.substring(0, 10) + '...'
+        });
+        
+        const response = await fetch('/api/subscriptions/my', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.accessToken}`
+            }
+        });
 
         if (response.status === 404) {
           // No subscription found

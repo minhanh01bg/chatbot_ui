@@ -23,24 +23,7 @@ export default function PlansPage() {
   const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
   const { data: session, status: sessionStatus } = useSession();
 
-  // Debug log
-  console.log('Plans page - Auth state:', {
-    // Custom hook
-    isAuthenticated,
-    userLoading,
-    user: user ? {
-      id: user.id,
-      name: user.name,
-      hasToken: !!user.accessToken
-    } : null,
-    // NextAuth session
-    sessionStatus,
-    hasSession: !!session,
-    sessionUser: session?.user,
-    sessionAccessToken: !!(session as any)?.accessToken,
-    // Full session object for debugging
-    fullSession: session
-  });
+
 
   // Simple client-side auth check
   const [clientAuth, setClientAuth] = useState({ isAuthenticated: false, isLoading: true });
@@ -53,8 +36,6 @@ export default function PlansPage() {
       const hasLocalStorageToken = !!localStorage.getItem('access_token');
       const hasCookieToken = document.cookie.includes('client_access_token');
       const isAuth = hasLocalStorageToken || hasCookieToken;
-
-      console.log('Client auth check:', { hasLocalStorageToken, hasCookieToken, isAuth });
 
       setClientAuth({ isAuthenticated: isAuth, isLoading: false });
     };
@@ -80,8 +61,6 @@ export default function PlansPage() {
           const hasCookieToken = document.cookie.includes('client_access_token');
 
           if (!hasLocalStorageToken || !hasCookieToken) {
-            console.log('Syncing token from NextAuth session to localStorage/cookies');
-
             // Store in localStorage
             localStorage.setItem('access_token', token);
 
@@ -90,27 +69,22 @@ export default function PlansPage() {
 
             // Update client auth state
             setClientAuth({ isAuthenticated: true, isLoading: false });
-
-            console.log('Token synced successfully');
           } else {
             // Token already exists, just update client auth state
             setClientAuth({ isAuthenticated: true, isLoading: false });
           }
         } else {
           // Session is authenticated but no token yet, try to fetch session again
-          console.log('Session authenticated but no token, trying to fetch session...');
           try {
             const response = await fetch('/api/auth/session');
             const sessionData = await response.json();
 
             if (sessionData?.accessToken) {
-              console.log('Got token from session API, storing...');
               localStorage.setItem('access_token', sessionData.accessToken);
               document.cookie = `client_access_token=${sessionData.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
               setClientAuth({ isAuthenticated: true, isLoading: false });
             } else {
               // Still no token, but session is authenticated, so consider as authenticated
-              console.log('No token available but session is authenticated');
               setClientAuth({ isAuthenticated: true, isLoading: false });
             }
           } catch (error) {
@@ -253,33 +227,7 @@ export default function PlansPage() {
           )}
         </div>
 
-        {/* Debug Authentication Status */}
-        <div className="mb-4">
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-lg">Debug: Authentication Status</CardTitle>
-            </CardHeader>
-            <CardContent className="py-4">
-              <div className="text-sm space-y-2">
-                <div><strong>Client Auth Loading:</strong> {clientAuth.isLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
-                <div><strong>Client Auth Status:</strong> {clientAuth.isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
-                <div><strong>Custom Hook Loading:</strong> {userLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
-                <div><strong>Custom Hook Status:</strong> {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
-                <div><strong>NextAuth Status:</strong> {sessionStatus}</div>
-                <div><strong>Final Loading:</strong> {finalUserLoading ? '⏳ Loading...' : '✅ Loaded'}</div>
-                <div><strong>Final Authenticated:</strong> {finalIsAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
 
-                {typeof window !== 'undefined' && (
-                  <>
-                    <div><strong>localStorage token:</strong> {localStorage.getItem('access_token') ? '✅ Has token' : '❌ No token'}</div>
-                    <div><strong>Cookie token:</strong> {document.cookie.includes('client_access_token') ? '✅ Has token' : '❌ No token'}</div>
-                    <div><strong>All cookies:</strong> {document.cookie || 'No cookies'}</div>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Current Subscription or Login Prompt */}
         {finalUserLoading ? (
