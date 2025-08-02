@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CreditCard, Star } from 'lucide-react';
 import { Plan } from '@/types/plan';
-// import PayPalSubscriptionButton from './PayPalSubscriptionButton';
+import PayPalSubscriptionButton from './PayPalSubscriptionButton';
 import { useToast } from '@/components/ui/use-toast';
 
 interface PaymentModalProps {
@@ -34,7 +34,7 @@ export default function PaymentModal({
   const handlePayPalSuccess = (subscriptionId: string) => {
     toast({
       title: 'Success!',
-      description: `Successfully subscribed to ${plan.name} plan via PayPal!`,
+      description: `Successfully created PayPal subscription for ${plan.name} plan!`,
     });
     onClose();
   };
@@ -121,15 +121,15 @@ export default function PaymentModal({
             {paymentMethod === 'paypal' ? (
               <div className="space-y-3">
                 <div className="text-sm text-muted-foreground">
-                  PayPal integration is being set up. Please use direct payment for now.
+                  Complete your subscription securely through PayPal.
                 </div>
-                <Button
-                  className="w-full"
-                  onClick={() => setPaymentMethod('direct')}
-                  variant="outline"
-                >
-                  Use Direct Payment Instead
-                </Button>
+                <PayPalSubscriptionButton
+                  plan={plan}
+                  onSuccess={handlePayPalSuccess}
+                  onError={handlePayPalError}
+                  onCancel={handlePayPalCancel}
+                  disabled={isSubscribing}
+                />
               </div>
             ) : (
               <div className="space-y-3">
