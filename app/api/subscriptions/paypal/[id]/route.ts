@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authConfig } from '@/app/(auth)/auth.config';
 
-export async function POST(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     // Get the session to verify authentication
     const session = await getServerSession(authConfig);
@@ -14,13 +17,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the request body
-    const body = await request.json();
-    const { plan_id } = body;
+    const subscriptionId = params.id;
 
-    if (!plan_id) {
+    if (!subscriptionId) {
       return NextResponse.json(
-        { error: 'Plan ID is required' },
+        { error: 'Subscription ID is required' },
         { status: 400 }
       );
     }
@@ -35,17 +36,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call the backend API to create PayPal subscription
+    // Call the backend API to check subscription status
     const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
-    const response = await fetch(`${backendUrl}/api/v1/subscriptions/create_subscription`, {
-      method: 'POST',
+    const response = await fetch(`${backendUrl}/api/v1/subscriptions/${subscriptionId}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({
-        plan_id: plan_id
-      }),
     });
 
     if (!response.ok) {
@@ -53,31 +51,21 @@ export async function POST(request: NextRequest) {
       console.error('Backend API error:', errorData);
       
       return NextResponse.json(
-        { error: errorData.detail || 'Failed to create subscription' },
+        { error: errorData.detail || 'Failed to get subscription status' },
         { status: response.status }
       );
     }
 
     const data = await response.json();
     
-    // Return the subscription data including approval URL
-    return NextResponse.json({
-      subscription_id: data.subscription_id,
-      approval_url: data.approval_url,
-      status: data.status,
-      expired_at: data.expired_at,
-      plan_id: data.plan_id,
-      user_id: data.user_id,
-      created_at: data.created_at,
-      updated_at: data.updated_at
-    });
+    return NextResponse.json(data);
 
   } catch (error) {
-    console.error('PayPal subscription creation error:', error);
+    console.error('PayPal subscription status check error:', error);
     
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
   }
-}
+} 
