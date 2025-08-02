@@ -72,6 +72,13 @@ export default function Page() {
             localStorage.setItem('access_token', session.accessToken);
             console.log('Client: Access token saved to localStorage');
 
+            // Store user info in localStorage
+            if (session.user?.id) {
+              localStorage.setItem('user_id', session.user.id);
+              localStorage.setItem('user_identifier', session.user.name || session.user.email || 'User');
+              console.log('Client: User info saved to localStorage');
+            }
+
             // Set client-side cookie
             document.cookie = `client_access_token=${session.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
 

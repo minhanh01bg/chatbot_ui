@@ -73,9 +73,9 @@ export const login = async (
               const existingCookies = cookieStore.getAll();
               console.log('Existing cookies before setting:', JSON.stringify(existingCookies.map(c => c.name)));
 
-              // Set the cookie
+              // Set the cookie with httpOnly: false for client-side access
               cookieStore.set('access_token', (session as any).accessToken, {
-                httpOnly: true,
+                httpOnly: false,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
@@ -96,6 +96,16 @@ export const login = async (
               console.log('Cookies after setting:', JSON.stringify(verificationCookies.map(c => c.name)));
               const tokenCookieSet = cookieStore.get('access_token');
               console.log('Access token cookie set successfully:', !!tokenCookieSet);
+              
+              // Store user info in localStorage for client-side access
+              if (session?.user?.id) {
+                // Note: This will be set on the client side after redirect
+                console.log('User info available for localStorage:', {
+                  userId: session.user.id,
+                  userName: session.user.name,
+                  userEmail: session.user.email
+                });
+              }
             } catch (cookieError) {
               console.error('Error setting cookies:', cookieError);
               console.error('Error details:', JSON.stringify(cookieError instanceof Error ? { message: cookieError.message, stack: cookieError.stack } : cookieError));
@@ -177,9 +187,9 @@ export const register = async (
             const { cookies } = await import('next/headers');
             const cookieStore = await cookies();
             cookieStore.set('access_token', sessionData.accessToken, { 
-              httpOnly: true, 
+              httpOnly: false, 
               secure: process.env.NODE_ENV === 'production',
-              sameSite: 'strict',
+              sameSite: 'lax',
               path: '/',
               maxAge: 60 * 60 * 24 * 7 // 1 week
             });

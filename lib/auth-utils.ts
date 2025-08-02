@@ -17,15 +17,26 @@ export function getClientAuthToken(): string | null {
     return localToken;
   }
   
-  // Check cookies
+  // Check cookies - try both naming conventions
   const clientToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('client_access_token='))
     ?.split('=')[1];
     
   if (clientToken) {
-    console.log('Found token in cookies');
+    console.log('Found token in client_access_token cookie');
     return clientToken;
+  }
+  
+  // Check for access_token cookie (set by server)
+  const serverToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('access_token='))
+    ?.split('=')[1];
+    
+  if (serverToken) {
+    console.log('Found token in access_token cookie');
+    return serverToken;
   }
   
   console.log('No token found in localStorage or cookies');
@@ -44,10 +55,15 @@ export function debugAuthState() {
   const userIdentifier = localStorage.getItem('user_identifier');
   const cookies = document.cookie;
 
-  // Extract client_access_token from cookies
+  // Extract tokens from cookies
   const clientToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('client_access_token='))
+    ?.split('=')[1];
+    
+  const serverToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('access_token='))
     ?.split('=')[1];
 
   console.log('=== Auth Debug ===');
@@ -55,6 +71,8 @@ export function debugAuthState() {
   console.log('localStorage user_id:', userId);
   console.log('localStorage user_identifier:', userIdentifier);
   console.log('client_access_token cookie:', formatTokenForDisplay(clientToken));
+  console.log('access_token cookie:', formatTokenForDisplay(serverToken));
   console.log('hasClientAuth():', hasClientAuth());
+  console.log('getClientAuthToken():', formatTokenForDisplay(getClientAuthToken()));
   console.log('================');
 }
