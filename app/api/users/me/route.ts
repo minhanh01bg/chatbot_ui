@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
 
 export async function GET(request: NextRequest) {
   try {

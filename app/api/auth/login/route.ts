@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
       console.log("Access token and user info cookies set successfully");
     } else {
       console.error("Failed to set access_token cookie - token not available in response");
+      console.error("Response data:", JSON.stringify(data));
     }
 
     return res;
