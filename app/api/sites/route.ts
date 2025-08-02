@@ -28,9 +28,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 });
     }
 
+    // Fix IPv6 issue by replacing localhost with 127.0.0.1
+    const backendUrl = NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
+    console.log('Sites API: Using backend URL:', backendUrl);
+
     // Call backend API with the token
     console.log('Sites API: Using token for authorization');
-    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites`, {
+    const response = await fetch(`${backendUrl}/api/v1/sites`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get backend URL from environment variables
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
     
     // Create new FormData for backend request
     const backendFormData = new FormData();
