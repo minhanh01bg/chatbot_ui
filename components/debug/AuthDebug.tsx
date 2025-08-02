@@ -1,210 +1,203 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useCurrentUser } from '@/hooks/use-current-user';
+import { getClientAuthToken, debugAuthState } from '@/lib/auth-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useCurrentUser } from '@/hooks/use-current-user';
-import { useSession } from 'next-auth/react';
-import { formatTokenForDisplay } from '@/lib/auth-utils';
 
 export default function AuthDebug() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [storageInfo, setStorageInfo] = useState({
-    hasLocalStorageToken: false,
-    hasCookieToken: false,
-    localStorageToken: '',
-    clientAccessToken: ''
-  });
-  const { user, isLoading, isAuthenticated } = useCurrentUser();
-  const { data: session, status } = useSession();
+  const { user, isAuthenticated, isLoading } = useCurrentUser();
+  const [debugInfo, setDebugInfo] = useState<any>({});
 
   useEffect(() => {
-    setMounted(true);
+    const updateDebugInfo = () => {
+      const token = getClientAuthToken();
+      const localToken = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const userId = typeof window !== 'undefined' ? localStorage.getItem('user_id') : null;
+      const userIdentifier = typeof window !== 'undefined' ? localStorage.getItem('user_identifier') : null;
+      
+      // Get cookies
+      const cookies = typeof window !== 'undefined' ? document.cookie : '';
+      const clientToken = cookies
+        .split('; ')
+        .find(row => row.startsWith('client_access_token='))
+        ?.split('=')[1];
+      const serverToken = cookies
+        .split('; ')
+        .find(row => row.startsWith('access_token='))
+        ?.split('=')[1];
 
-    // Get storage info safely on client side
-    const hasLocalStorageToken = !!localStorage.getItem('access_token');
-    const hasCookieToken = document.cookie.includes('client_access_token=');
-    const localStorageToken = localStorage.getItem('access_token') || '';
-    const clientAccessToken = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('client_access_token='))
-      ?.split('=')[1] || '';
+      setDebugInfo({
+        useCurrentUser: {
+          isAuthenticated,
+          isLoading,
+          hasUser: !!user,
+          userId: user?.id,
+          userName: user?.name,
+          userEmail: user?.email,
+          hasAccessToken: !!user?.accessToken,
+          tokenLength: user?.accessToken?.length,
+        },
+        localStorage: {
+          hasAccessToken: !!localToken,
+          tokenLength: localToken?.length,
+          userId,
+          userIdentifier,
+        },
+        cookies: {
+          all: cookies,
+          hasClientToken: !!clientToken,
+          clientTokenLength: clientToken?.length,
+          hasServerToken: !!serverToken,
+          serverTokenLength: serverToken?.length,
+        },
+        getClientAuthToken: {
+          hasToken: !!token,
+          tokenLength: token?.length,
+        }
+      });
+    };
 
-    setStorageInfo({
-      hasLocalStorageToken,
-      hasCookieToken,
-      localStorageToken,
-      clientAccessToken
-    });
-  }, []);
+    updateDebugInfo();
+    const interval = setInterval(updateDebugInfo, 1000);
+    return () => clearInterval(interval);
+  }, [user, isAuthenticated, isLoading]);
 
-  if (!isVisible) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <Button
-          onClick={() => setIsVisible(true)}
-          variant="outline"
-          size="sm"
-        >
-          Debug Auth
-        </Button>
-      </div>
-    );
-  }
+  const handleDebugAuth = () => {
+    debugAuthState();
+  };
+
+  const handleTestAPI = async () => {
+    try {
+      console.log('Testing API call...');
+      const response = await fetch('/api/subscriptions/my', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.accessToken}`
+        }
+      });
+      
+      console.log('API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('API Data:', data);
+      } else {
+        const error = await response.text();
+        console.log('API Error:', error);
+      }
+    } catch (error) {
+      console.error('API Test Error:', error);
+    }
+  };
+
+  const handleTestBackend = async () => {
+    try {
+      console.log('Testing backend connectivity...');
+      const response = await fetch('/api/test-backend', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      console.log('Backend Test Result:', data);
+    } catch (error) {
+      console.error('Backend Test Error:', error);
+    }
+  };
+
+  const handleTestSession = async () => {
+    try {
+      console.log('Testing session...');
+      const response = await fetch('/api/debug-session', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      console.log('Session Test Result:', data);
+    } catch (error) {
+      console.error('Session Test Error:', error);
+    }
+  };
+
+  const handleTestAuth = async () => {
+    try {
+      console.log('Testing auth...');
+      const response = await fetch('/api/test-auth', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      console.log('Auth Test Result:', data);
+    } catch (error) {
+      console.error('Auth Test Error:', error);
+    }
+  };
+
+  const handleTestToken = async () => {
+    try {
+      console.log('Testing token...');
+      const response = await fetch('/api/test-token', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.accessToken}`
+        }
+      });
+      
+      const data = await response.json();
+      console.log('Token Test Result:', data);
+    } catch (error) {
+      console.error('Token Test Error:', error);
+    }
+  };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-96">
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Auth Debug</CardTitle>
-            <Button
-              onClick={() => setIsVisible(false)}
-              variant="ghost"
-              size="sm"
-            >
-              ×
+    <Card className="w-full max-w-4xl">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          Authentication Debug
+          <div className="flex gap-2">
+            <Button onClick={handleDebugAuth} size="sm" variant="outline">
+              Debug Auth
+            </Button>
+            <Button onClick={handleTestAPI} size="sm" variant="outline">
+              Test API
+            </Button>
+            <Button onClick={handleTestBackend} size="sm" variant="outline">
+              Test Backend
+            </Button>
+            <Button onClick={handleTestSession} size="sm" variant="outline">
+              Test Session
+            </Button>
+            <Button onClick={handleTestAuth} size="sm" variant="outline">
+              Test Auth
+            </Button>
+            <Button onClick={handleTestToken} size="sm" variant="outline">
+              Test Token
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3 text-xs">
-          {/* useCurrentUser Hook */}
-          <div>
-            <h4 className="font-semibold mb-1">Current Authentication State:</h4>
-            <div className="space-y-1">
-              <div className="flex justify-between">
-                <span>isLoading:</span>
-                <Badge variant={isLoading ? 'secondary' : 'outline'}>
-                  {isLoading.toString()}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>isAuthenticated:</span>
-                <Badge variant={isAuthenticated ? 'default' : 'destructive'}>
-                  {isAuthenticated.toString()}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>User ID:</span>
-                <span className="text-right max-w-32 truncate">
-                  {user?.id || 'null'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>User Name:</span>
-                <span className="text-right max-w-32 truncate">
-                  {user?.name || 'null'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Has Token:</span>
-                <Badge variant={user?.accessToken ? 'default' : 'destructive'}>
-                  {!!user?.accessToken ? 'Yes' : 'No'}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          {/* NextAuth Session */}
-          <div>
-            <h4 className="font-semibold mb-1">Session Details:</h4>
-            <div className="space-y-1">
-              <div className="flex justify-between">
-                <span>Status:</span>
-                <Badge variant={
-                  status === 'authenticated' ? 'default' : 
-                  status === 'loading' ? 'secondary' : 'destructive'
-                }>
-                  {status}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Session User:</span>
-                <span className="text-right max-w-32 truncate">
-                  {session?.user?.id || 'null'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Browser Storage */}
-          <div>
-            <h4 className="font-semibold mb-1">Storage & Tokens:</h4>
-            <div className="space-y-1">
-              <div className="flex justify-between">
-                <span>localStorage token:</span>
-                <Badge variant={storageInfo.hasLocalStorageToken ? 'default' : 'destructive'}>
-                  {storageInfo.hasLocalStorageToken ? 'Yes' : 'No'}
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Cookie token:</span>
-                <Badge variant={storageInfo.hasCookieToken ? 'default' : 'destructive'}>
-                  {storageInfo.hasCookieToken ? 'Yes' : 'No'}
-                </Badge>
-              </div>
-              {mounted && (storageInfo.localStorageToken || storageInfo.clientAccessToken) && (
-                <div className="mt-2 pt-2 border-t">
-                  <div className="text-xs space-y-1">
-                    {storageInfo.localStorageToken && (
-                      <div>
-                        <span className="font-medium">localStorage:</span>
-                        <div className="font-mono text-xs break-all bg-gray-100 dark:bg-gray-700 p-1 rounded mt-1">
-                          {formatTokenForDisplay(storageInfo.localStorageToken)}
-                        </div>
-                      </div>
-                    )}
-                    {storageInfo.clientAccessToken && (
-                      <div>
-                        <span className="font-medium">Cookie:</span>
-                        <div className="font-mono text-xs break-all bg-gray-100 dark:bg-gray-700 p-1 rounded mt-1">
-                          {formatTokenForDisplay(storageInfo.clientAccessToken)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="pt-2 border-t">
-            <Button
-              onClick={() => {
-                console.log('Auth Debug Info:', {
-                  useCurrentUser: {
-                    user: user ? {
-                      ...user,
-                      accessToken: formatTokenForDisplay(user.accessToken)
-                    } : null,
-                    isLoading,
-                    isAuthenticated
-                  },
-                  nextAuthSession: {
-                    session: session ? {
-                      ...session,
-                      accessToken: formatTokenForDisplay((session as any).accessToken)
-                    } : null,
-                    status
-                  },
-                  localStorage: mounted ? {
-                    access_token: formatTokenForDisplay(localStorage.getItem('access_token')),
-                  } : null,
-                  cookies: mounted ? document.cookie : null,
-                });
-              }}
-              variant="outline"
-              size="sm"
-              className="w-full"
-            >
-              Log to Console
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <pre className="text-xs bg-gray-100 p-4 rounded overflow-auto max-h-96">
+          {JSON.stringify(debugInfo, null, 2)}
+        </pre>
+      </CardContent>
+    </Card>
   );
 }

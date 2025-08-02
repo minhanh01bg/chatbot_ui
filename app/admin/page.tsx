@@ -2,6 +2,8 @@ import DashboardCards from '@/components/admin/DashboardCards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import AuthDebug from '@/components/debug/AuthDebug';
+import TestSubscription from '@/components/plans/TestSubscription';
 
 export default function AdminDashboard() {
   return (
@@ -20,6 +22,7 @@ export default function AdminDashboard() {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="debug">Debug</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <DashboardCards />
@@ -64,6 +67,11 @@ export default function AdminDashboard() {
               </CardFooter>
             </Card>
           </div>
+        </TabsContent>
+        
+        <TabsContent value="debug" className="space-y-4">
+          <AuthDebug />
+          <TestSubscription />
         </TabsContent>
       </Tabs>
     </div>
