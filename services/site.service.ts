@@ -1,188 +1,64 @@
-interface Site {
-  _id: string;
-  name: string;
-  description: string;
-  url: string;
-  created_at: string;
-  updated_at: string;
-  document_count: number;
-}
+import { Site } from '@/types/site';
 
-interface SitesResponse {
-  sites: Site[];
-//   total: number;
-//   skip: number;
-//   limit: number;
-}
+export const getSites = async (skip = 0, limit = 10): Promise<Site[]> => {
+  const response = await fetch(`/api/sites?skip=${skip}&limit=${limit}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-export const get_sites = async (): Promise<SitesResponse> => {
-  try {
-    const response = await fetch(`/api/sites`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error fetching sites: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch sites:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to fetch sites');
   }
-}
 
-export const get_site_by_id = async (id: string): Promise<Site> => {
-  try {
-    const response = await fetch(`/api/sites/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const data = await response.json();
+  return data;
+};
 
-    if (!response.ok) {
-      throw new Error(`Error fetching site: ${response.statusText}`);
-    }
+export const createSite = async (siteData: Partial<Site>): Promise<Site> => {
+  const response = await fetch('/api/sites', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(siteData),
+  });
 
-    return await response.json();
-  } catch (error) {
-    console.error(`Failed to fetch site with id ${id}:`, error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to create site');
   }
-}
 
-// Lấy tất cả documents thuộc về một site cụ thể
-export const get_site_documents = async (siteId: string, skip: number = 0, limit: number = 10) => {
-  try {
-    const response = await fetch(`/api/sites/${siteId}/documents?skip=${skip}&limit=${limit}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  return response.json();
+};
 
-    if (!response.ok) {
-      throw new Error(`Error fetching site documents: ${response.statusText}`);
-    }
+export const updateSite = async (siteId: string, siteData: Partial<Site>): Promise<Site> => {
+  const response = await fetch(`/api/sites/${siteId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(siteData),
+  });
 
-    return await response.json();
-  } catch (error) {
-    console.error(`Failed to fetch documents for site ${siteId}:`, error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to update site');
   }
-}
 
-// Create site data interface for new API
-export interface CreateSiteData {
-  name: string;
-  domain: string;
-  openai_api_key?: string;
-  model_type?: string;
-  language?: string;
-  force_language?: boolean;
-}
+  return response.json();
+};
 
-// New create site function using the new API
-export const createSite = async (siteData: CreateSiteData) => {
-  try {
-    console.log('Client: Starting createSite request with data:', siteData);
+export const deleteSite = async (siteId: string, accessToken: string): Promise<void> => {
+  const response = await fetch(`/api/sites/${siteId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
 
-    const response = await fetch('/api/admin/sites/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(siteData),
-      credentials: 'include', // Ensure cookies are sent
-    });
-
-    console.log('Client: Received response:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      headers: Object.fromEntries(response.headers.entries())
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Client: Error response data:', errorData);
-      throw new Error(errorData.error || `Error creating site: ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    console.log('Client: Success response data:', result);
-    return result;
-  } catch (error) {
-    console.error('Client: Failed to create site:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to delete site');
   }
-}
-
-// Thêm site mới (legacy function)
-export const create_site = async (siteData: Omit<Site, '_id' | 'created_at' | 'updated_at' | 'document_count'>) => {
-  try {
-    const response = await fetch('/admin/sites/api', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(siteData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error creating site: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to create site:', error);
-    throw error;
-  }
-}
-
-// Cập nhật site
-export const update_site = async (id: string, siteData: Partial<Omit<Site, '_id' | 'created_at' | 'updated_at'>>) => {
-  try {
-    const response = await fetch(`/api/sites/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(siteData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error updating site: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Failed to update site ${id}:`, error);
-    throw error;
-  }
-}
-
-// Xóa site
-export const delete_site = async (id: string) => {
-  try {
-    const response = await fetch(`/api/sites/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error deleting site: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Failed to delete site ${id}:`, error);
-    throw error;
-  }
-} 
+}; 

@@ -1,41 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
 
-// PUT /api/sites/[id]
-export async function PUT(
+export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get access token directly from request cookies with fallback to client token
-    const accessToken = request.cookies.get('access_token')?.value;
-    const clientToken = request.cookies.get('client_access_token')?.value;
-    const token = accessToken || clientToken;
+    const { id: siteId } = await params;
     
-    // Check authorization
-    if (!token) {
-      console.error('Site Detail API: No access token found in cookies');
-      return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 });
+    // Get access token from Authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Access token is required' },
+        { status: 401 }
+      );
     }
+    
+    const accessToken = authHeader.replace('Bearer ', '');
 
-    const siteId = params.id;
-    const updateData = await request.json();
-
-    // Make request to backend API
-    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites/${siteId}`, {
-      method: 'PUT',
+    // Forward request to backend
+    const response = await fetch(`${BACKEND_URL}/api/v1/site/${siteId}`, {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(updateData)
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       return NextResponse.json(
-        { error: errorData.detail || 'Failed to update site' }, 
+        { error: errorData.detail || 'Failed to delete site' },
         { status: response.status }
       );
     }
@@ -43,56 +40,9 @@ export async function PUT(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error(`Error updating site ${params.id}:`, error);
+    console.error('Delete site API error:', error);
     return NextResponse.json(
-      { error: 'An error occurred while updating the site' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/sites/[id]
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // Get access token directly from request cookies with fallback to client token
-    const accessToken = request.cookies.get('access_token')?.value;
-    const clientToken = request.cookies.get('client_access_token')?.value;
-    const token = accessToken || clientToken;
-    
-    // Check authorization
-    if (!token) {
-      console.error('Site Detail API: No access token found in cookies');
-      return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 });
-    }
-
-    const siteId = params.id;
-
-    // Make request to backend API
-    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/sites/${siteId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      return NextResponse.json(
-        { error: errorData.detail || 'Failed to delete site' }, 
-        { status: response.status }
-      );
-    }
-
-    // Return success response
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(`Error deleting site ${params.id}:`, error);
-    return NextResponse.json(
-      { error: 'An error occurred while deleting the site' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
