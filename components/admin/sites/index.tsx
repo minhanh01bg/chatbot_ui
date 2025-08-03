@@ -17,6 +17,8 @@ import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import SiteChatButton from './SiteChatButton';
 import CreateSiteModal from './CreateSiteModal';
+import { deleteSite } from '@/services/site.service';
+import { useSession } from 'next-auth/react';
 
 // Define site type - flexible to match multiple API response formats
 interface Site {
@@ -40,12 +42,16 @@ interface Site {
 
 export default function SitesTable() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [totalItems, setTotalItems] = useState(0);
+  const [deletingSiteId, setDeletingSiteId] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
   
   const itemsPerPage = 10;
 
@@ -98,92 +104,115 @@ export default function SitesTable() {
     // Handle sites with different field names
     (site.name && site.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (site.description && site.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (site.url && site.url.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (site.domain && site.domain.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (site.email && site.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    (site.url && site.url.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-  
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Format date for display, handling different date field names
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
-    
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-      });
-    } catch (e) {
-      return dateString;
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return 'Invalid Date';
     }
   };
 
-  // Safely get site ID
   const getSiteId = (site: Site) => site._id || site.id || '';
 
-  // Navigate to site documents
   const navigateToSiteDocuments = (site: Site) => {
     const siteId = getSiteId(site);
-    if (!siteId) return;
-    
-    // Store the selected site in localStorage, but don't include sensitive data
-    const safeData = {
-      ...site,
-      // Only include needed fields
-      name: site.name,
-      domain: site.domain,
-      chat_token: site.chat_token,
-      _id: site._id || site.id,
-      id: site._id || site.id
-    };
-    
-    // Store in localStorage temporarily
-    localStorage.setItem('selected_site', JSON.stringify(safeData));
-    
-    // Navigate to documents page
-    router.push(`/admin/sites/${siteId}/documents`);
+    if (siteId) {
+      router.push(`/admin/sites/${siteId}/documents`);
+    }
   };
 
-  // Truncate long strings for display
   const truncate = (str?: string, length = 30) => {
     if (!str) return '';
     return str.length > length ? str.substring(0, length) + '...' : str;
   };
 
+  const handleDeleteClick = (site: Site) => {
+    setSiteToDelete(site);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!siteToDelete || !(session as any)?.accessToken) {
+      setShowDeleteDialog(false);
+      setSiteToDelete(null);
+      return;
+    }
+
+    const siteId = getSiteId(siteToDelete);
+    if (!siteId) {
+      console.error('No site ID found');
+      setShowDeleteDialog(false);
+      setSiteToDelete(null);
+      return;
+    }
+
+    try {
+      setDeletingSiteId(siteId);
+      await deleteSite(siteId, (session as any).accessToken);
+      
+      // Remove the deleted site from the list
+      setSites(prev => prev.filter(site => getSiteId(site) !== siteId));
+      
+      // Show success message
+      console.log('Site deleted successfully');
+    } catch (error) {
+      console.error('Error deleting site:', error);
+      setError('Failed to delete site. Please try again.');
+    } finally {
+      setDeletingSiteId(null);
+      setShowDeleteDialog(false);
+      setSiteToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setSiteToDelete(null);
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold">Sites</h2>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              type="text"
-              placeholder="Search sites..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <CreateSiteModal onSiteCreated={fetchSites} />
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Sites</h2>
+          <p className="text-muted-foreground">
+            Manage your AI chat sites and configurations.
+          </p>
+        </div>
+        <CreateSiteModal onSiteCreated={fetchSites} />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search sites..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
-        <div className="overflow-x-auto">
+      <div className="rounded-md border">
+        <div className="relative">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name/Domain</TableHead>
-                <TableHead>User/Key</TableHead>
-                <TableHead>Creation</TableHead>
+                <TableHead>Site</TableHead>
+                <TableHead>Configuration</TableHead>
+                <TableHead>Created</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -291,6 +320,8 @@ export default function SitesTable() {
                           size="sm" 
                           className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
                           title="Delete"
+                          onClick={() => handleDeleteClick(site)}
+                          disabled={deletingSiteId === getSiteId(site)}
                         >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
@@ -319,6 +350,35 @@ export default function SitesTable() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && siteToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Site</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <strong>{siteToDelete.name}</strong>? 
+              This action cannot be undone and will remove all associated data.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={handleDeleteCancel}
+                disabled={deletingSiteId === getSiteId(siteToDelete)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteConfirm}
+                disabled={deletingSiteId === getSiteId(siteToDelete)}
+              >
+                {deletingSiteId === getSiteId(siteToDelete) ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
