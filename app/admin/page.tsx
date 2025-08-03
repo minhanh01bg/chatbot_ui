@@ -1,3 +1,5 @@
+'use client';
+
 import DashboardCards from '@/components/admin/DashboardCards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -5,10 +7,21 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import AuthDebug from '@/components/debug/AuthDebug';
 import TestSubscription from '@/components/plans/TestSubscription';
 import ProductsList from '@/components/admin/products/ProductsList';
+import { WelcomeBanner } from '@/components/welcome-banner';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 export default function AdminDashboard() {
+  const { user } = useCurrentUser();
+
   return (
-    <div className="flex flex-col gap-6">
+    <>
+      {user && (
+        <WelcomeBanner 
+          userName={user.name} 
+          userEmail={user.email} 
+        />
+      )}
+      <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <div className="flex items-center gap-2">
@@ -81,5 +94,6 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 } 
