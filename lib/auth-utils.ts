@@ -76,3 +76,75 @@ export function debugAuthState() {
   console.log('getClientAuthToken():', formatTokenForDisplay(getClientAuthToken()));
   console.log('================');
 }
+
+/**
+ * Comprehensive logout function that clears all authentication data
+ * including localStorage, cookies, and NextAuth session
+ */
+export const clearAllAuthData = () => {
+  // Clear localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_identifier');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('auth_token');
+    
+    // Clear all auth-related localStorage items
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('user') || key.includes('auth') || key.includes('token'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  }
+
+  // Clear cookies
+  if (typeof document !== 'undefined') {
+    const cookies = document.cookie.split(';');
+    cookies.forEach(cookie => {
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      if (name.includes('user') || name.includes('auth') || name.includes('token')) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      }
+    });
+  }
+};
+
+/**
+ * Complete logout function that handles all cleanup and redirection
+ */
+export const performLogout = async (router: any) => {
+  try {
+    // Clear all local storage and cookies first
+    clearAllAuthData();
+    
+    // Import signOut dynamically to avoid SSR issues
+    const { signOut } = await import('next-auth/react');
+    
+    // Sign out from NextAuth
+    await signOut({ 
+      redirect: false,
+      callbackUrl: '/login'
+    });
+    
+    // Force router refresh and redirect
+    router.push('/login');
+    router.refresh();
+    
+    // Force page reload to ensure all state is cleared
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 100);
+    
+  } catch (error) {
+    console.error('Logout error:', error);
+    // Even if NextAuth fails, clear local data and redirect
+    clearAllAuthData();
+    router.push('/login');
+    router.refresh();
+  }
+};

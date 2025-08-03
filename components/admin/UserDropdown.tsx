@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import {
   UserIcon,
   Settings,
@@ -21,15 +21,14 @@ import {
   CreditCard,
   LogOut
 } from 'lucide-react';
+import { performLogout } from '@/lib/auth-utils';
 
 export default function UserDropdown() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
   const handleLogout = async (): Promise<void> => {
-    await signOut({ redirect: false });
-    router.push('/login');
-    router.refresh();
+    await performLogout(router);
   };
 
   // Show loading state while session is loading
@@ -58,37 +57,27 @@ export default function UserDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-9 px-2 gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/admin-avatar.png" alt={userName} />
+            <AvatarImage src="/avatars/01.png" alt={userName} />
             <AvatarFallback>{userInitial}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start">
             <span className="hidden md:inline font-medium text-sm">{userName}</span>
-            <span className="hidden md:inline text-xs text-muted-foreground">Admin</span>
+            <span className="hidden md:inline text-xs text-muted-foreground">{userEmail}</span>
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-0.5">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{userName}</p>
-                <p className="text-xs text-muted-foreground">{userEmail}</p>
-              </div>
-            </DropdownMenuLabel>
+        <DropdownMenuLabel>
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{userName}</p>
+            <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
           </div>
-        </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/admin/dashboard" className="cursor-pointer flex w-full items-center">
+          <Link href="/admin" className="cursor-pointer flex w-full items-center">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/admin/profile" className="cursor-pointer flex w-full items-center">
-            <UserIcon className="mr-2 h-4 w-4" />
-            <span>My Profile</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
@@ -98,24 +87,21 @@ export default function UserDropdown() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/admin/settings" className="cursor-pointer flex w-full items-center">
+          <Link href="/admin/sites" className="cursor-pointer flex w-full items-center">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/admin/help" className="cursor-pointer flex w-full items-center">
+          <Link href="/help" className="cursor-pointer flex w-full items-center">
             <HelpCircle className="mr-2 h-4 w-4" />
-            <span>Help & Support</span>
+            <span>Help</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          className="cursor-pointer flex items-center text-red-500 focus:text-red-500"
-          onClick={handleLogout}
-        >
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>Đăng xuất</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -2,9 +2,10 @@
 import { ChevronUp, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import type { User } from 'next-auth';
-import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { performLogout } from '@/lib/auth-utils';
 
 import {
   DropdownMenu,
@@ -21,6 +22,11 @@ import {
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await performLogout(router);
+  };
 
   return (
     <SidebarMenu>
@@ -60,11 +66,7 @@ export function SidebarUserNav({ user }: { user: User }) {
               <button
                 type="button"
                 className="w-full cursor-pointer"
-                onClick={() => {
-                  signOut({
-                    redirectTo: '/',
-                  });
-                }}
+                onClick={handleLogout}
               >
                 Sign out
               </button>
