@@ -18,6 +18,15 @@ export default function ProductsList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Debug logging
+  console.log('ProductsList Debug:', {
+    isAuthenticated,
+    isSuperAdmin,
+    userRole: user?.role,
+    userId: user?.id,
+    hasAccessToken: !!user?.accessToken
+  });
+
   const fetchProducts = async () => {
     if (!isAuthenticated || !user?.accessToken) {
       setError('Authentication required');
@@ -106,6 +115,34 @@ export default function ProductsList() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h3 className="font-semibold text-yellow-800 mb-2">Debug Information:</h3>
+              <div className="text-sm text-yellow-700 space-y-1">
+                <p>isAuthenticated: {isAuthenticated.toString()}</p>
+                <p>isSuperAdmin: {isSuperAdmin.toString()}</p>
+                <p>userRole: {user?.role || 'undefined'}</p>
+                <p>userId: {user?.id || 'undefined'}</p>
+                <p>hasAccessToken: {!!user?.accessToken ? 'true' : 'false'}</p>
+              </div>
+              <Button 
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/debug-session');
+                    const data = await response.json();
+                    console.log('Debug Session API Response:', data);
+                    alert(`Session Debug:\nRole: ${data.role}\nAuthenticated: ${data.authenticated}\nFull data in console`);
+                  } catch (error) {
+                    console.error('Debug Session Error:', error);
+                    alert('Error fetching session debug');
+                  }
+                }}
+                className="mt-2"
+                variant="outline"
+                size="sm"
+              >
+                Test Session API
+              </Button>
+            </div>
             <p className="text-muted-foreground">Access denied. Super admin privileges required.</p>
           </div>
         </CardContent>
