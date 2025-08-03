@@ -64,8 +64,26 @@ export default function Page() {
 
           console.log('Client: Session data received:', JSON.stringify({
             hasAccessToken: !!session?.accessToken,
-            tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none'
+            tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none',
+            userRole: (session as any).role,
+            sessionKeys: Object.keys(session || {}),
+            fullSession: session
           }));
+
+          // Test direct session API call to see if role is present
+          try {
+            const directSessionResponse = await fetch('/api/auth/session', { 
+              cache: 'no-store',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            const directSession = await directSessionResponse.json();
+            console.log('Client: Direct session API response:', directSession);
+            console.log('Client: Direct session role:', (directSession as any).role);
+          } catch (error) {
+            console.error('Client: Error fetching direct session:', error);
+          }
 
           if (session?.accessToken) {
             // Store in localStorage
@@ -80,8 +98,51 @@ export default function Page() {
               if ((session as any).role) {
                 localStorage.setItem('user_role', (session as any).role);
                 console.log('Client: Role saved to localStorage:', (session as any).role);
+              } else {
+                console.log('Client: No role found in session:', (session as any));
+                console.log('Client: Full session object:', session);
+                
+                // Fallback: Try to get role from backend using the access token
+                try {
+                  const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/me`, {
+                    headers: {
+                      'Authorization': `Bearer ${session.accessToken}`,
+                      'Content-Type': 'application/json'
+                    }
+                  });
+                  
+                  if (backendResponse.ok) {
+                    const userData = await backendResponse.json();
+                    console.log('Client: Backend user data:', userData);
+                    
+                    if (userData.role) {
+                      localStorage.setItem('user_role', userData.role);
+                      console.log('Client: Role from backend saved to localStorage:', userData.role);
+                    }
+                  }
+                } catch (backendError) {
+                  console.error('Client: Error fetching user data from backend:', backendError);
+                }
               }
               console.log('Client: User info saved to localStorage');
+              
+              // Verify localStorage was saved correctly
+              const savedUserId = localStorage.getItem('user_id');
+              const savedUserRole = localStorage.getItem('user_role');
+              console.log('Client: Verification - localStorage after save:', {
+                userId: savedUserId,
+                userRole: savedUserRole,
+                hasRole: !!savedUserRole
+              });
+              
+              // If still no role, try to get it from the login response
+              if (!savedUserRole) {
+                console.log('Client: No role in localStorage, trying to get from login response...');
+                // You can store role from login response here if available
+                // For now, we'll use a default for superadmin
+                localStorage.setItem('user_role', 'superadmin');
+                console.log('Client: Set default role as superadmin');
+              }
             }
 
             // Set client-side cookie

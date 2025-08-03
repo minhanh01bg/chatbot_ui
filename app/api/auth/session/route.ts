@@ -24,11 +24,13 @@ export async function GET(request: NextRequest) {
         email: session.user.email,
       } : null,
       accessToken: (session as any)?.accessToken || clientAccessToken || accessToken,
+      role: (session as any)?.role, // Add role to response
       expires: session?.expires,
       // Debug info
       debug: {
         sessionExists: !!session,
         sessionAccessToken: (session as any)?.accessToken ? 'exists' : null,
+        sessionRole: (session as any)?.role, // Add role to debug
         cookieAccessToken: accessToken ? 'exists' : null,
         clientCookieToken: clientAccessToken ? 'exists' : null,
         userId: userId,

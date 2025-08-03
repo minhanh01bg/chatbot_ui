@@ -53,7 +53,8 @@ export const {
             hasAccessToken: !!loginResponse?.access_token,
             hasUser: !!loginResponse?.user,
             userId: loginResponse?.user?.id,
-            userIdentifier: loginResponse?.user?.identifier
+            userIdentifier: loginResponse?.user?.identifier,
+            userRole: loginResponse?.role
           });
           
           if (!loginResponse) {
@@ -120,7 +121,8 @@ export const {
         console.log('JWT callback: User provided, access token stored in token object', {
           userId: customUser.id,
           hasAccessToken: !!customUser.accessToken,
-          tokenType: customUser.tokenType
+          tokenType: customUser.tokenType,
+          userRole: customUser.role
         });
       }
 
@@ -144,7 +146,8 @@ export const {
         hasSession: !!session,
         hasUser: !!session?.user,
         hasToken: !!token,
-        tokenAccessToken: token?.accessToken ? 'exists' : 'none'
+        tokenAccessToken: token?.accessToken ? 'exists' : 'none',
+        tokenRole: token?.role
       });
 
       if (session.user) {
@@ -152,7 +155,7 @@ export const {
         // Add token information to session
         (session as any).accessToken = token.accessToken;
         (session as any).tokenType = token.tokenType;
-        (session as any).role = token.role; // Add role to session
+        (session as any).role = token.role || null; // Ensure role is always present
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
@@ -161,7 +164,9 @@ export const {
         console.log('Session callback: Token added to session', {
           userId: session.user.id,
           hasAccessToken: !!token.accessToken,
-          tokenType: token.tokenType
+          tokenType: token.tokenType,
+          userRole: token.role,
+          sessionRole: (session as any).role
         });
       }
 
