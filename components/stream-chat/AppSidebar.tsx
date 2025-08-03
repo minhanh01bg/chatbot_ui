@@ -11,6 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import SessionsList from './SessionsList';
+import { MessageSquare, Sparkles } from 'lucide-react';
 
 interface AppSidebarProps {
   onSelectSession: (sessionId: string) => void;
@@ -31,8 +32,8 @@ const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refresh
   };
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0">
-      <SidebarHeader>
+    <Sidebar className="group-data-[side=left]:border-r-0 bg-white/80 backdrop-blur-sm border-r border-gray-200/50">
+      <SidebarHeader className="bg-gradient-to-r from-purple-50 to-blue-50 p-3">
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">
             <Link
@@ -40,18 +41,27 @@ const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refresh
               onClick={() => {
                 setOpenMobile(false);
               }}
-              className="flex flex-row gap-3 items-center"
+              className="flex flex-row gap-3 items-center group"
             >
-              <span className="text-lg font-semibold px-2 hover:bg-muted rounded-md cursor-pointer">
-                Chatbot
-              </span>
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                <MessageSquare className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  AI Chat
+                </span>
+                <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  Powered by AI
+                </span>
+              </div>
             </Link>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   type="button"
-                  className="p-2 h-fit"
+                  className="p-2 h-fit hover:bg-purple-50 hover:text-purple-600 transition-colors rounded-lg"
                   onClick={handleNewChat}
                 >
                   <PlusIcon />
@@ -62,7 +72,7 @@ const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refresh
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-white/60">
         <SessionsList 
           onSelectSession={onSelectSession} 
           onDeleteSession={onDeleteSession}

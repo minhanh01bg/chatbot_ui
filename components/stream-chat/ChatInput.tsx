@@ -48,32 +48,51 @@ const ChatInput: FC<ChatInputProps> = ({ onSend, disabled }) => {
 
   return (
     <div className="w-full relative">
-      <Textarea
-        ref={textareaRef}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Send a message..."
-        className={cn(
-          "min-h-[40px] max-h-[200px] resize-none py-3 pl-4 pr-12",
-          "rounded-lg shadow-sm border-muted-foreground/20 w-full",
-          "focus-visible:ring-1 focus-visible:ring-primary"
-        )}
-        disabled={disabled}
-        rows={1}
-      />
-      <Button 
-        type="submit" 
-        onClick={handleSubmit}
-        disabled={disabled || !message.trim()}
-        size="icon"
-        className={cn(
-          "absolute right-2 top-[50%] translate-y-[-50%] h-8 w-8",
-          "bg-primary hover:bg-primary/90 text-primary-foreground"
-        )}
-      >
-        <IconSend className="h-4 w-4" />
-      </Button>
+      <div className="relative bg-white rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
+        <Textarea
+          ref={textareaRef}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message here..."
+          className={cn(
+            "min-h-[56px] max-h-[200px] resize-none py-4 pl-5 pr-16",
+            "rounded-2xl border-0 shadow-none bg-transparent",
+            "focus-visible:ring-0 focus-visible:ring-offset-0",
+            "placeholder:text-gray-400 text-gray-700",
+            "text-base leading-relaxed"
+          )}
+          disabled={disabled}
+          rows={1}
+        />
+        <Button 
+          type="submit" 
+          onClick={handleSubmit}
+          disabled={disabled || !message.trim()}
+          size="icon"
+          className={cn(
+            "absolute right-2 top-[50%] translate-y-[-50%] h-10 w-10",
+            "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700",
+            "text-white shadow-md hover:shadow-lg transition-all duration-200",
+            "rounded-xl border-0",
+            disabled || !message.trim() ? "opacity-50 cursor-not-allowed" : "opacity-100"
+          )}
+        >
+          <IconSend className="h-5 w-5" />
+        </Button>
+      </div>
+      
+      {/* Helper text */}
+      <div className="flex items-center justify-between mt-2 px-1">
+        <p className="text-xs text-gray-400">
+          Press Enter to send, Shift+Enter for new line
+        </p>
+        <div className="flex items-center gap-1">
+          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+          <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+        </div>
+      </div>
     </div>
   )
 }

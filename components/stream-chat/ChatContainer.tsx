@@ -22,6 +22,7 @@ const ChatContainer = () => {
   const [activeSessionId, setActiveSessionId] = useState<string>('');
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [hasInitialized, setHasInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -40,6 +41,21 @@ const ChatContainer = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Initialize chat when component mounts and site context is valid
+  useEffect(() => {
+    if (isValidSiteChat && currentSiteId && !hasInitialized) {
+      console.log('Initializing chat with site context:', currentSiteId);
+      setHasInitialized(true);
+      
+      // If no active session, create a new one
+      if (!activeSessionId) {
+        const newSessionId = `site_${currentSiteId}_${Date.now()}`;
+        setActiveSessionId(newSessionId);
+        console.log('Created new session ID:', newSessionId);
+      }
+    }
+  }, [isValidSiteChat, currentSiteId, activeSessionId, hasInitialized]);
 
   // Load chat history when a session is selected
   const handleSelectSession = async (sessionId: string) => {
@@ -84,16 +100,18 @@ const ChatContainer = () => {
       setIsLoading(false);
     }
   };
-	const handleDeleteSession = async (sessionId: string) => {
-		try {
-			await deleteSession(sessionId);
-			setActiveSessionId('');
-			setMessages([]);
-			// setRefreshTrigger(prev => prev + 1);
-		} catch (error) {
-			console.error('Error deleting session:', error);
-		}
-	}
+
+  const handleDeleteSession = async (sessionId: string) => {
+    try {
+      await deleteSession(sessionId);
+      setActiveSessionId('');
+      setMessages([]);
+      // setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Error deleting session:', error);
+    }
+  };
+
   const handleSendMessage = async (message: string) => {
     if (!isValidSiteChat) {
       console.error('No valid site chat context');
@@ -109,6 +127,7 @@ const ChatContainer = () => {
         // Generate a new session ID for site chat
         sessionId = `site_${currentSiteId}_${Date.now()}`;
         setActiveSessionId(sessionId);
+        console.log('Created new session ID for message:', sessionId);
       }
 
       let botMessage = '';
