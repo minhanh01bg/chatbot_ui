@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
+import { SessionProvider } from 'next-auth/react';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { SiteChatProvider } from '@/contexts/SiteChatContext';
@@ -64,10 +65,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SiteChatProvider>
-            <Toaster position="top-center" />
-            {children}
-          </SiteChatProvider>
+          <SessionProvider>
+            <SiteChatProvider>
+              <Toaster position="top-center" />
+              {children}
+            </SiteChatProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
