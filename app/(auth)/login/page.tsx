@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
+import { AuthGuard } from '@/components/auth-guard';
 
 import { login, type LoginActionState } from '../actions';
 
@@ -194,8 +195,9 @@ export default function Page() {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
-      <div className="w-full max-w-md bg-card rounded-lg shadow-lg dark:shadow-slate-800 p-6">
+    <AuthGuard redirectTo="/admin" redirectIfAuthenticated={true}>
+      <div className="flex justify-center items-center min-h-screen from-blue-50 to-violet-50 dark:from-blue-950 dark:to-violet-950">
+        <div className="w-full max-w-md bg-card rounded-lg shadow-lg dark:shadow-slate-800 p-6">
         <div className="mb-4 text-center">
           <h1 className="text-2xl font-bold">Login</h1>
           <p className="text-muted-foreground mt-1">Welcome back! Please enter your credentials.</p>
@@ -255,5 +257,6 @@ export default function Page() {
         </p>
       </div>
     </div>
+    </AuthGuard>
   );
 }
