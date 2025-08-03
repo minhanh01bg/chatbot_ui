@@ -55,7 +55,13 @@ export function useCurrentUser() {
           const userRole = localStorage.getItem('user_role') ||
                           document.cookie.split('; ').find(row => row.startsWith('user_role='))?.split('=')[1];
 
-          console.log('useCurrentUser: User info from storage:', { userId, userIdentifier, userRole });
+          console.log('useCurrentUser: User info from storage:', { 
+            userId, 
+            userIdentifier, 
+            userRole,
+            localStorageKeys: typeof window !== 'undefined' ? Object.keys(localStorage) : [],
+            cookieKeys: document.cookie.split('; ').map(c => c.split('=')[0])
+          });
 
           setUser({
             id: userId || 'authenticated-user',
@@ -127,10 +133,21 @@ export function useCurrentUser() {
     return () => clearTimeout(timeout);
   }, [isLoading]);
 
+  const isSuperAdmin = user?.role?.trim().toLowerCase() === 'superadmin';
+  
+  console.log('useCurrentUser: Role check:', {
+    userRole: user?.role,
+    roleType: typeof user?.role,
+    roleLength: user?.role?.length,
+    isSuperAdmin,
+    comparison: user?.role?.trim().toLowerCase() === 'superadmin',
+    trimmedRole: user?.role?.trim().toLowerCase()
+  });
+
   return {
     user,
     isLoading,
     isAuthenticated: !!user,
-    isSuperAdmin: user?.role === 'superadmin',
+    isSuperAdmin,
   };
 }
