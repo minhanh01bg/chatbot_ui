@@ -1,24 +1,13 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { getSessions } from '@/services/sessionService';
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, useSidebar } from '@/components/ui/sidebar';
+import ChatItem from './ChatItem';
 import { SessionData } from '@/types/session';
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  useSidebar,
-} from '@/components/ui/sidebar';
-import ChatItem from '@/components/stream-chat/ChatItem';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { getSessions } from '@/services/sessionService';
+import { getSiteSessions } from '@/services/siteChat.service';
+import { useSiteChat } from '@/contexts/SiteChatContext';
+import { isToday, isYesterday, subWeeks, subMonths } from 'date-fns';
 
 type GroupedChats = {
   today: SessionData[];
@@ -41,21 +30,33 @@ const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refre
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+  const { currentSiteToken, isValidSiteChat } = useSiteChat();
 
   useEffect(() => {
     const fetchSessions = async () => {
       setIsLoading(true);
       try {
-        const response = await getSessions(1, 20);
-        setSessions(response.data);
+        if (isValidSiteChat && currentSiteToken) {
+          // Use site-specific sessions
+          console.log('Fetching site-specific sessions');
+          const response = await getSiteSessions(currentSiteToken, 1, 20);
+          setSessions(response.data || []);
+        } else {
+          // Use global sessions (fallback)
+          console.log('Fetching global sessions');
+          const response = await getSessions(1, 20);
+          setSessions(response.data);
+        }
       } catch (error) {
         console.error('Error fetching sessions:', error);
+        // Set empty array on error to prevent further issues
+        setSessions([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchSessions();
-  }, [refreshTrigger, setSessions]);
+  }, [refreshTrigger, setSessions, currentSiteToken, isValidSiteChat]);
 
   const groupChatsByDate = (chats: SessionData[]): GroupedChats => {
     const now = new Date();
@@ -138,38 +139,47 @@ const SessionsList = ({ onSelectSession, onDeleteSession, activeSessionId, refre
                           setOpenMobile={setOpenMobile}
                           onSelectSession={onSelectSession}
                           onDeleteSession={handleDeleteClick}
-                          setSessions={setSessions}
                         />
                       ))}
                     </div>
                   )
                 )}
-                {Object.values(groupedChats).every(group => group.length === 0) && (
-                  <div className="px-2 py-1 text-sm">No sessions found</div>
+                {sessions.length === 0 && !isLoading && (
+                  <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
+                    No sessions found
+                  </div>
                 )}
               </>
             )}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
-      
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              chat and remove it from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Session</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this session? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteDialog(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

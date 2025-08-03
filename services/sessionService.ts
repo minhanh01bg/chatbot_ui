@@ -1,7 +1,7 @@
 import { SessionResponse, ChatHistoryResponse, SessionData } from '@/types/session';
 
 export const getSessions = async (page = 1, pageSize = 10): Promise<SessionResponse> => {
-  const response = await fetch(`/api/sessions?page=${page}&pageSize=${pageSize}`, {
+  const response = await fetch(`/api/chat/sessions?page=${page}&pageSize=${pageSize}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const deleteSession = async (
   onError?: (error: Error) => void
 ) => {
   try {
-    const response = await fetch(`/api/sessions?session_id=${sessionId}`, {
+    const response = await fetch(`/api/chat/sessions?session_id=${sessionId}`, {
       method: 'DELETE',
     });
 

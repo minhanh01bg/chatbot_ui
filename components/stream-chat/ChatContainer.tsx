@@ -4,7 +4,7 @@ import { sendChatMessage } from '@/services/chatService';
 import { getChatHistory, createSession, deleteSession } from '@/services/sessionService';
 import { MessageData, SessionData } from '@/types/session';
 import { useSiteChat } from '@/contexts/SiteChatContext';
-import { sendSiteChatMessage, getSiteSessions } from '@/services/siteChat.service';
+import { sendSiteChatMessage, getSiteSessions, getSiteChatHistory } from '@/services/siteChat.service';
 import ChatLayout from './ChatLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,7 +54,17 @@ const ChatContainer = () => {
     setActiveSessionId(sessionId);
 
     try {
-      const history = await getChatHistory(sessionId);
+      let history;
+      
+      if (isValidSiteChat && currentSiteToken) {
+        // Use site-specific chat history
+        console.log('Fetching site-specific chat history for session:', sessionId);
+        history = await getSiteChatHistory(sessionId, currentSiteToken);
+      } else {
+        // Use global chat history
+        console.log('Fetching global chat history for session:', sessionId);
+        history = await getChatHistory(sessionId);
+      }
       
       // Convert API response format to our local message format
       const convertedMessages = history.data.map((msg: MessageData) => ({
@@ -65,6 +75,11 @@ const ChatContainer = () => {
       setMessages(convertedMessages);
     } catch (error) {
       console.error('Error fetching chat history:', error);
+      // Show error message to user
+      setMessages([{
+        content: 'Sorry, there was an error loading the chat history.',
+        isBot: true
+      }]);
     } finally {
       setIsLoading(false);
     }

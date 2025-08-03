@@ -36,7 +36,7 @@ export default function SitesPage() {
   }, {} as Record<string, string>) : {};
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-5">
       {/* Dashboard Stats */}
       {!loading && siteKeys.length > 0 && (
         <OverallDashboardStats 

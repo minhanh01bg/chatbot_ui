@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getChatSessions, createSession, deleteSession } from '@/services/session.service';
+import { getSessions, createSession, deleteSession } from '@/services/sessionService';
 
 export async function GET(request: Request) {
     try {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
         const page = parseInt(searchParams.get('page') || '1');
         const pageSize = parseInt(searchParams.get('pageSize') || '10');
 
-        const sessions = await getChatSessions(page, pageSize);
+        const sessions = await getSessions(page, pageSize);
         return NextResponse.json(sessions);
     } catch (error) {
         return NextResponse.json(

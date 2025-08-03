@@ -20,18 +20,25 @@ export function SiteChatProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
+    console.log('=== SITE CHAT CONTEXT MOUNTING ===');
     const savedSiteId = localStorage.getItem('current_site_id');
     const savedSiteToken = localStorage.getItem('current_site_token');
     const savedSiteName = localStorage.getItem('current_site_name');
     
     if (savedSiteId && savedSiteToken && savedSiteName) {
+      console.log('Setting context from localStorage');
       setCurrentSiteId(savedSiteId);
       setCurrentSiteToken(savedSiteToken);
       setCurrentSiteName(savedSiteName);
+    } else {
+      console.log('No valid data in localStorage');
     }
   }, []);
 
   const setSiteChat = (siteId: string, siteToken: string, siteName: string) => {
+    console.log('=== SET SITE CHAT CALLED ===');
+    console.log('Setting site chat:', { siteId, siteName, tokenLength: siteToken.length });
+    
     setCurrentSiteId(siteId);
     setCurrentSiteToken(siteToken);
     setCurrentSiteName(siteName);
@@ -41,10 +48,11 @@ export function SiteChatProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('current_site_token', siteToken);
     localStorage.setItem('current_site_name', siteName);
     
-    console.log('Site chat context set:', { siteId, siteName, tokenLength: siteToken.length });
+    console.log('Site chat context set and saved to localStorage');
   };
 
   const clearSiteChat = () => {
+    console.log('=== CLEAR SITE CHAT CALLED ===');
     setCurrentSiteId(null);
     setCurrentSiteToken(null);
     setCurrentSiteName(null);

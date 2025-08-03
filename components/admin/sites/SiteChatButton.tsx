@@ -15,6 +15,14 @@ export default function SiteChatButton({ site }: SiteChatButtonProps) {
   const { setSiteChat } = useSiteChat();
 
   const handleChatClick = () => {
+    console.log('=== SITE CHAT BUTTON CLICKED ===');
+    console.log('Site data:', {
+      id: site.id,
+      name: site.name,
+      hasToken: !!site.chat_token,
+      tokenLength: site.chat_token?.length
+    });
+
     // Check if required fields exist
     if (!site.id || !site.chat_token || !site.name) {
       console.error('Missing required site data for chat:', {
@@ -26,8 +34,10 @@ export default function SiteChatButton({ site }: SiteChatButtonProps) {
     }
 
     // Set the site context for chat
+    console.log('Setting site chat context...');
     setSiteChat(site.id, site.chat_token, site.name);
-
+    
+    console.log('Site context set, navigating to chat...');
     // Navigate to chat page
     router.push('/chat');
   };

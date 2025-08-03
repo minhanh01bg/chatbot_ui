@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getChatHistory } from '@/services/session.service';
+import { getChatHistory } from '@/services/sessionService';
 
 export async function GET(request: Request) {
     try {
@@ -20,4 +20,4 @@ export async function GET(request: Request) {
             { status: 500 }
         );
     }
-}
+} 
