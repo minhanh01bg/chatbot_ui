@@ -89,18 +89,22 @@ export default function Sidebar() {
 
   return (
     <UISidebar 
-      className="group-data-[side=left]:border-r-0"
+      className="group-data-[side=left]:border-r-0 bg-white/80 backdrop-blur-sm border-r border-gray-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <SidebarHeader className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-800">
+      <SidebarHeader className="h-16 flex items-center justify-center border-b border-gray-200">
         <div className="flex flex-row justify-between items-center px-4 w-full">
           {(open || isHovered) && (
-            <h1 className="text-xl font-bold">Admin Panel</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Admin Panel
+            </h1>
           )}
           {!open && !isHovered && (
             <div className="w-full flex justify-center">
-              <span className="font-bold text-xl">A</span>
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                <span className="font-bold text-white text-sm">A</span>
+              </div>
             </div>
           )}
         </div>
@@ -109,7 +113,7 @@ export default function Sidebar() {
         <div className="relative flex w-full min-w-0 flex-col p-2 mt-2">
           <div className="w-full">
             {(open || isHovered) && (
-              <div className="px-3 py-1 text-xs text-sidebar-foreground/50 mb-2">Main Navigation</div>
+              <div className="px-3 py-1 text-xs text-gray-500 mb-2 font-medium">Main Navigation</div>
             )}
             <SidebarMenu className="flex w-full min-w-0 flex-col gap-1">
               {navigation.map((item, index) => {
@@ -122,16 +126,16 @@ export default function Sidebar() {
                       <>
                         <button
                           onClick={() => handleSubmenuToggle(index)}
-                          className={`flex w-full items-center justify-between gap-2 rounded-lg p-2 
+                          className={`flex w-full items-center justify-between gap-2 rounded-lg p-2 transition-all duration-200
                           ${isItemActive ? 
-                            'bg-brand-500/10 text-brand-500' : 
-                            'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                            'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md' : 
+                            'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                           }`}
                         >
                           <div className="flex items-center">
                             <item.icon
                               className={`h-5 w-5 mr-3 flex-shrink-0 
-                              ${isItemActive ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400'}`}
+                              ${isItemActive ? 'text-white' : 'text-gray-500'}`}
                               aria-hidden="true"
                             />
                             {(open || isHovered) && (
@@ -152,10 +156,10 @@ export default function Sidebar() {
                                 key={subItem.name}
                                 href={subItem.href}
                                 onClick={() => setOpenMobile(false)}
-                                className={`block rounded-lg px-2 py-1.5 text-sm 
+                                className={`block rounded-lg px-2 py-1.5 text-sm transition-colors
                                 ${isActive(subItem.href) || pathname.startsWith(subItem.href) ?
-                                  'bg-brand-500/10 text-brand-500 font-medium' :
-                                  'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                                  'bg-purple-100 text-purple-700 font-medium' :
+                                  'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                               >
                                 {subItem.name}
@@ -168,16 +172,20 @@ export default function Sidebar() {
                       <SidebarMenuButton 
                         asChild 
                         isActive={isItemActive}
-                        className="h-9 text-sm flex gap-2 p-2"
+                        className="h-9 text-sm flex gap-2 p-2 transition-all duration-200"
                       >
                         <Link
                           href={item.href || '#'}
                           onClick={() => setOpenMobile(false)}
-                          className="flex items-center"
+                          className={`flex items-center rounded-lg transition-all duration-200
+                          ${isItemActive ? 
+                            'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md' : 
+                            'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
                         >
                           <item.icon
                             className={`h-5 w-5 mr-3 flex-shrink-0
-                            ${isItemActive ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400'}`}
+                            ${isItemActive ? 'text-white' : 'text-gray-500'}`}
                             aria-hidden="true"
                           />
                           {(open || isHovered) && (

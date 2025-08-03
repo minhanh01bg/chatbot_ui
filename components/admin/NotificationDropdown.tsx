@@ -64,7 +64,7 @@ export default function NotificationDropdown() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 text-muted-foreground hover:text-foreground relative"
+          className="h-10 w-10 text-gray-600 hover:text-gray-900 hover:bg-gray-50 relative transition-colors"
         >
           <BellIcon className="h-5 w-5" />
           {unreadCount > 0 && (
@@ -75,15 +75,15 @@ export default function NotificationDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 p-0">
-        <div className="flex items-center justify-between p-3 border-b">
-          <DropdownMenuLabel className="px-0 py-0">Notifications</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-80 p-0 bg-white border border-gray-200 shadow-lg">
+        <div className="flex items-center justify-between p-3 border-b border-gray-100">
+          <DropdownMenuLabel className="px-0 py-0 text-gray-900 font-semibold">Notifications</DropdownMenuLabel>
           {unreadCount > 0 && (
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={markAllAsRead}
-              className="h-8 text-xs"
+              className="h-8 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50"
             >
               Mark all as read
             </Button>
@@ -94,7 +94,7 @@ export default function NotificationDropdown() {
             notifications.map((notification) => (
               <div 
                 key={notification.id} 
-                className={`p-3 hover:bg-muted cursor-pointer border-l-2 ${
+                className={`p-3 hover:bg-gray-50 cursor-pointer border-l-2 transition-colors ${
                   notification.read 
                     ? 'border-transparent' 
                     : notification.type === 'message' 
@@ -105,21 +105,21 @@ export default function NotificationDropdown() {
                 }`}
               >
                 <div className="flex justify-between items-start">
-                  <div className="font-medium">{notification.title}</div>
-                  <div className="text-xs text-muted-foreground">{notification.time}</div>
+                  <div className="font-medium text-gray-900">{notification.title}</div>
+                  <div className="text-xs text-gray-500">{notification.time}</div>
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">{notification.description}</div>
+                <div className="text-sm text-gray-600 mt-1">{notification.description}</div>
               </div>
             ))
           ) : (
-            <div className="p-6 text-center text-muted-foreground">
+            <div className="p-6 text-center text-gray-500">
               No notifications
             </div>
           )}
         </div>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-gray-100" />
         <Link href="/admin/notifications" className="block w-full">
-          <DropdownMenuItem className="cursor-pointer justify-center font-medium">
+          <DropdownMenuItem className="cursor-pointer justify-center font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50">
             View all notifications
           </DropdownMenuItem>
         </Link>

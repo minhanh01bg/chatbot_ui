@@ -9,19 +9,22 @@ type StatCardProps = {
   icon: React.ReactNode;
   trend: 'up' | 'down' | 'neutral';
   percentage: string;
+  gradient: string;
 };
 
-const StatCard = ({ title, value, description, icon, trend, percentage }: StatCardProps) => {
+const StatCard = ({ title, value, description, icon, trend, percentage, gradient }: StatCardProps) => {
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="p-6 flex flex-col space-y-2">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <div className="p-2 bg-primary/10 rounded-full">{icon}</div>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <div className={`p-3 rounded-lg bg-gradient-to-r ${gradient} text-white`}>
+            {icon}
+          </div>
         </div>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-3xl font-bold text-gray-900 mb-2">{value}</div>
         <div className="flex items-center text-sm">
-          <div className={`mr-2 p-1 rounded-md ${
+          <div className={`mr-2 p-1.5 rounded-md ${
             trend === 'up' 
               ? 'text-green-500 bg-green-500/10' 
               : trend === 'down' 
@@ -29,12 +32,12 @@ const StatCard = ({ title, value, description, icon, trend, percentage }: StatCa
                 : 'text-yellow-500 bg-yellow-500/10'
           }`}>
             {trend === 'up' ? (
-              <ArrowUp className="h-3 w-3" />
+              <ArrowUp className="h-4 w-4" />
             ) : trend === 'down' ? (
-              <ArrowDown className="h-3 w-3" />
+              <ArrowDown className="h-4 w-4" />
             ) : null}
           </div>
-          <p className={`${
+          <p className={`font-medium ${
             trend === 'up' 
               ? 'text-green-500' 
               : trend === 'down' 
@@ -43,7 +46,7 @@ const StatCard = ({ title, value, description, icon, trend, percentage }: StatCa
           }`}>
             {percentage}
           </p>
-          <p className="text-muted-foreground ml-2">{description}</p>
+          <p className="text-gray-500 ml-2">{description}</p>
         </div>
       </div>
     </div>
@@ -52,38 +55,42 @@ const StatCard = ({ title, value, description, icon, trend, percentage }: StatCa
 
 export default function DashboardCards() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
         title="Total Revenue"
         value="$45,231.89"
         description="compared to last month"
-        icon={<DollarSign className="h-4 w-4 text-primary" />}
+        icon={<DollarSign className="h-5 w-5" />}
         trend="up"
         percentage="12.5%"
+        gradient="from-purple-600 to-blue-600"
       />
       <StatCard
         title="New Users"
         value="2,350"
         description="compared to last month"
-        icon={<UserPlus className="h-4 w-4 text-primary" />}
+        icon={<UserPlus className="h-5 w-5" />}
         trend="up"
         percentage="5.2%"
+        gradient="from-green-600 to-emerald-600"
       />
       <StatCard
         title="Sales"
         value="12,234"
         description="compared to last month"
-        icon={<ShoppingBag className="h-4 w-4 text-primary" />}
+        icon={<ShoppingBag className="h-5 w-5" />}
         trend="down"
         percentage="3.1%"
+        gradient="from-orange-600 to-red-600"
       />
       <StatCard
         title="Active Users"
         value="573"
         description="compared to last week"
-        icon={<Users className="h-4 w-4 text-primary" />}
+        icon={<Users className="h-5 w-5" />}
         trend="up"
         percentage="7.4%"
+        gradient="from-indigo-600 to-purple-600"
       />
     </div>
   );
