@@ -156,6 +156,7 @@ export default function CreateSiteModal({ onSiteCreated }: CreateSiteModalProps)
                 value={formData.model_type}
                 onChange={(e) => handleInputChange('model_type', e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Model Type"
               >
                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                 <option value="gpt-4">GPT-4</option>
@@ -183,6 +184,7 @@ export default function CreateSiteModal({ onSiteCreated }: CreateSiteModalProps)
               id="force_language"
               checked={formData.force_language}
               onChange={(e) => handleInputChange('force_language', e.target.checked)}
+              aria-label="Force Language"
               className="mt-1 h-4 w-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
             />
             <div className="flex flex-col">
