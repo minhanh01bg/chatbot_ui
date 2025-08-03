@@ -1,203 +1,153 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useCurrentUser } from '@/hooks/use-current-user';
-import { getClientAuthToken, debugAuthState } from '@/lib/auth-utils';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 export default function AuthDebug() {
-  const { user, isAuthenticated, isLoading } = useCurrentUser();
-  const [debugInfo, setDebugInfo] = useState<any>({});
+  const { user } = useCurrentUser();
+  const [sessionData, setSessionData] = useState<any>(null);
+  const [dashboardTest, setDashboardTest] = useState<any>(null);
+  const [backendTest, setBackendTest] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const updateDebugInfo = () => {
-      const token = getClientAuthToken();
-      const localToken = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const userId = typeof window !== 'undefined' ? localStorage.getItem('user_id') : null;
-      const userIdentifier = typeof window !== 'undefined' ? localStorage.getItem('user_identifier') : null;
-      
-      // Get cookies
-      const cookies = typeof window !== 'undefined' ? document.cookie : '';
-      const clientToken = cookies
-        .split('; ')
-        .find(row => row.startsWith('client_access_token='))
-        ?.split('=')[1];
-      const serverToken = cookies
-        .split('; ')
-        .find(row => row.startsWith('access_token='))
-        ?.split('=')[1];
-
-      setDebugInfo({
-        useCurrentUser: {
-          isAuthenticated,
-          isLoading,
-          hasUser: !!user,
-          userId: user?.id,
-          userName: user?.name,
-          userEmail: user?.email,
-          hasAccessToken: !!user?.accessToken,
-          tokenLength: user?.accessToken?.length,
-        },
-        localStorage: {
-          hasAccessToken: !!localToken,
-          tokenLength: localToken?.length,
-          userId,
-          userIdentifier,
-        },
-        cookies: {
-          all: cookies,
-          hasClientToken: !!clientToken,
-          clientTokenLength: clientToken?.length,
-          hasServerToken: !!serverToken,
-          serverTokenLength: serverToken?.length,
-        },
-        getClientAuthToken: {
-          hasToken: !!token,
-          tokenLength: token?.length,
-        }
-      });
-    };
-
-    updateDebugInfo();
-    const interval = setInterval(updateDebugInfo, 1000);
-    return () => clearInterval(interval);
-  }, [user, isAuthenticated, isLoading]);
-
-  const handleDebugAuth = () => {
-    debugAuthState();
+  const testSession = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/session');
+      const data = await response.json();
+      setSessionData(data);
+    } catch (error) {
+      console.error('Session test error:', error);
+      setSessionData({ error: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleTestAPI = async () => {
+  const testDashboardAPI = async () => {
     try {
-      console.log('Testing API call...');
-      const response = await fetch('/api/subscriptions/my', {
+      setLoading(true);
+      
+      // Get sites to find a chat_token
+      const sitesResponse = await fetch('/api/sites?skip=0&limit=50');
+      const sitesData = await sitesResponse.json();
+      const sitesArray = Array.isArray(sitesData) ? sitesData : (sitesData.sites || []);
+      
+      if (sitesArray.length === 0) {
+        setDashboardTest({ error: 'No sites available' });
+        return;
+      }
+
+      const firstSite = sitesArray[0];
+      if (!firstSite?.chat_token) {
+        setDashboardTest({ error: 'No chat token available for sites' });
+        return;
+      }
+
+      // Test dashboard API with site's chat_token
+      const response = await fetch('/api/dashboard?rangeDays=7', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.accessToken}`
-        }
+          'Authorization': `Bearer ${firstSite.chat_token}`,
+        },
       });
-      
-      console.log('API Response:', {
+
+      const data = await response.json();
+      setDashboardTest({
         status: response.status,
         statusText: response.statusText,
-        ok: response.ok
+        data: data,
+        siteName: firstSite.name || firstSite.key,
+        token: firstSite.chat_token.substring(0, 20) + '...'
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('API Data:', data);
-      } else {
-        const error = await response.text();
-        console.log('API Error:', error);
-      }
     } catch (error) {
-      console.error('API Test Error:', error);
+      console.error('Dashboard API test error:', error);
+      setDashboardTest({ error: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleTestBackend = async () => {
+  const testBackend = async () => {
     try {
-      console.log('Testing backend connectivity...');
-      const response = await fetch('/api/test-backend', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
+      setLoading(true);
+      const response = await fetch('/api/test-backend');
       const data = await response.json();
-      console.log('Backend Test Result:', data);
+      setBackendTest(data);
     } catch (error) {
-      console.error('Backend Test Error:', error);
-    }
-  };
-
-  const handleTestSession = async () => {
-    try {
-      console.log('Testing session...');
-      const response = await fetch('/api/debug-session', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      const data = await response.json();
-      console.log('Session Test Result:', data);
-    } catch (error) {
-      console.error('Session Test Error:', error);
-    }
-  };
-
-  const handleTestAuth = async () => {
-    try {
-      console.log('Testing auth...');
-      const response = await fetch('/api/test-auth', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      const data = await response.json();
-      console.log('Auth Test Result:', data);
-    } catch (error) {
-      console.error('Auth Test Error:', error);
-    }
-  };
-
-  const handleTestToken = async () => {
-    try {
-      console.log('Testing token...');
-      const response = await fetch('/api/test-token', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.accessToken}`
-        }
-      });
-      
-      const data = await response.json();
-      console.log('Token Test Result:', data);
-    } catch (error) {
-      console.error('Token Test Error:', error);
+      console.error('Backend test error:', error);
+      setBackendTest({ error: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Authentication Debug
-          <div className="flex gap-2">
-            <Button onClick={handleDebugAuth} size="sm" variant="outline">
-              Debug Auth
+    <div className="space-y-6">
+      <Card className="bg-white border border-gray-200 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-900">Auth Debug</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="text-sm font-medium text-gray-600 mb-2">Current User</h3>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <pre className="text-xs text-gray-800 overflow-auto">
+                {JSON.stringify(user, null, 2)}
+              </pre>
+            </div>
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={testSession} disabled={loading} variant="outline">
+              Test Session API
             </Button>
-            <Button onClick={handleTestAPI} size="sm" variant="outline">
-              Test API
+            <Button onClick={testDashboardAPI} disabled={loading} variant="outline">
+              Test Dashboard API
             </Button>
-            <Button onClick={handleTestBackend} size="sm" variant="outline">
+            <Button onClick={testBackend} disabled={loading} variant="outline">
               Test Backend
             </Button>
-            <Button onClick={handleTestSession} size="sm" variant="outline">
-              Test Session
-            </Button>
-            <Button onClick={handleTestAuth} size="sm" variant="outline">
-              Test Auth
-            </Button>
-            <Button onClick={handleTestToken} size="sm" variant="outline">
-              Test Token
-            </Button>
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <pre className="text-xs bg-gray-100 p-4 rounded overflow-auto max-h-96">
-          {JSON.stringify(debugInfo, null, 2)}
-        </pre>
-      </CardContent>
-    </Card>
+
+          {sessionData && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">Session Data</h3>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <pre className="text-xs text-gray-800 overflow-auto">
+                  {JSON.stringify(sessionData, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {dashboardTest && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">Dashboard API Test</h3>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <pre className="text-xs text-gray-800 overflow-auto">
+                  {JSON.stringify(dashboardTest, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {backendTest && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">Backend Test</h3>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <pre className="text-xs text-gray-800 overflow-auto">
+                  {JSON.stringify(backendTest, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
