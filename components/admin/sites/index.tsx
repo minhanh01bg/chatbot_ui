@@ -12,7 +12,7 @@ import {
 } from '../../../components/ui/table';
 import { Pagination } from '../../../components/ui/pagination';
 import { Button } from '../../../components/ui/button';
-import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail, MessageCircle } from 'lucide-react';
+import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail, MessageCircle, BarChart3 } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import SiteChatButton from './SiteChatButton';
@@ -205,7 +205,18 @@ export default function SitesTable() {
                   <TableRow key={getSiteId(site) || site.name}>
                     <TableCell className="font-medium">
                       <div>
-                        <div>{site.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span>{site.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                            onClick={() => getSiteId(site) && router.push(`/admin/sites/${getSiteId(site)}`)}
+                            title="View Analytics"
+                          >
+                            <BarChart3 className="h-3 w-3" />
+                          </Button>
+                        </div>
                         {site.domain && (
                           <div className="text-sm text-muted-foreground flex items-center">
                             <Globe className="h-3 w-3 mr-1" />
