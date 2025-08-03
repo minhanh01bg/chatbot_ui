@@ -12,7 +12,7 @@ export default function AdminLayout({
   return (
     <SessionProvider>
       <SidebarProvider>
-        <div className="min-h-screen flex bg-background w-full">
+        <div className="min-h-screen flex bg-gradient-to-br from-purple-50 via-white to-blue-50 w-full">
           {/* Sidebar and Backdrop */}
           <Sidebar />
           <Backdrop />
@@ -29,7 +29,7 @@ export default function AdminLayout({
             </main>
 
             {/* Footer */}
-            <footer className="py-2 px-6 border-t border-border text-sm text-muted-foreground text-center">
+            <footer className="py-4 px-6 border-t border-gray-200 bg-white/50 backdrop-blur-sm text-sm text-gray-600 text-center">
               <p>© {new Date().getFullYear()} Admin Dashboard. All rights reserved.</p>
             </footer>
           </div>

@@ -9,91 +9,285 @@ import TestSubscription from '@/components/plans/TestSubscription';
 import ProductsList from '@/components/admin/products/ProductsList';
 import { WelcomeBanner } from '@/components/welcome-banner';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { 
+  ArrowDown, 
+  ArrowUp, 
+  TrendingUp, 
+  Users, 
+  Activity, 
+  MessageSquare, 
+  FileText, 
+  Globe, 
+  Zap, 
+  DollarSign, 
+  BarChart3,
+  Plus,
+  Settings,
+  Clock,
+  Target
+} from 'lucide-react';
+import OverallDashboardStats from '@/components/admin/OverallDashboardStats';
+import { useState, useEffect } from 'react';
+import SiteDashboardStats from '@/components/admin/SiteDashboardStats';
+import DashboardDebug from '@/components/admin/DashboardDebug';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminDashboard() {
   const { user } = useCurrentUser();
+  const [sites, setSites] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSites = async () => {
+      try {
+        const response = await fetch('/api/sites?skip=0&limit=50');
+        if (response.ok) {
+          const data = await response.json();
+          // Handle both array and object response formats
+          const sitesArray = Array.isArray(data) ? data : (data.sites || []);
+          setSites(sitesArray);
+        }
+      } catch (error) {
+        console.error('Error fetching sites:', error);
+        setSites([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSites();
+  }, []);
+
+  // Fake data for dashboard
+  const fakeStats = {
+    totalUsers: 1247,
+    totalSites: sites.length,
+    totalQuestions: 15420,
+    totalSessions: 8923,
+    totalRevenue: 45231,
+    activeChats: 234,
+    documentsProcessed: 567,
+    averageResponseTime: 1.2,
+    userGrowth: 12.5,
+    revenueGrowth: 8.2,
+    sessionGrowth: 15.3,
+    documentGrowth: 23.1
+  };
+
+  const siteKeys = Array.isArray(sites) ? sites.map(site => site.key || site._id) : [];
+  const siteNames = Array.isArray(sites) ? sites.reduce((acc, site) => {
+    acc[site.key || site._id] = site.name || site.key || site._id;
+    return acc;
+  }, {} as Record<string, string>) : {};
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       {user && (
         <WelcomeBanner 
           userName={user.name} 
           userEmail={user.email} 
         />
       )}
-      <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline">Download Report</Button>
-          <Button>New Project</Button>
+      <div className="p-6 space-y-6">
+        {/* Header Section */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Welcome back, <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">{user?.name || 'Admin'}</span>
+            </h1>
+            <p className="text-gray-600">Here's what's happening with your platform today.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" className="border-gray-300 hover:border-purple-600 hover:text-purple-600">
+              Download Report
+            </Button>
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Plus className="h-4 w-4 mr-2" />
+              New Site
+            </Button>
+          </div>
         </div>
-      </div>
-      
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="debug">Debug</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <DashboardCards />
-          
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
+
+        {/* Main Dashboard Content */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="sites">Sites</TabsTrigger>
+            <TabsTrigger value="debug">Debug</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Fake UI for main dashboard */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-100 text-sm font-medium">Total Sites</p>
+                      <p className="text-3xl font-bold">12</p>
+                      <p className="text-purple-200 text-sm">+2 this month</p>
+                    </div>
+                    <Globe className="w-12 h-12 text-purple-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-100 text-sm font-medium">Active Users</p>
+                      <p className="text-3xl font-bold">2,847</p>
+                      <p className="text-green-200 text-sm">+12% from last week</p>
+                    </div>
+                    <Users className="w-12 h-12 text-green-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-orange-600 to-red-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-orange-100 text-sm font-medium">Total Questions</p>
+                      <p className="text-3xl font-bold">15,234</p>
+                      <p className="text-orange-200 text-sm">+8% from yesterday</p>
+                    </div>
+                    <MessageSquare className="w-12 h-12 text-orange-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-indigo-100 text-sm font-medium">Revenue</p>
+                      <p className="text-3xl font-bold">$12,847</p>
+                      <p className="text-indigo-200 text-sm">+23% this month</p>
+                    </div>
+                    <DollarSign className="w-12 h-12 text-indigo-200" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
+                    <Settings className="h-5 w-5 mr-2 text-purple-600" />
+                    Site Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">Manage your sites, configure settings, and monitor performance.</p>
+                  <Button variant="outline" className="w-full">
+                    Manage Sites
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
+                    <BarChart3 className="h-5 w-5 mr-2 text-green-600" />
+                    Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">View detailed analytics and performance metrics for your sites.</p>
+                  <Button variant="outline" className="w-full">
+                    View Analytics
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
+                    <Target className="h-5 w-5 mr-2 text-blue-600" />
+                    Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">Monitor system performance and optimize your chatbot experience.</p>
+                  <Button variant="outline" className="w-full">
+                    Performance
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <Card className="bg-white border border-gray-200 shadow-lg">
               <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>
-                  You made 265 sales this month.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-md">
-                  Chart Placeholder
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Activities</CardTitle>
-                <CardDescription>
-                  Latest user activities from your system.
-                </CardDescription>
+                <CardTitle className="text-lg font-semibold text-gray-900">Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex items-center gap-4">
-                      <div className="w-2 h-2 rounded-full bg-primary"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">User completed checkout</p>
-                        <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">New site "TechSupport" created</p>
+                        <p className="text-xs text-gray-500">2 hours ago</p>
                       </div>
                     </div>
-                  ))}
+                    <Badge variant="outline" className="text-xs">Site</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Updated chatbot configuration</p>
+                        <p className="text-xs text-gray-500">4 hours ago</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs">Config</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Performance alert resolved</p>
+                        <p className="text-xs text-gray-500">6 hours ago</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs">Alert</Badge>
+                  </div>
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button variant="ghost" className="w-full">View all activities</Button>
-              </CardFooter>
             </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="products" className="space-y-4">
-          <ProductsList />
-        </TabsContent>
-        
-        <TabsContent value="debug" className="space-y-4">
-          <AuthDebug />
-          <TestSubscription />
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            {/* Overall Dashboard Statistics with site selector */}
+            <OverallDashboardStats siteKeys={[]} />
+            
+            {/* Individual Site Dashboard with dropdown */}
+            <SiteDashboardStats />
+          </TabsContent>
+
+          <TabsContent value="sites" className="space-y-6">
+            <Card className="bg-white border border-gray-200 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">Sites Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Manage your sites here. This section will show all your sites with their configurations.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="debug" className="space-y-6">
+            <AuthDebug />
+            <DashboardDebug />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-    </>
   );
 } 
