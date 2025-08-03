@@ -1,109 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 export async function GET(request: NextRequest) {
   try {
-    console.log('=== /api/test-backend called ===');
-    console.log('Environment variables:', {
-      NEXT_PUBLIC_BACKEND_URL: NEXT_PUBLIC_BACKEND_URL,
-      NODE_ENV: process.env.NODE_ENV
+    // Get backend URL from environment variables
+    const backendUrl = process.env.BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
+
+    // Test basic connectivity
+    const response = await fetch(`${backendUrl}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    // Use environment variable or fallback to default
-    const backendUrl = NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
-    
-    if (!backendUrl) {
-      return NextResponse.json(
-        { error: 'Backend URL not configured' },
-        { status: 500 }
-      );
+    if (response.ok) {
+      const data = await response.json();
+      return NextResponse.json({
+        success: true,
+        backendUrl,
+        status: response.status,
+        data
+      });
+    } else {
+      return NextResponse.json({
+        success: false,
+        backendUrl,
+        status: response.status,
+        statusText: response.statusText,
+        error: 'Backend health check failed'
+      });
     }
-
-    // Test basic connectivity - try multiple endpoints
-    const apiUrl = backendUrl.replace('localhost', '127.0.0.1');
-    const testUrls = [
-      `${apiUrl}/api/v1/health`,
-      `${apiUrl}/api/v1/`,
-      `${apiUrl}/`,
-      `${apiUrl}/health`
-    ];
-
-    console.log('Testing backend connectivity:', {
-      originalUrl: backendUrl,
-      modifiedUrl: apiUrl,
-      testUrls: testUrls
-    });
-
-    // Try each endpoint
-    for (const testUrl of testUrls) {
-      try {
-        console.log(`Testing endpoint: ${testUrl}`);
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
-        const response = await fetch(testUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          cache: 'no-store',
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-
-        console.log(`Backend test response for ${testUrl}:`, {
-          status: response.status,
-          statusText: response.statusText,
-          ok: response.ok
-        });
-
-        if (response.ok) {
-          const data = await response.text();
-          return NextResponse.json({
-            success: true,
-            message: 'Backend is reachable',
-            endpoint: testUrl,
-            status: response.status,
-            data: data
-          });
-        } else if (response.status !== 404) {
-          // If it's not 404, the server is reachable but endpoint doesn't exist
-          return NextResponse.json({
-            success: true,
-            message: 'Backend is reachable but endpoint not found',
-            endpoint: testUrl,
-            status: response.status,
-            statusText: response.statusText
-          });
-        }
-      } catch (fetchError) {
-        console.error(`Fetch error for ${testUrl}:`, fetchError);
-        
-        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-          console.log(`Timeout for ${testUrl}`);
-          continue; // Try next endpoint
-        }
-        
-        // For other errors, continue trying
-        continue;
-      }
-    }
-    
-    // If we get here, none of the endpoints worked
+  } catch (error) {
+    console.error('Backend test error:', error);
     return NextResponse.json({
       success: false,
-      message: 'Failed to connect to backend - all endpoints failed',
-      testedUrls: testUrls
-    });
-
-  } catch (error) {
-    console.error('Test backend error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+      error: error instanceof Error ? error.message : 'Unknown error',
+      backendUrl: process.env.BACKEND_URL || 'http://127.0.0.1:8001'
+    }, { status: 500 });
   }
 } 
