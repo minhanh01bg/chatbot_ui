@@ -9,6 +9,7 @@ interface CurrentUser {
   name?: string;
   email?: string;
   accessToken?: string;
+  role?: string;
 }
 
 export function useCurrentUser() {
@@ -24,7 +25,8 @@ export function useCurrentUser() {
         hasSession: !!session,
         sessionUser: session?.user,
         sessionUserId: session?.user?.id,
-        sessionAccessToken: !!(session as any)?.accessToken
+        sessionAccessToken: !!(session as any)?.accessToken,
+        sessionRole: (session as any)?.role
       });
 
       // Check localStorage/cookies first (immediate after login)
@@ -50,13 +52,17 @@ export function useCurrentUser() {
           const userIdentifier = localStorage.getItem('user_identifier') ||
                                document.cookie.split('; ').find(row => row.startsWith('user_identifier='))?.split('=')[1];
 
-          console.log('useCurrentUser: User info from storage:', { userId, userIdentifier });
+          const userRole = localStorage.getItem('user_role') ||
+                          document.cookie.split('; ').find(row => row.startsWith('user_role='))?.split('=')[1];
+
+          console.log('useCurrentUser: User info from storage:', { userId, userIdentifier, userRole });
 
           setUser({
             id: userId || 'authenticated-user',
             name: userIdentifier || 'User',
             email: userIdentifier || 'user@example.com',
             accessToken: token,
+            role: userRole,
           });
           setIsLoading(false);
           return;
@@ -69,7 +75,8 @@ export function useCurrentUser() {
           userId: session.user.id,
           userName: session.user.name,
           userEmail: session.user.email,
-          hasAccessToken: !!(session as any).accessToken
+          hasAccessToken: !!(session as any).accessToken,
+          userRole: (session as any).role
         });
 
         setUser({
@@ -77,6 +84,7 @@ export function useCurrentUser() {
           name: session.user.name || undefined,
           email: session.user.email || undefined,
           accessToken: (session as any).accessToken,
+          role: (session as any).role,
         });
         setIsLoading(false);
         return;
@@ -123,5 +131,6 @@ export function useCurrentUser() {
     user,
     isLoading,
     isAuthenticated: !!user,
+    isSuperAdmin: user?.role === 'superadmin',
   };
 }

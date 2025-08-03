@@ -76,6 +76,11 @@ export default function Page() {
             if (session.user?.id) {
               localStorage.setItem('user_id', session.user.id);
               localStorage.setItem('user_identifier', session.user.name || session.user.email || 'User');
+              // Store role if available
+              if ((session as any).role) {
+                localStorage.setItem('user_role', (session as any).role);
+                console.log('Client: Role saved to localStorage:', (session as any).role);
+              }
               console.log('Client: User info saved to localStorage');
             }
 

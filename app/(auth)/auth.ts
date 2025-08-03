@@ -19,6 +19,7 @@ interface CustomUser extends User {
   tokenType?: string;
   username?: string;
   email?: string;
+  role?: string;
 }
 
 export const {
@@ -79,7 +80,8 @@ export const {
             name: loginResponse.user.identifier, // Use identifier as display name
             email: loginResponse.user.identifier.includes('@') ? loginResponse.user.identifier : null, // Set email if identifier is email
             accessToken: loginResponse.access_token,
-            tokenType: loginResponse.token_type
+            tokenType: loginResponse.token_type,
+            role: loginResponse.role // Add role from response
           };
 
           console.log('Authentication successful for user ID:', user.id);
@@ -110,6 +112,7 @@ export const {
         // Save token from API response to JWT
         token.accessToken = customUser.accessToken;
         token.tokenType = customUser.tokenType;
+        token.role = customUser.role; // Save role to JWT
         // Add timestamp to mark token creation time
         token.createdAt = Date.now();
 
@@ -149,6 +152,7 @@ export const {
         // Add token information to session
         (session as any).accessToken = token.accessToken;
         (session as any).tokenType = token.tokenType;
+        (session as any).role = token.role; // Add role to session
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
