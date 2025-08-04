@@ -1,6 +1,15 @@
 import { Site } from '@/types/site';
 import { getClientAuthToken } from '@/lib/auth-utils';
 
+export interface CreateSiteData {
+  name: string;
+  domain: string;
+  openai_api_key?: string;
+  model_type?: string;
+  language?: string;
+  force_language?: boolean;
+}
+
 export const getSites = async (skip = 0, limit = 10): Promise<Site[]> => {
   const response = await fetch(`/api/sites?skip=${skip}&limit=${limit}`, {
     method: 'GET',
@@ -40,17 +49,25 @@ export const getSiteById = async (siteId: string): Promise<Site> => {
   return data;
 };
 
-export const createSite = async (siteData: Partial<Site>): Promise<Site> => {
-  const response = await fetch('/api/sites', {
+export const createSite = async (siteData: CreateSiteData): Promise<Site> => {
+  const accessToken = getClientAuthToken();
+  
+  if (!accessToken) {
+    throw new Error('Access token not found');
+  }
+
+  const response = await fetch('/api/admin/sites/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
     },
     body: JSON.stringify(siteData),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create site');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to create site');
   }
 
   return response.json();
