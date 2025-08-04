@@ -4,8 +4,6 @@ import DashboardCards from '@/components/admin/DashboardCards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import AuthDebug from '@/components/debug/AuthDebug';
-import TestSubscription from '@/components/plans/TestSubscription';
 import ProductsList from '@/components/admin/products/ProductsList';
 import { WelcomeBanner } from '@/components/welcome-banner';
 import { useCurrentUser } from '@/hooks/use-current-user';
@@ -29,7 +27,7 @@ import {
 import OverallDashboardStats from '@/components/admin/OverallDashboardStats';
 import { useState, useEffect } from 'react';
 import SiteDashboardStats from '@/components/admin/SiteDashboardStats';
-import DashboardDebug from '@/components/admin/DashboardDebug';
+
 import { Badge } from '@/components/ui/badge';
 
 export default function AdminDashboard() {
@@ -283,8 +281,6 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="debug" className="space-y-6">
-            <AuthDebug />
-            <DashboardDebug />
           </TabsContent>
         </Tabs>
       </div>

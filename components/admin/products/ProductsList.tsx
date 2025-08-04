@@ -124,24 +124,6 @@ export default function ProductsList() {
                 <p>userId: {user?.id || 'undefined'}</p>
                 <p>hasAccessToken: {!!user?.accessToken ? 'true' : 'false'}</p>
               </div>
-              <Button 
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/debug-session');
-                    const data = await response.json();
-                    console.log('Debug Session API Response:', data);
-                    alert(`Session Debug:\nRole: ${data.role}\nAuthenticated: ${data.authenticated}\nFull data in console`);
-                  } catch (error) {
-                    console.error('Debug Session Error:', error);
-                    alert('Error fetching session debug');
-                  }
-                }}
-                className="mt-2"
-                variant="outline"
-                size="sm"
-              >
-                Test Session API
-              </Button>
             </div>
             <p className="text-muted-foreground">Access denied. Super admin privileges required.</p>
           </div>
