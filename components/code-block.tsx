@@ -33,14 +33,14 @@ export function CodeBlock({
         {tab === 'code' && (
           <pre
             {...props}
-            className={`text-sm w-full overflow-x-auto dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900`}
+            className={`text-sm w-full overflow-x-auto bg-gray-100 dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-800 dark:text-gray-200 font-mono`}
           >
             <code className="whitespace-pre-wrap break-words">{children}</code>
           </pre>
         )}
 
         {tab === 'run' && output && (
-          <div className="text-sm w-full overflow-x-auto bg-zinc-800 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 border-t-0 rounded-b-xl text-zinc-50">
+          <div className="text-sm w-full overflow-x-auto bg-gray-800 dark:bg-gray-900 p-4 border border-gray-200 dark:border-gray-700 border-t-0 rounded-b-xl text-gray-200 dark:text-gray-100">
             <code>{output}</code>
           </div>
         )}
@@ -49,7 +49,7 @@ export function CodeBlock({
   } else {
     return (
       <code
-        className={`${className} text-sm bg-zinc-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md`}
+        className={`${className} text-sm bg-gray-100 dark:bg-gray-800 py-0.5 px-1.5 rounded-md font-mono`}
         {...props}
       >
         {children}
