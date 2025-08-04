@@ -31,7 +31,7 @@ interface OverallDashboardStatsProps {
 }
 
 export default function OverallDashboardStats({ siteKeys, siteNames = {} }: OverallDashboardStatsProps) {
-  const { user } = useCurrentUser();
+  // const { user } = useCurrentUser();
   const [stats, setStats] = useState<Record<string, DashboardStats>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,26 +51,12 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
 
   // Fetch sites with their tokens
   const fetchSites = async () => {
-    console.log('=== FETCH SITES CALLED ===');
-    console.log('fetchSites called');
     try {
       const response = await fetch('/api/sites?skip=0&limit=50');
-      console.log('Sites API response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('Sites API response data:', data);
-        
         const sitesArray = Array.isArray(data) ? data : (data.sites || []);
-        console.log('Processed sites array:', sitesArray);
-        console.log('First site structure:', sitesArray[0]);
-        console.log('First site keys:', Object.keys(sitesArray[0] || {}));
-        
-        console.log('Setting sites array:', sitesArray.length, 'sites');
         setSites(sitesArray);
-        
-        // Don't set selectedSite here, let the useEffect handle it
-        console.log('Sites loaded, selectedSite will be set by useEffect');
       } else {
         console.error('Sites API failed:', response.status, response.statusText);
       }
@@ -80,17 +66,11 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
   };
 
   useEffect(() => {
-    console.log('=== COMPONENT MOUNTED ===');
-    console.log('Component mounted, fetching sites');
     fetchSites();
   }, []);
 
   const fetchStats = async () => {
-    console.log('=== FETCH STATS CALLED ===');
-    console.log('fetchStats called with:', { selectedSite, sites: sites.length });
-    
     if (!selectedSite) {
-      console.log('No selectedSite, returning early');
       return;
     }
 
@@ -114,15 +94,9 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         return;
       }
 
-      console.log('Fetching dashboard stats for site:', selectedSite);
-      console.log('Using chat token:', selectedSiteData.chat_token);
-      console.log('Range days:', rangeDays);
 
       // Call dashboard API with site's chat_token
       const apiUrl = `/api/dashboard?rangeDays=${rangeDays}`;
-      console.log('Making API call to:', apiUrl);
-      console.log('Request body:', { site_key: selectedSite });
-      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -132,14 +106,8 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         body: JSON.stringify({ site_key: selectedSite }),
       });
       
-      console.log('API response status:', response.status);
-      console.log('API response headers:', Object.fromEntries(response.headers.entries()));
-
-      console.log('Dashboard API response status:', response.status);
-
       if (response.ok) {
         const data = await response.json();
-        console.log('Dashboard API response data:', data);
         setStats({
           [selectedSite]: data
         });
@@ -175,100 +143,25 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
     }
   };
 
-  // Effect to fetch stats when selectedSite, rangeDays, or sites change
+  // Fetch stats when selectedSite or rangeDays change
   useEffect(() => {
-    console.log('=== MAIN USE EFFECT ===');
-    console.log('OverallDashboardStats useEffect triggered:', {
-      selectedSite,
-      hasUser: !!user,
-      user: user,
-      rangeDays,
-      sitesLoaded: sites.length > 0
-    });
-    
-    if (selectedSite && sites.length > 0) {
-      console.log('Conditions met, calling fetchStats');
+    const shouldFetch = selectedSite && sites.length > 0;
+
+    console.log('=== FETCH STATS EFFECT ===');
+    console.log('Triggered with:', { selectedSite, rangeDays, sitesLength: sites.length });
+
+    if (shouldFetch) {
       fetchStats();
     } else {
-      console.log('Conditions not met:', { selectedSite: !!selectedSite, sitesLength: sites.length });
+      console.log('Conditions not met:', { hasSelectedSite: !!selectedSite, sitesLength: sites.length });
     }
-  }, [selectedSite, rangeDays, sites]);
+  }, [selectedSite, rangeDays]);
 
-  // Effect to ensure selectedSite is set when sites are loaded
   useEffect(() => {
-    console.log('=== SITES LOADED EFFECT ===');
-    console.log('Sites changed:', sites.length, 'sites');
-    console.log('Current selectedSite:', selectedSite);
-    
-    if (sites.length > 0) {
-      if (!selectedSite) {
-        const firstSite = getSiteKey(sites[0]);
-        console.log('Sites loaded but no selectedSite, setting to first site:', firstSite);
-        setSelectedSite(firstSite);
-      } else {
-        console.log('Sites loaded and selectedSite already set:', selectedSite);
-      }
-    } else {
-      console.log('No sites available');
-    }
-  }, [sites]);
-
-  // Effect to handle manual site selection from dropdown
-  useEffect(() => {
-    console.log('=== SITE SELECTION EFFECT ===');
-    console.log('Site selection changed:', selectedSite);
-    console.log('Current sites length:', sites.length);
-         console.log('Current sites:', sites.map(s => ({ key: getSiteKey(s), name: s.name })));
-    
-    if (selectedSite && sites.length > 0) {
-      console.log('Manual site selection detected, calling fetchStats');
-      fetchStats();
-    } else {
-      console.log('Conditions not met for fetchStats:', { 
-        hasSelectedSite: !!selectedSite, 
-        sitesLength: sites.length 
-      });
-    }
-  }, [selectedSite]);
-
-  // Effect to handle rangeDays changes
-  useEffect(() => {
-    console.log('=== RANGE DAYS EFFECT ===');
-    console.log('Range days changed to:', rangeDays);
-    if (selectedSite && sites.length > 0) {
-      console.log('Range days change detected, calling fetchStats');
-      fetchStats();
-    }
-  }, [rangeDays]);
-
-  // Effect to debug selectedSite changes
-  useEffect(() => {
-    console.log('=== SELECTED SITE DEBUG ===');
-    console.log('selectedSite changed to:', selectedSite);
-    console.log('Type of selectedSite:', typeof selectedSite);
-    console.log('selectedSite is empty string:', selectedSite === '');
-    console.log('selectedSite is undefined:', selectedSite === undefined);
-  }, [selectedSite]);
-
-  // Effect to force set selectedSite when sites are loaded
-  useEffect(() => {
-    console.log('=== FORCE SET SELECTED SITE ===');
-    console.log('Sites length:', sites.length);
-    console.log('Current selectedSite:', selectedSite);
-    console.log('First site data:', sites[0]);
-    console.log('First site keys:', Object.keys(sites[0] || {}));
-    
     if (sites.length > 0 && (!selectedSite || selectedSite === '')) {
       const firstSite = sites[0];
-      console.log('First site object:', firstSite);
-      
-                    const selectedKey = getSiteKey(firstSite);
-       if (selectedKey) {
-         console.log('Force setting selectedSite to:', selectedKey);
-         setSelectedSite(selectedKey);
-       } else {
-         console.log('No valid key found in first site:', firstSite);
-       }
+      const selectedKey = getSiteKey(firstSite);
+      selectedKey && setSelectedSite(selectedKey);
     }
   }, [sites]);
 

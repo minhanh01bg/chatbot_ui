@@ -57,8 +57,7 @@ const navigation: NavItem[] = [
       { name: 'User Roles', href: '/admin/users/roles' },
     ]
   },
-  { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
-  { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
+  // { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
 export default function Sidebar() {

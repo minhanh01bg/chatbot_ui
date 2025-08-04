@@ -47,7 +47,6 @@ export default function UserDropdown() {
 
   // Get user info from session or fallback to defaults
   const userIdentifier = (session?.user as any)?.identifier || session?.user?.name || 'Administrator';
-  console.log(userIdentifier)
   const userName = userIdentifier;
   const userEmail = userIdentifier.includes('@') ? userIdentifier : 'admin@example.com';
   const userInitial = userName.charAt(0).toUpperCase();
