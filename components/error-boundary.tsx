@@ -33,7 +33,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
            message.includes('AnonymousModel') ||
            message.includes('tabStates') ||
            message.includes('injectionLifecycle') ||
-           message.includes('sw.js');
+           message.includes('sw.js') ||
+           message.includes('marks') ||
+           message.includes('You are trying to read or write to an object that is no longer part of a state tree');
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
