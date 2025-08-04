@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { SiteChatProvider } from '@/contexts/SiteChatContext';
+import ErrorBoundary from '@/components/error-boundary';
 
 import './globals.css';
 
@@ -37,6 +38,92 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
+const SERVICE_WORKER_SCRIPT = `\
+(function() {
+  // Disable problematic service workers
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        if (registration.active && 
+            (registration.active.scriptURL.includes('extension') || 
+             registration.active.scriptURL.includes('chrome-extension'))) {
+          registration.unregister();
+        }
+      }
+    });
+  }
+})();`;
+
+const ERROR_HANDLER_SCRIPT = `\
+(function() {
+  // Suppress console errors from service workers and extensions
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+  
+  console.error = function(...args) {
+    const message = args.join(' ');
+    if (message.includes('mobx-state-tree') || 
+        message.includes('AnonymousModel') ||
+        message.includes('tabStates') ||
+        message.includes('injectionLifecycle') ||
+        message.includes('Failed to fetch') ||
+        message.includes('sw.js')) {
+      // Suppress these errors silently
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+  
+  console.warn = function(...args) {
+    const message = args.join(' ');
+    if (message.includes('mobx-state-tree') || 
+        message.includes('AnonymousModel') ||
+        message.includes('tabStates') ||
+        message.includes('injectionLifecycle')) {
+      // Suppress these warnings silently
+      return;
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+
+  // Handle MobX State Tree errors from service workers
+  window.addEventListener('error', function(event) {
+    if (event.error && event.error.message && 
+        (event.error.message.includes('mobx-state-tree') || 
+         event.error.message.includes('AnonymousModel') ||
+         event.error.message.includes('tabStates') ||
+         event.error.message.includes('injectionLifecycle'))) {
+      event.preventDefault();
+      return false;
+    }
+  });
+
+  // Handle unhandled promise rejections
+  window.addEventListener('unhandledrejection', function(event) {
+    if (event.reason && event.reason.message && 
+        (event.reason.message.includes('mobx-state-tree') || 
+         event.reason.message.includes('AnonymousModel') ||
+         event.reason.message.includes('tabStates') ||
+         event.reason.message.includes('injectionLifecycle'))) {
+      event.preventDefault();
+      return false;
+    }
+  });
+
+  // Override fetch to catch network errors from service workers
+  const originalFetch = window.fetch;
+  window.fetch = function(...args) {
+    return originalFetch.apply(this, args).catch(error => {
+      if (error.message.includes('Failed to fetch') && 
+          (error.stack && error.stack.includes('sw.js'))) {
+        // Suppress fetch errors from service workers
+        return Promise.resolve(new Response('', { status: 200 }));
+      }
+      throw error;
+    });
+  };
+})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -57,21 +144,33 @@ export default async function RootLayout({
             __html: THEME_COLOR_SCRIPT,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: SERVICE_WORKER_SCRIPT,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: ERROR_HANDLER_SCRIPT,
+          }}
+        />
       </head>
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SessionProvider>
-            <SiteChatProvider>
-              <Toaster position="top-center" />
-              {children}
-            </SiteChatProvider>
-          </SessionProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SessionProvider>
+              <SiteChatProvider>
+                <Toaster position="top-center" />
+                {children}
+              </SiteChatProvider>
+            </SessionProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

@@ -48,6 +48,9 @@ export function hasClientAuth(): boolean {
 }
 
 export function debugAuthState() {
+  // Debug logging disabled to prevent console spam
+  // Uncomment the lines below if you need to debug auth state
+  /*
   if (typeof window === 'undefined') return;
 
   const localToken = localStorage.getItem('access_token');
@@ -75,6 +78,7 @@ export function debugAuthState() {
   console.log('hasClientAuth():', hasClientAuth());
   console.log('getClientAuthToken():', formatTokenForDisplay(getClientAuthToken()));
   console.log('================');
+  */
 }
 
 /**
