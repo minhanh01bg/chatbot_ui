@@ -48,6 +48,17 @@ export default function CreateSiteModal({ onSiteCreated }: CreateSiteModalProps)
       return;
     }
 
+    // Basic domain validation
+    const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (!domainRegex.test(formData.domain)) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please enter a valid domain name (e.g., example.com)',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {

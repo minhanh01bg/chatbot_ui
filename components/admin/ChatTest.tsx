@@ -175,13 +175,13 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
                   <div 
                     key={index}
                     className={cn(
-                      "flex items-start gap-3 rounded-lg p-3",
-                      message.role === 'user' ? "ml-auto max-w-[80%] bg-primary text-primary-foreground" : "mr-auto max-w-[80%] bg-muted"
+                      "flex items-start gap-3 rounded-lg p-3 chat-message",
+                      message.role === 'user' ? "ml-auto max-w-[80%] chat-message-user" : "mr-auto max-w-[80%] chat-message-assistant"
                     )}
                   >
                     {message.role === 'assistant' && (
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
+                        <AvatarFallback className="bg-blue-600 text-white">
                           <Bot className="h-4 w-4" />
                         </AvatarFallback>
                       </Avatar>
