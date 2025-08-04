@@ -159,15 +159,6 @@ export const {
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;
-
-        // For debugging
-        console.log('Session callback: Token added to session', {
-          userId: session.user.id,
-          hasAccessToken: !!token.accessToken,
-          tokenType: token.tokenType,
-          userRole: token.role,
-          sessionRole: (session as any).role
-        });
       }
 
       return session;
