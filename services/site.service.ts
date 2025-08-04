@@ -1,4 +1,5 @@
 import { Site } from '@/types/site';
+import { getClientAuthToken } from '@/lib/auth-utils';
 
 export const getSites = async (skip = 0, limit = 10): Promise<Site[]> => {
   const response = await fetch(`/api/sites?skip=${skip}&limit=${limit}`, {
@@ -10,6 +11,29 @@ export const getSites = async (skip = 0, limit = 10): Promise<Site[]> => {
 
   if (!response.ok) {
     throw new Error('Failed to fetch sites');
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+export const getSiteById = async (siteId: string): Promise<Site> => {
+  const accessToken = getClientAuthToken();
+  
+  if (!accessToken) {
+    throw new Error('Access token not found');
+  }
+
+  const response = await fetch(`/api/sites/${siteId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch site');
   }
 
   const data = await response.json();
