@@ -176,3 +176,155 @@
 .suggestion-highlight {
     @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
 }
+
+/* Custom styles for chat messages */
+.chat-message-user {
+  @apply bg-blue-50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-100 border border-blue-200 dark:border-blue-800;
+}
+
+.chat-message-assistant {
+  @apply bg-gray-50 dark:bg-gray-800/30 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700;
+}
+
+/* Improved markdown styling */
+.markdown-content {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.markdown-content h1 {
+  @apply text-3xl font-bold mt-6 mb-3 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300;
+}
+
+.markdown-content h4 {
+  @apply text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300;
+}
+
+.markdown-content h5 {
+  @apply text-base font-semibold mt-3 mb-2 text-gray-600 dark:text-gray-400;
+}
+
+.markdown-content h6 {
+  @apply text-sm font-semibold mt-3 mb-2 text-gray-500 dark:text-gray-500;
+}
+
+.markdown-content p {
+  @apply mb-4 text-gray-700 dark:text-gray-300 leading-relaxed;
+}
+
+.markdown-content ul {
+  @apply list-disc list-outside ml-6 space-y-1 text-gray-700 dark:text-gray-300;
+}
+
+.markdown-content ol {
+  @apply list-decimal list-outside ml-6 space-y-1 text-gray-700 dark:text-gray-300;
+}
+
+.markdown-content li {
+  @apply py-1;
+}
+
+.markdown-content strong {
+  @apply font-bold text-gray-900 dark:text-gray-100;
+}
+
+.markdown-content em {
+  @apply italic text-gray-600 dark:text-gray-400;
+}
+
+.markdown-content a {
+  @apply text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 bg-gray-50 dark:bg-gray-800/50 italic text-gray-600 dark:text-gray-400;
+}
+
+/* Smooth transitions for chat messages */
+.chat-message {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+/* Improved code block styling */
+.markdown-content pre {
+  @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-lg overflow-x-auto my-3 border border-gray-200 dark:border-gray-700;
+}
+
+.markdown-content code {
+  @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+/* Table styling */
+.markdown-content table {
+  @apply w-full border-collapse border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden my-4;
+}
+
+.markdown-content th {
+  @apply bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold text-left px-4 py-2 border-b border-gray-200 dark:border-gray-700;
+}
+
+.markdown-content td {
+  @apply px-4 py-2 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200;
+}
+
+/* Improved spacing for chat container */
+.chat-container {
+  @apply space-y-4;
+}
+
+/* Better focus states */
+.chat-input:focus {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Enhanced hover effects for chat messages */
+.chat-message-user:hover {
+  @apply shadow-md transform transition-all duration-200;
+}
+
+.chat-message-assistant:hover {
+  @apply shadow-md transform transition-all duration-200;
+}
+
+/* Improved scrollbar styling */
+.chat-scroll-area::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.chat-scroll-area::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
+}
+
+.chat-scroll-area::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500;
+}
+
+/* Typing indicator animation */
+@keyframes typing {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.typing-dot {
+  animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Smooth scrolling for chat */
+.chat-scroll-area {
+  @apply scroll-smooth;
+}
