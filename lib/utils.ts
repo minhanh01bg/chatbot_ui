@@ -222,3 +222,58 @@ export function getMessageIdFromAnnotations(message: Message) {
   // @ts-expect-error messageIdFromServer is not defined in MessageAnnotation
   return annotation.messageIdFromServer;
 }
+
+/**
+ * Utility functions for debugging MobX and service worker issues
+ */
+export const debugServiceWorkers = async () => {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return [];
+  }
+
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    return registrations.map(registration => ({
+      scriptURL: registration.active?.scriptURL,
+      scope: registration.scope,
+      state: registration.active?.state,
+      id: registration.id
+    }));
+  } catch (error) {
+    console.error('Error getting service worker registrations:', error);
+    return [];
+  }
+};
+
+export const cleanupProblematicServiceWorkers = async () => {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return;
+  }
+
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const registration of registrations) {
+      if (registration.active && 
+          (registration.active.scriptURL.includes('extension') || 
+           registration.active.scriptURL.includes('chrome-extension') ||
+           registration.active.scriptURL.includes('sw.js') ||
+           registration.active.scriptURL.includes('mobx'))) {
+        await registration.unregister();
+        console.log('Unregistered problematic service worker:', registration.active.scriptURL);
+      }
+    }
+  } catch (error) {
+    console.error('Error cleaning up service workers:', error);
+  }
+};
+
+export const isMobXError = (error: Error | string): boolean => {
+  const message = typeof error === 'string' ? error : error.message || '';
+  return message.includes('mobx-state-tree') || 
+         message.includes('AnonymousModel') ||
+         message.includes('tabStates') ||
+         message.includes('injectionLifecycle') ||
+         message.includes('sw.js') ||
+         message.includes('marks') ||
+         message.includes('You are trying to read or write to an object that is no longer part of a state tree');
+};

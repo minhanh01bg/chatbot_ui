@@ -38,19 +38,51 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
+const DEBUG_SCRIPT = `\
+(function() {
+  // Debug script to identify MobX error sources (only in development)
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    // Log service worker registrations for debugging
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        console.log('Service Worker Registrations:', registrations.map(r => ({
+          scriptURL: r.active?.scriptURL,
+          scope: r.scope,
+          state: r.active?.state
+        })));
+      });
+    }
+  }
+})();`;
+
 const SERVICE_WORKER_SCRIPT = `\
 (function() {
   // Disable problematic service workers
   if ('serviceWorker' in navigator) {
+    // Immediately unregister any existing service workers
     navigator.serviceWorker.getRegistrations().then(function(registrations) {
       for(let registration of registrations) {
         if (registration.active && 
             (registration.active.scriptURL.includes('extension') || 
-             registration.active.scriptURL.includes('chrome-extension'))) {
+             registration.active.scriptURL.includes('chrome-extension') ||
+             registration.active.scriptURL.includes('sw.js') ||
+             registration.active.scriptURL.includes('mobx'))) {
           registration.unregister();
         }
       }
     });
+
+    // Prevent new service worker registrations
+    const originalRegister = navigator.serviceWorker.register;
+    navigator.serviceWorker.register = function(scriptURL, options) {
+      if (scriptURL.includes('extension') || 
+          scriptURL.includes('chrome-extension') ||
+          scriptURL.includes('sw.js') ||
+          scriptURL.includes('mobx')) {
+        return Promise.reject(new Error('Service worker registration blocked'));
+      }
+      return originalRegister.call(this, scriptURL, options);
+    };
   }
 })();`;
 
@@ -67,7 +99,9 @@ const ERROR_HANDLER_SCRIPT = `\
         message.includes('tabStates') ||
         message.includes('injectionLifecycle') ||
         message.includes('Failed to fetch') ||
-        message.includes('sw.js')) {
+        message.includes('sw.js') ||
+        message.includes('marks') ||
+        message.includes('You are trying to read or write to an object that is no longer part of a state tree')) {
       // Suppress these errors silently
       return;
     }
@@ -79,7 +113,9 @@ const ERROR_HANDLER_SCRIPT = `\
     if (message.includes('mobx-state-tree') || 
         message.includes('AnonymousModel') ||
         message.includes('tabStates') ||
-        message.includes('injectionLifecycle')) {
+        message.includes('injectionLifecycle') ||
+        message.includes('marks') ||
+        message.includes('You are trying to read or write to an object that is no longer part of a state tree')) {
       // Suppress these warnings silently
       return;
     }
@@ -92,7 +128,9 @@ const ERROR_HANDLER_SCRIPT = `\
         (event.error.message.includes('mobx-state-tree') || 
          event.error.message.includes('AnonymousModel') ||
          event.error.message.includes('tabStates') ||
-         event.error.message.includes('injectionLifecycle'))) {
+         event.error.message.includes('injectionLifecycle') ||
+         event.error.message.includes('marks') ||
+         event.error.message.includes('You are trying to read or write to an object that is no longer part of a state tree'))) {
       event.preventDefault();
       return false;
     }
@@ -104,7 +142,9 @@ const ERROR_HANDLER_SCRIPT = `\
         (event.reason.message.includes('mobx-state-tree') || 
          event.reason.message.includes('AnonymousModel') ||
          event.reason.message.includes('tabStates') ||
-         event.reason.message.includes('injectionLifecycle'))) {
+         event.reason.message.includes('injectionLifecycle') ||
+         event.reason.message.includes('marks') ||
+         event.reason.message.includes('You are trying to read or write to an object that is no longer part of a state tree'))) {
       event.preventDefault();
       return false;
     }
@@ -122,6 +162,21 @@ const ERROR_HANDLER_SCRIPT = `\
       throw error;
     });
   };
+
+  // Additional service worker cleanup
+  if ('serviceWorker' in navigator) {
+    // Unregister any problematic service workers
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        if (registration.active && 
+            (registration.active.scriptURL.includes('extension') || 
+             registration.active.scriptURL.includes('chrome-extension') ||
+             registration.active.scriptURL.includes('sw.js'))) {
+          registration.unregister();
+        }
+      }
+    });
+  }
 })();`;
 
 export default async function RootLayout({
@@ -142,6 +197,11 @@ export default async function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: THEME_COLOR_SCRIPT,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: DEBUG_SCRIPT,
           }}
         />
         <script
