@@ -106,12 +106,6 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
 
   return (
     <div className="h-full flex items-center justify-center p-4">
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded text-xs z-50">
-          Debug: Site ID: {siteId}, Loading: {isLoading.toString()}, Has Site: {!!site}, Has Chat Token: {!!site?.chat_token}, Has Access Token: {!!getClientAuthToken()}
-        </div>
-      )}
       <div className="w-full grid grid-cols-1 lg:grid-cols-8 gap-3">
         <div className="lg:col-span-4 flex items-center justify-center">
           {isLoading ? (

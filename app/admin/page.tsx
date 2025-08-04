@@ -108,11 +108,9 @@ export default function AdminDashboard() {
 
         {/* Main Dashboard Content */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="sites">Sites</TabsTrigger>
-            <TabsTrigger value="debug">Debug</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -266,21 +264,7 @@ export default function AdminDashboard() {
             <OverallDashboardStats siteKeys={[]} />
             
             {/* Individual Site Dashboard with dropdown */}
-            <SiteDashboardStats />
-          </TabsContent>
-
-          <TabsContent value="sites" className="space-y-6">
-            <Card className="bg-white border border-gray-200 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">Sites Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Manage your sites here. This section will show all your sites with their configurations.</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="debug" className="space-y-6">
+            {/* <SiteDashboardStats /> */}
           </TabsContent>
         </Tabs>
       </div>
