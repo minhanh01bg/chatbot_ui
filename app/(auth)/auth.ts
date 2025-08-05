@@ -11,6 +11,7 @@ import { authConfig } from './auth.config';
 
 interface ExtendedSession extends Session {
   user: User;
+  accessToken?: string;
 }
 
 // Extend User type to support additional fields we need
