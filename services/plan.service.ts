@@ -2,27 +2,32 @@ import { Plan } from '@/types/plan';
 
 // All API calls go through Next.js API routes for better security
 
-export const getPublicPlans = async (): Promise<Plan[]> => {
-  try {
-    // Use Next.js API route for better security
-    const response = await fetch('/api/plans', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+export class PlanService {
+  static async getPlans(): Promise<Plan[]> {
+    try {
+      // Use Next.js API route for better security
+      const response = await fetch('/api/plans', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Error fetching plans: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Error fetching plans: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch plans:', error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Failed to fetch plans:', error);
-    throw error;
   }
-};
+
+  static async getPublicPlans(): Promise<Plan[]> {
+    return this.getPlans();
+  }
 
 export const getPlan = async (planId: string): Promise<Plan> => {
   try {
