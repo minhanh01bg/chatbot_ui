@@ -169,7 +169,7 @@ export default function CurrentSubscription() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-lg">{subscription.plan_name || 'Unknown Plan'}</h3>
+              <h3 className="font-semibold text-lg">{subscription.product_name || 'Unknown Plan'}</h3>
               <p className="text-sm text-muted-foreground">
                 {subscription.plan_price === 0 ? 'Free Plan' :
                  subscription.plan_price ? `$${subscription.plan_price}` : 'Price not available'}

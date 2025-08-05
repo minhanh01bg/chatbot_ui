@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
       console.log('Subscription data received:', {
         hasSubscription: !!data,
         subscriptionId: data?.id,
-        planName: data?.plan_name,
+        productName: data?.product_name,
         status: data?.status
       });
 
