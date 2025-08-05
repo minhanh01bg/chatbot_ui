@@ -28,6 +28,11 @@ export class PlanService {
   static async getPublicPlans(): Promise<Plan[]> {
     return this.getPlans();
   }
+}
+
+export const getPublicPlans = async (): Promise<Plan[]> => {
+  return PlanService.getPublicPlans();
+};
 
 export const getPlan = async (planId: string): Promise<Plan> => {
   try {
@@ -77,3 +82,24 @@ export const subscribeToPlan = async (planId: string, userId?: string, accessTok
     throw error;
   }
 };
+
+export const getPlanById = async (planId: string): Promise<Plan> => {
+    try {
+        const response = await fetch(`/api/plans/${planId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Error fetching plan: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to fetch plan:', error);
+        throw error;
+    }
+}

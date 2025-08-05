@@ -116,3 +116,25 @@ export const cancelSubscription = async (subscriptionId: string) => {
     throw error;
   }
 };
+
+export const getMySubscriptions = async (accessToken: string): Promise<Subscription[]> => {
+  try {
+    const response = await fetch('/api/subscriptions/my', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error fetching subscriptions: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch subscriptions:', error);
+    throw error;
+  }
+}

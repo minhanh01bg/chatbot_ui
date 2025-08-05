@@ -31,6 +31,6 @@ export interface Subscription {
   expired_at: string | null;
   created_at: string;
   updated_at: string;
-  plan_name: string;
+  product_name: string;
   plan_price: number;
 }
