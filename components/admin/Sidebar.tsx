@@ -14,6 +14,7 @@ import {
   GlobeAltIcon,
   WrenchScrewdriverIcon,
   CreditCardIcon,
+  UserPlusIcon,
 } from '@heroicons/react/24/outline';
 import { 
   Sidebar as UISidebar, 
@@ -24,6 +25,7 @@ import {
   SidebarMenuButton,
   useSidebar
 } from '@/components/ui/sidebar';
+import { useSuperAdmin } from '@/hooks/use-superadmin';
 
 type NavItem = {
   name: string;
@@ -60,9 +62,18 @@ const navigation: NavItem[] = [
   // { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
+const superAdminNavigation: NavItem[] = [
+  {
+    name: 'Admin Subscriptions',
+    href: '/admin/subscriptions',
+    icon: UserPlusIcon
+  },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
   const { toggleSidebar, setOpenMobile, open, isHovered, setIsHovered } = useSidebar();
+  const { isSuperAdmin } = useSuperAdmin();
   
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
@@ -196,6 +207,46 @@ export default function Sidebar() {
                   </SidebarMenuItem>
                 );
               })}
+              
+              {/* Super Admin Navigation */}
+              {isSuperAdmin && (
+                <>
+                  {(open || isHovered) && (
+                    <div className="px-3 py-1 text-xs text-gray-500 mb-2 font-medium mt-4">Admin Tools</div>
+                  )}
+                  {superAdminNavigation.map((item) => {
+                    const isItemActive = isActive(item.href || '') || isActivePrefix(item.href || '');
+                    return (
+                      <SidebarMenuItem key={item.name} className="group/menu-item relative">
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={isItemActive}
+                          className="h-9 text-sm flex gap-2 p-2 transition-all duration-200"
+                        >
+                          <Link
+                            href={item.href || '#'}
+                            onClick={() => setOpenMobile(false)}
+                            className={`flex items-center rounded-lg transition-all duration-200
+                            ${isItemActive ? 
+                              'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md' : 
+                              'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                          >
+                            <item.icon
+                              className={`h-5 w-5 mr-3 flex-shrink-0
+                              ${isItemActive ? 'text-white' : 'text-gray-500'}`}
+                              aria-hidden="true"
+                            />
+                            {(open || isHovered) && (
+                              <span className="truncate text-sm font-medium">{item.name}</span>
+                            )}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </>
+              )}
             </SidebarMenu>
           </div>
         </div>
