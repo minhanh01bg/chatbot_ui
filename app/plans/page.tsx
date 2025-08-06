@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2, Grid, List, Sparkles, Check, Star, Zap, Shield, Users, Globe, MessageSquare, Bot } from 'lucide-react';
 import { Plan } from '@/types/plan';
-import { getPublicPlans } from '@/services/plan.service';
+import { PlanService } from '../../services/plan.service';
 import PlanCard from '@/components/plans/PlanCard';
 import PlanComparison from '@/components/plans/PlanComparison';
 import { useToast } from '@/components/ui/use-toast';
@@ -107,7 +107,7 @@ export default function PlansPage() {
     const fetchPlans = async () => {
       try {
         setIsLoading(true);
-        const fetchedPlans = await getPublicPlans();
+        const fetchedPlans = await PlanService.getPublicPlans();
         setPlans(fetchedPlans);
         setError(null);
       } catch (err) {

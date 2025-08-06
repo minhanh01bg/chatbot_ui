@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Zap, Sparkles, Shield, Users, Globe } from 'lucide-react';
 import { Plan } from '@/types/plan';
-import { subscribeToPlan } from '@/services/plan.service';
+import { createSubscription } from '@/services/subscription.service';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import PaymentModal from './PaymentModal';
@@ -60,7 +60,7 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
 
     setIsSubscribing(true);
     try {
-      const result = await subscribeToPlan(plan.id, user.id, user.accessToken);
+      const result = await createSubscription(plan.id, user.id, user.accessToken);
       toast({
         title: 'Success!',
         description: `Successfully subscribed to ${plan.name} plan. Your subscription is now active.`,
@@ -83,7 +83,7 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
   };
 
   return (
-    <Card className={`relative h-full flex flex-col border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${
+    <Card className={`relative h-full width-full flex flex-col border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${
       isPopular 
         ? 'border-2 border-purple-500 shadow-2xl scale-105 bg-gradient-to-br from-purple-50 to-blue-50' 
         : 'border border-purple-100 hover:border-purple-300'
