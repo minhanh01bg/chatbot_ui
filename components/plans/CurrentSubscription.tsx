@@ -141,6 +141,7 @@ export default function CurrentSubscription() {
       case 'active':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'expired':
+      case 'cancelled':
         return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
         return <Clock className="w-4 h-4 text-yellow-500" />;
@@ -154,6 +155,7 @@ export default function CurrentSubscription() {
       case 'active':
         return 'default';
       case 'expired':
+      case 'cancelled':
         return 'destructive';
       default:
         return 'secondary';
@@ -206,7 +208,7 @@ export default function CurrentSubscription() {
                 Manage Subscription
               </Button>
             </Link>
-            {subscription.status === 'expired' && (
+            {(subscription.status === 'expired' || subscription.status === 'cancelled') && (
               <Link href="/plans" className="flex-1">
                 <Button size="sm" className="w-full">
                   Renew

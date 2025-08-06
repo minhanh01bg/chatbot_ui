@@ -117,6 +117,23 @@ export const cancelSubscription = async (subscriptionId: string) => {
   }
 };
 
+export const cancelMySubscription = async (subscriptionId: string) => {
+  try {
+    const response = await fetch(`/api/subscriptions/my/${subscriptionId}/cancel`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Error canceling subscription: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to cancel subscription:', error);
+    throw error;
+  }
+}
+
 export const getMySubscriptions = async (accessToken: string): Promise<Subscription[]> => {
   try {
     const response = await fetch('/api/subscriptions/my', {

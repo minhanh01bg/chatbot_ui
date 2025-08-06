@@ -27,7 +27,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   plan_id: string;
-  status: 'active' | 'inactive' | 'expired';
+  status: 'active' | 'inactive' | 'expired' | 'cancelled';
   expired_at: string | null;
   created_at: string;
   updated_at: string;
