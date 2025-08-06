@@ -5,7 +5,6 @@ import { jwtDecode } from 'jwt-decode';
 
 import { getUser } from '@/lib/db/queries';
 import { login as loginService } from '../../services/login.service';
-import { cookies } from 'next/headers';
 
 import { authConfig } from './auth.config';
 

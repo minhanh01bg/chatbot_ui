@@ -99,7 +99,7 @@ export default function AuthSuccessPage() {
 
         // Gọi API để set server-side cookies
         try {
-          await setAuthToken(token, expiredAt);
+          await setAuthToken(token, expiredAt || undefined);
           console.log('Server-side token sync result: Success');
         } catch (error) {
           console.error('Failed to sync token with server:', error);
