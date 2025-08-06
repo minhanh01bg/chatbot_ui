@@ -177,9 +177,9 @@ export default function PlansPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-12">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div className="flex items-center justify-between mb-6">
             <Link href="/">
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-purple-600">
@@ -244,7 +244,7 @@ export default function PlansPage() {
             </div>
           </div>
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
               <div key={plan.id} className="flex">
                 <PlanCard

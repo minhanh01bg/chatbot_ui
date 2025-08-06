@@ -83,7 +83,7 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
   };
 
   return (
-    <Card className={`relative h-full width-full flex flex-col border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 ${
+    <Card className={`relative h-full w-full flex flex-col border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 min-h-[600px] ${
       isPopular 
         ? 'border-2 border-purple-500 shadow-2xl scale-105 bg-gradient-to-br from-purple-50 to-blue-50' 
         : 'border border-purple-100 hover:border-purple-300'
@@ -97,61 +97,61 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
         </div>
       )}
 
-      <CardHeader className="text-center pb-6">
+      <CardHeader className="text-center pb-8 px-8">
         <div className="flex items-center justify-center mb-4">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+          <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
             isPopular 
               ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
               : 'bg-gradient-to-r from-purple-500 to-blue-500'
           }`}>
-            <Sparkles className="w-6 h-6 text-white" />
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold text-gray-900">{plan.name}</CardTitle>
+        <CardTitle className="text-3xl font-bold text-gray-900">{plan.name}</CardTitle>
         <CardDescription className="text-gray-600 mt-2">
           {plan.description}
         </CardDescription>
         <div className="mt-6">
-          <div className="text-4xl font-bold text-gray-900">
+          <div className="text-5xl font-bold text-gray-900">
             {plan.price === 0 ? 'Free' : `$${plan.price}`}
           </div>
           {plan.price > 0 && (
-            <div className="text-gray-500 mt-1">/{plan.period}</div>
+            <div className="text-gray-500 mt-1 text-lg">/{plan.period}</div>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1">
+      <CardContent className="flex-1 px-8">
         <div className="space-y-6">
           {/* Limits */}
           <div className="space-y-3">
-            <h4 className="font-semibold text-gray-900 flex items-center">
-              <Shield className="w-4 h-4 mr-2 text-purple-600" />
+            <h4 className="font-semibold text-gray-900 flex items-center text-lg">
+              <Shield className="w-5 h-5 mr-2 text-purple-600" />
               Plan Limits
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-base">
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{plan.limits.number_of_sites} sites</span>
               </li>
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{plan.limits.number_of_documents} documents</span>
               </li>
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{formatFileSize(plan.limits.file_size)} file size</span>
               </li>
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{plan.limits.number_of_faqs} FAQs</span>
               </li>
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{plan.limits.number_of_crawlers} crawlers</span>
               </li>
               <li className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                 <span className="text-gray-700">{formatTokens(plan.limits.number_token_chat)} chat tokens</span>
               </li>
             </ul>
@@ -160,14 +160,14 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
           {/* Features */}
           {plan.features && plan.features.length > 0 && (
             <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900 flex items-center">
-                <Zap className="w-4 h-4 mr-2 text-blue-600" />
+              <h4 className="font-semibold text-gray-900 flex items-center text-lg">
+                <Zap className="w-5 h-5 mr-2 text-blue-600" />
                 Features
               </h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-3 text-base">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <Zap className="w-4 h-4 text-blue-500 mr-3 flex-shrink-0" />
+                    <Zap className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" />
                     <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
@@ -177,9 +177,9 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-6">
+      <CardFooter className="pt-8 px-8">
         <Button
-          className={`w-full py-3 text-lg font-semibold ${
+          className={`w-full py-4 text-xl font-semibold ${
             isPopular 
               ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg' 
               : 'bg-white border-2 border-purple-600 text-purple-600 hover:bg-purple-50'
