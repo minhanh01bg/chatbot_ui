@@ -1,5 +1,5 @@
 export interface PayPalSubscriptionResponse {
-  subscription_id: string;
+//   subscription_id: string;
   approval_url: string;
   status: string;
   expired_at: string;

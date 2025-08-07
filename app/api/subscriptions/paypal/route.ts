@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     
     // Return the subscription data including approval URL
     return NextResponse.json({
-      subscription_id: data.subscription_id,
+    //   subscription_id: data.subscription_id,
       approval_url: data.approval_url,
       status: data.status,
       expired_at: data.expired_at,
