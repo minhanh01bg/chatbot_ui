@@ -5,12 +5,13 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '1
 // GET /api/plans/[id] - Get specific plan details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Plan by ID API: Fetching from backend:', `${BACKEND_URL}/api/v1/plans/${params.id}`);
+    const resolvedParams = await params;
+    console.log('Plan by ID API: Fetching from backend:', `${BACKEND_URL}/api/v1/plans/${resolvedParams.id}`);
     
-    const response = await fetch(`${BACKEND_URL}/api/v1/plans/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/plans/${resolvedParams.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -71,10 +71,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Dashboard API POST called');
-    console.log('Request URL:', request.url);
-    console.log('Request headers:', Object.fromEntries(request.headers.entries()));
-    
     // Get authorization header from the request
     const authHeader = request.headers.get('authorization');
     console.log('Authorization header:', authHeader ? 'Present' : 'Missing');
@@ -103,13 +99,6 @@ export async function POST(request: NextRequest) {
     if (rangeDaysNumber) {
       params.append('range_days', rangeDaysNumber.toString());
     }
-
-    console.log('Forwarding to backend:', `${backendUrl}/api/v1/dashboard?${params}`);
-    console.log('Request body:', body);
-    console.log('Backend request headers:', {
-      'Content-Type': 'application/json',
-      'Authorization': authHeader ? 'Bearer [HIDDEN]' : 'Missing'
-    });
     
     const backendResponse = await fetch(
       `${backendUrl}/api/v1/dashboard?${params}`,
