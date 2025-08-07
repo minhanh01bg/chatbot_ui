@@ -99,12 +99,12 @@ export default function PlanCard({ plan, isPopular = false }: PlanCardProps) {
 
       <CardHeader className="text-center pb-8 px-8">
         <div className="flex items-center justify-center mb-4">
-          <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+          <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
             isPopular 
               ? 'bg-gradient-to-r from-purple-600 to-blue-600' 
               : 'bg-gradient-to-r from-purple-500 to-blue-500'
           }`}>
-            <Sparkles className="w-8 h-8 text-white" />
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
         </div>
         <CardTitle className="text-3xl font-bold text-gray-900">{plan.name}</CardTitle>

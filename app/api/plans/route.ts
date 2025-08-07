@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
       is_self_sigup_allowed: true // Default to true, adjust as needed
     }));
 
-    console.log('Plans API: Transformed plans:', transformedPlans);
     return NextResponse.json(transformedPlans);
   } catch (error) {
     console.error('Error fetching plans:', error);

@@ -202,7 +202,7 @@ export default function PlansPage() {
             <span className="text-purple-600 font-semibold text-lg">Choose Your Perfect Plan</span>
           </div>
           
-          <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             Pricing Plans
             <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"> That Scale</span>
           </h1>
@@ -244,7 +244,7 @@ export default function PlansPage() {
             </div>
           </div>
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
               <div key={plan.id} className="flex">
                 <PlanCard

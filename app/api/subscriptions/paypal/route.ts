@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '127.0.0.1');
+
 export async function POST(request: NextRequest) {
   try {
     // Get the session to verify authentication
     const session = await auth();
-    
-    if (!session || !session.user) {
+    let accessToken: string | undefined;
+
+    if (session?.user?.id) {
+      accessToken = (session as any).accessToken;
+    }
+    if (!accessToken) {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      accessToken = cookieStore.get('access_token')?.value || 
+                   cookieStore.get('client_access_token')?.value;
+    }
+
+    if (!accessToken) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Access token not found' },
         { status: 401 }
       );
     }
@@ -24,19 +37,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the access token from session
-    const accessToken = (session as any).accessToken;
-    
-    if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Access token not found' },
-        { status: 401 }
-      );
-    }
-
     // Call the backend API to create PayPal subscription
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-    const response = await fetch(`${backendUrl}/api/v1/subscriptions/create_subscription`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/create_subscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
