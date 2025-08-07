@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import type { Subscription } from '@/types/plan';
 import { cancelMySubscription } from '@/services/subscription.service';
 import { toast } from 'sonner';
+import { LoadingSpinner } from '@/components/loading-spinner';
 import {
   Dialog,
   DialogContent,
@@ -25,13 +26,37 @@ export default function SubscriptionsPage() {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [subscriptionToCancel, setSubscriptionToCancel] = useState<Subscription | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadSubscriptions = async () => {
+    if (session?.accessToken) {
+      setIsLoading(true);
+      try {
+        const subscriptions = await getMySubscriptions(session.accessToken);
+        setSubscriptions(subscriptions);
+      } catch (error) {
+        console.error('Failed to load subscriptions:', error);
+        toast.error('Failed to load subscriptions');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
-    if (session?.accessToken) {
-      getMySubscriptions(session.accessToken).then((subscriptions) => {
-        setSubscriptions(subscriptions);
-      });
-    }
+    loadSubscriptions();
+  }, [session]);
+
+  // Refresh data when page becomes visible (e.g., when returning from success page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && session?.accessToken) {
+        loadSubscriptions();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [session]);
 
   const handleCancelSubscription = async (subscriptionId: string) => {
@@ -87,7 +112,11 @@ export default function SubscriptionsPage() {
         </div>
 
         {/* Subscription Content */}
-        {subscriptions.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <LoadingSpinner size="md" text="Loading subscriptions..." />
+          </div>
+        ) : subscriptions.length === 0 ? (
           <Card className="max-w-2xl mx-auto border-0 shadow-xl bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center mb-4">

@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { checkPayPalSubscriptionStatus } from '@/services/paypal.service';
+import { getMySubscriptions } from '@/services/subscription.service';
 import Link from 'next/link';
 
 export default function SubscriptionSuccessPage() {
@@ -14,64 +15,131 @@ export default function SubscriptionSuccessPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [isActivating, setIsActivating] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const subscriptionId = searchParams.get('subscription_id');
   const token = searchParams.get('token');
   const payerId = searchParams.get('PayerID');
+  const serverToken = searchParams.get('server_token');
+  const baToken = searchParams.get('ba_token');
+  const { data: session } = useSession();
 
   useEffect(() => {
-    const checkSubscription = async () => {
-      if (!subscriptionId) {
-        setError('No subscription ID found');
+    const activateSubscription = async () => {
+      if (!subscriptionId || !token || !serverToken || !baToken) {
+        setError('Missing required parameters');
         setIsLoading(false);
         return;
       }
 
       try {
-        // Wait a moment for PayPal to process the payment
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const status = await checkPayPalSubscriptionStatus(subscriptionId);
-        setSubscriptionStatus(status);
+        setIsActivating(true);
         
-        if (status.status === 'ACTIVE' || status.status === 'APPROVED') {
-          toast({
-            title: 'Payment Successful!',
-            description: 'Your subscription has been activated successfully.',
-          });
+        // Call the success API to activate the subscription
+        const response = await fetch(`/api/subscriptions/success?subscription_id=${subscriptionId}&token=${token}&server_token=${serverToken}&ba_token=${baToken}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to activate subscription');
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+          // Wait a moment for PayPal to process the payment
+          await new Promise(resolve => setTimeout(resolve, 2000));
+
+          // Check if subscription is now active by getting my subscriptions
+          if (session?.accessToken) {
+            try {
+                             const subscriptions = await getMySubscriptions(session.accessToken);
+               const activeSubscription = subscriptions.find(sub => 
+                 sub.id === subscriptionId
+               );
+               
+               if (activeSubscription) {
+                 setSubscriptionStatus(activeSubscription);
+                 
+                 if (activeSubscription.status === 'active') {
+                  toast({
+                    title: 'Payment Successful!',
+                    description: 'Your subscription has been activated successfully.',
+                  });
+                  
+                  // Auto redirect to my subscriptions after 3 seconds
+                  setTimeout(() => {
+                    router.push('/subscriptions');
+                  }, 3000);
+                } else {
+                  toast({
+                    title: 'Payment Processing',
+                    description: 'Your payment is being processed. Please wait a moment.',
+                  });
+                }
+              } else {
+                toast({
+                  title: 'Payment Processing',
+                  description: 'Your payment is being processed. Please check your subscriptions in a moment.',
+                });
+              }
+            } catch (error) {
+              console.error('Error checking subscription status:', error);
+              toast({
+                title: 'Payment Successful!',
+                description: 'Your subscription has been activated successfully.',
+              });
+              
+              // Auto redirect to my subscriptions after 3 seconds
+              setTimeout(() => {
+                router.push('/subscriptions');
+              }, 3000);
+            }
+          } else {
+            toast({
+              title: 'Payment Successful!',
+              description: 'Your subscription has been activated successfully.',
+            });
+            
+            // Auto redirect to my subscriptions after 3 seconds
+            setTimeout(() => {
+              router.push('/subscriptions');
+            }, 3000);
+          }
         } else {
-          toast({
-            title: 'Payment Processing',
-            description: 'Your payment is being processed. Please wait a moment.',
-          });
+          throw new Error(result.error || 'Failed to activate subscription');
         }
       } catch (err) {
-        console.error('Error checking subscription status:', err);
-        setError('Failed to verify subscription status');
+        console.error('Error activating subscription:', err);
+        setError('Failed to activate subscription. Please contact support.');
         toast({
-          title: 'Verification Error',
-          description: 'Unable to verify your subscription status. Please contact support.',
+          title: 'Activation Error',
+          description: 'Unable to activate your subscription. Please contact support.',
           variant: 'destructive',
         });
       } finally {
         setIsLoading(false);
+        setIsActivating(false);
       }
     };
 
-    checkSubscription();
-  }, [subscriptionId, toast]);
+    activateSubscription();
+  }, [subscriptionId, token, serverToken, baToken, toast, router]);
 
-  if (isLoading) {
+  if (isLoading || isActivating) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="text-center py-8">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Processing Payment</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {isActivating ? 'Activating Subscription' : 'Processing Payment'}
+            </h2>
             <p className="text-muted-foreground">
-              Please wait while we verify your payment...
+              {isActivating 
+                ? 'Please wait while we activate your subscription...'
+                : 'Please wait while we verify your payment...'
+              }
             </p>
           </CardContent>
         </Card>
@@ -101,7 +169,7 @@ export default function SubscriptionSuccessPage() {
     );
   }
 
-  const isSuccess = subscriptionStatus?.status === 'ACTIVE' || subscriptionStatus?.status === 'APPROVED';
+  const isSuccess = subscriptionStatus?.status === 'active';
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
@@ -113,6 +181,8 @@ export default function SubscriptionSuccessPage() {
               <h2 className="text-xl font-semibold mb-2">Payment Successful!</h2>
               <p className="text-muted-foreground mb-4">
                 Your subscription has been activated successfully.
+                <br />
+                <span className="text-sm text-blue-600">Redirecting to My Subscriptions...</span>
               </p>
               
               {subscriptionStatus && (
@@ -121,7 +191,8 @@ export default function SubscriptionSuccessPage() {
                   <div className="text-sm space-y-1">
                     <div><strong>Status:</strong> {subscriptionStatus.status}</div>
                     <div><strong>Plan ID:</strong> {subscriptionStatus.plan_id}</div>
-                    <div><strong>Subscription ID:</strong> {subscriptionStatus.subscription_id}</div>
+                    <div><strong>Product:</strong> {subscriptionStatus.product_name}</div>
+                    <div><strong>Price:</strong> ${subscriptionStatus.plan_price}</div>
                     {subscriptionStatus.expired_at && (
                       <div><strong>Expires:</strong> {new Date(subscriptionStatus.expired_at).toLocaleDateString()}</div>
                     )}
@@ -142,7 +213,8 @@ export default function SubscriptionSuccessPage() {
                   <h3 className="font-medium mb-2">Current Status:</h3>
                   <div className="text-sm space-y-1">
                     <div><strong>Status:</strong> {subscriptionStatus.status}</div>
-                    <div><strong>Subscription ID:</strong> {subscriptionStatus.subscription_id}</div>
+                    <div><strong>Product:</strong> {subscriptionStatus.product_name}</div>
+                    <div><strong>Price:</strong> ${subscriptionStatus.plan_price}</div>
                   </div>
                 </div>
               )}
