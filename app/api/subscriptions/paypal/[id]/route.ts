@@ -3,9 +3,10 @@ import { auth } from '@/app/(auth)/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     // Get the session to verify authentication
     const session = await auth();
     
@@ -16,7 +17,7 @@ export async function GET(
       );
     }
 
-    const subscriptionId = params.id;
+    const subscriptionId = resolvedParams.id;
 
     if (!subscriptionId) {
       return NextResponse.json(
