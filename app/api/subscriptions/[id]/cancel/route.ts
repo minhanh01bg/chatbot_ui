@@ -6,9 +6,10 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '1
 // POST /api/subscriptions/[id]/cancel - Cancel subscription
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     let accessToken: string | undefined;
     const session = await auth();
     if (!session?.user?.id || (session?.user as any)?.role !== 'superadmin') {
@@ -27,7 +28,7 @@ export async function POST(
         { status: 401 }
       );
     }
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${params.id}/cancel`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${resolvedParams.id}/cancel`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

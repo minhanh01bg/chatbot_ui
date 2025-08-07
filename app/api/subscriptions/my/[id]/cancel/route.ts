@@ -6,9 +6,10 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '1
 // POST /api/subscriptions/my/[id]/cancel - Cancel subscription
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     let accessToken: string | undefined;
     const session = await auth();
     if (session?.user?.id) {
@@ -26,13 +27,8 @@ export async function POST(
         { status: 401 }
       );
     }
-    console.log('Attempting to cancel subscription:', {
-      subscriptionId: params.id,
-      backendUrl: `${BACKEND_URL}/api/v1/subscriptions/my/${params.id}/cancel`,
-      hasAccessToken: !!accessToken
-    });
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/my/${params.id}/cancel`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/my/${resolvedParams.id}/cancel`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -56,7 +52,7 @@ export async function POST(
         { 
           error: errorData.detail || 'Failed to cancel subscription',
           status: response.status,
-          subscriptionId: params.id
+          subscriptionId: resolvedParams.id
         },
         { status: response.status }
       );

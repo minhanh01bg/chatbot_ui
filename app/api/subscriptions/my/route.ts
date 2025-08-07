@@ -25,13 +25,6 @@ export async function GET(request: NextRequest) {
 
     // Get access token from request headers first
     let accessToken = request.headers.get('authorization')?.replace('Bearer ', '');
-    
-    console.log('Request headers:', {
-      hasAuthHeader: !!accessToken,
-      authHeaderLength: accessToken?.length,
-      allHeaders: Object.fromEntries(request.headers.entries())
-    });
-    
     // Get session from NextAuth as fallback
     const session = await auth();
     

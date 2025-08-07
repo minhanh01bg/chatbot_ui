@@ -6,9 +6,10 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '1
 // GET /api/subscriptions/[id] - Get specific subscription
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     let accessToken: string | undefined;
 
     // Try to get from NextAuth session first
@@ -32,7 +33,7 @@ export async function GET(
       );
     }
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${resolvedParams.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -62,9 +63,10 @@ export async function GET(
 // PUT /api/subscriptions/[id] - Update subscription
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     let accessToken: string | undefined;
 
     const session = await auth();
@@ -88,7 +90,7 @@ export async function PUT(
 
     const body = await request.json();
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${resolvedParams.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -119,9 +121,10 @@ export async function PUT(
 // DELETE /api/subscriptions/[id] - Cancel subscription
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     let accessToken: string | undefined;
 
     const session = await auth();
@@ -143,7 +146,7 @@ export async function DELETE(
       );
     }
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/api/v1/subscriptions/${resolvedParams.id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
