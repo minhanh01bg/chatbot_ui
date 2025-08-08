@@ -65,10 +65,9 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
         id: doc._id,
         name: doc.title || doc.file_name,
         siteId: siteId,
-        status: 'completed' as const, // Type assertion to match enum 
         createdAt: doc.created_time,
         size: 0, // Default size
-        type: doc.file_name?.split('.').pop() || 'unknown'
+        type: doc.doc_type
       }));
       
       setTotalPages(data?.total_pages);
@@ -92,8 +91,7 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
   const filteredDocuments = searchTerm
     ? documents.filter(doc =>
         doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.status.toLowerCase().includes(searchTerm.toLowerCase())
+        doc.type.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : documents;
 
@@ -269,12 +267,6 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Debug Info */}
-      <div className="px-6 py-2 bg-gray-100 text-xs flex-shrink-0 mb-4">
-        Debug: {totalDocs} total docs, {totalPages} pages, page {currentPage}, showing {documents.length} docs on current page
-      </div>
-
       {/* Pagination Controls */}
       {totalDocs > 0 && totalPages > 1 && (
         <div className="flex items-center justify-between flex-shrink-0 mb-4">
@@ -379,18 +371,14 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
             ) : (
               <div className="space-y-4">
                 {paginatedDocuments.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <FileText className="h-8 w-8 text-blue-500" />
+                      <FileText className="h-6 w-6 text-blue-500" />
                       <div>
-                        <h3 className="font-medium">{doc.name}</h3>
+                        <h3 className="font-medium text-sm">{doc.name}</h3>
                         <p className="text-sm text-muted-foreground">
                           Created: {new Date(doc.createdAt).toLocaleDateString()} •
-                          Type: {doc.type} •
-                          Status: {doc.status === 'completed' ? 'Ready' :
-                                   doc.status === 'processing' ? 'Processing' :
-                                   doc.status === 'uploading' ? 'Uploading' :
-                                   'Processing...'}
+                          Type: {doc.type}
                         </p>
                       </div>
                     </div>
