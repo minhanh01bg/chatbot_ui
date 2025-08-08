@@ -17,6 +17,9 @@ import {
   Globe
 } from 'lucide-react';
 import { DashboardStats } from '@/services/dashboard.service';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { performLogout } from '@/lib/auth-utils';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 interface SiteDashboardStatsProps {
@@ -27,6 +30,7 @@ interface SiteDashboardStatsProps {
 
 export default function SiteDashboardStats({ siteKey, siteName, rangeDays = 7 }: SiteDashboardStatsProps) {
   const { user } = useCurrentUser();
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +50,32 @@ export default function SiteDashboardStats({ siteKey, siteName, rangeDays = 7 }:
         if (sitesArray.length > 0 && !selectedSite) {
           setSelectedSite(sitesArray[0].key || sitesArray[0]._id);
         }
+      } else {
+        let message = response.statusText;
+        try {
+          const errorData = await response.json();
+          const rawDetail = (errorData?.error ?? errorData?.detail) as any;
+          if (Array.isArray(rawDetail)) {
+            const firstMsg = rawDetail.find((d) => typeof d?.msg === 'string')?.msg;
+            if (firstMsg) message = firstMsg;
+          } else if (typeof rawDetail === 'string') {
+            message = rawDetail;
+          }
+        } catch {}
+
+        if (response.status === 401 && /expired|hết hạn|signature has expired/i.test(message)) {
+          toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          await performLogout(router);
+          return;
+        }
+
+        toast.error(message || 'Failed to fetch sites');
       }
     } catch (error) {
       console.error('Error fetching sites:', error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   };
 

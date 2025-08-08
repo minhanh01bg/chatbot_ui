@@ -26,12 +26,16 @@ import {
 } from 'lucide-react';
 import OverallDashboardStats from '@/components/admin/OverallDashboardStats';
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { performLogout } from '@/lib/auth-utils';
 import SiteDashboardStats from '@/components/admin/SiteDashboardStats';
 
 import { Badge } from '@/components/ui/badge';
 
 export default function AdminDashboard() {
   const { user } = useCurrentUser();
+  const router = useRouter();
   const [sites, setSites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,10 +48,33 @@ export default function AdminDashboard() {
           // Handle both array and object response formats
           const sitesArray = Array.isArray(data) ? data : (data.sites || []);
           setSites(sitesArray);
+        } else {
+          let message = response.statusText;
+          try {
+            const errorData = await response.json();
+            const rawDetail = (errorData?.error ?? errorData?.detail) as any;
+            if (Array.isArray(rawDetail)) {
+              const firstMsg = rawDetail.find((d) => typeof d?.msg === 'string')?.msg;
+              if (firstMsg) message = firstMsg;
+            } else if (typeof rawDetail === 'string') {
+              message = rawDetail;
+            }
+          } catch {}
+
+          if (response.status === 401 && /expired|hết hạn|signature has expired/i.test(message)) {
+            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            await performLogout(router);
+            return;
+          }
+
+          toast.error(message || 'Failed to fetch sites');
         }
       } catch (error) {
         console.error('Error fetching sites:', error);
         setSites([]);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
       } finally {
         setLoading(false);
       }

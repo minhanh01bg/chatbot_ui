@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { performLogout } from '@/lib/auth-utils';
 import { 
   Table, 
   TableBody, 
@@ -70,7 +72,28 @@ export default function SitesTable() {
       });
 
       if (!response.ok) {
-        throw new Error(`Error fetching sites: ${response.statusText}`);
+        let message = `Error fetching sites: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          const rawDetail = (errorData?.error ?? errorData?.detail) as any;
+          if (Array.isArray(rawDetail)) {
+            const firstMsg = rawDetail.find((d) => typeof d?.msg === 'string')?.msg;
+            if (firstMsg) message = firstMsg;
+          } else if (typeof rawDetail === 'string') {
+            message = rawDetail;
+          }
+        } catch {}
+
+        if (response.status === 401 && /expired|hết hạn|signature has expired/i.test(message)) {
+          toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          setSites([]);
+          setError('Unauthorized');
+          // Fully clear session to avoid redirect loops
+          await performLogout(router);
+          return;
+        }
+
+        throw new Error(message);
       }
 
       const data = await response.json();
@@ -89,6 +112,10 @@ export default function SitesTable() {
     } catch (err) {
       console.error('Error fetching sites:', err);
       setError('Failed to load sites. Please try again later.');
+      if (err instanceof Error) {
+        // Show generic error toast when not handled above
+        toast.error(err.message);
+      }
       setSites([]);
     } finally {
       setLoading(false);
