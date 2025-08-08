@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
 import { AuthGuard } from '@/components/auth-guard';
+import { clearAllAuthData } from '@/lib/auth-utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -29,6 +30,12 @@ export default function Page() {
   );
 
   useEffect(() => {
+    // Defensive: if we reached login due to expired session, ensure stale tokens are cleared to avoid loops
+    const reason = searchParams.get('reason');
+    if (reason === 'expired') {
+      clearAllAuthData();
+    }
+
     // Check for Google OAuth errors
     const error = searchParams.get('error');
     if (error) {
