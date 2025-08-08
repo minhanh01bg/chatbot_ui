@@ -461,17 +461,16 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
       </Card> */}
 
       {/* Crawler Documents Section */}
-      <Card className="flex-1 min-h-0 flex flex-col">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 flex-shrink-0 p-4 pb-0">
-          <CardTitle className="text-md font-semibold">Crawler Documents</CardTitle>
+      <Card className="flex-1 min-h-0 flex flex-col border-none">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 flex-shrink-0 p-0">
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground pb-2">
               {crawlerTotalDocs} crawler documents
             </span>
           </div>
           
         </CardHeader>
-        <CardContent className="flex-1 min-h-0 flex flex-col p-2">
+        <CardContent className="flex-1 min-h-0 flex flex-col p-0 m-0">
 
           {isCrawlerLoading ? (
             <div className="text-center py-10">Loading crawler documents...</div>
@@ -487,13 +486,13 @@ export default function CrawlerTab({ siteId, site }: CrawlerTabProps) {
             <div className="flex flex-col h-full">
               
               <div className="flex-1 min-h-0 overflow-auto">
-                <div className="space-y-4 px-2 p-2">
+                <div className="space-y-4">
                   {paginatedCrawlerDocuments.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <FileText className="h-8 w-8 text-blue-500" />
+                        <FileText className="h-6 w-6 text-blue-500" />
                         <div>
-                          <h3 className="font-medium">{doc.name}</h3>
+                          <h3 className="font-medium text-sm">{doc.name}</h3>
                           <p className="text-sm text-muted-foreground">
                             Created: {new Date(doc.createdAt).toLocaleDateString()} • Type: {doc.type}
                           </p>
