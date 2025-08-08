@@ -88,18 +88,17 @@ export default function SubscriptionsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-4">
-            <Link href="/plans">
+            {/* <Link href="/plans">
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-purple-600">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Plans
               </Button>
-            </Link>
+            </Link> */}
             <div>
               <div className="flex items-center space-x-2 mb-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="text-purple-600 font-semibold">My Subscriptions</span>
+                <span className="text-3xl text-purple-600 font-semibold">My Subscriptions</span>
               </div>
-              <h1 className="text-4xl font-bold text-gray-900">Subscription Management</h1>
               <p className="text-gray-600">Manage your subscription and billing details</p>
             </div>
           </div>
