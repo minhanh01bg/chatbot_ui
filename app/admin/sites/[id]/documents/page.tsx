@@ -106,7 +106,39 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
 
   return (
     <div className="h-full flex items-center justify-center p-4">
-      <div className="w-full grid grid-cols-1 lg:grid-cols-8 gap-3">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-10 gap-3">
+      <div className="lg:col-span-6 flex items-center justify-center">
+          {isLoading ? (
+            <div className="text-center py-10">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <p>Loading chat interface...</p>
+            </div>
+                  ) : site ? (
+          site.chat_token ? (
+            <ChatTest variant="embedded" site={site} />
+          ) : (
+            <div className="text-center py-10 text-yellow-600">
+              <p>Site loaded but no chat token found.</p>
+              <p className="text-sm mt-1 text-muted-foreground">
+                This site may not be properly configured for chat.
+              </p>
+              <p className="text-xs mt-1 text-muted-foreground">
+                Please configure the site with a valid chat token.
+              </p>
+            </div>
+          )
+        ) : (
+          <div className="text-center py-10 text-red-500">
+            <p>Failed to load chat interface.</p>
+            <p className="text-sm mt-1 text-muted-foreground">
+              Please check your authentication and try again.
+            </p>
+            <p className="text-xs mt-1 text-muted-foreground">
+              If you're not logged in, please log in and try again.
+            </p>
+          </div>
+        )}
+        </div>
         <div className="lg:col-span-4 flex items-center justify-center">
           {isLoading ? (
             <div className="text-center py-10">
@@ -143,38 +175,7 @@ export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
         )}
         </div>
 
-        <div className="lg:col-span-4 flex items-center justify-center">
-          {isLoading ? (
-            <div className="text-center py-10">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p>Loading chat interface...</p>
-            </div>
-                  ) : site ? (
-          site.chat_token ? (
-            <ChatTest variant="embedded" site={site} />
-          ) : (
-            <div className="text-center py-10 text-yellow-600">
-              <p>Site loaded but no chat token found.</p>
-              <p className="text-sm mt-1 text-muted-foreground">
-                This site may not be properly configured for chat.
-              </p>
-              <p className="text-xs mt-1 text-muted-foreground">
-                Please configure the site with a valid chat token.
-              </p>
-            </div>
-          )
-        ) : (
-          <div className="text-center py-10 text-red-500">
-            <p>Failed to load chat interface.</p>
-            <p className="text-sm mt-1 text-muted-foreground">
-              Please check your authentication and try again.
-            </p>
-            <p className="text-xs mt-1 text-muted-foreground">
-              If you're not logged in, please log in and try again.
-            </p>
-          </div>
-        )}
-        </div>
+        
       </div>
     </div>
   );
