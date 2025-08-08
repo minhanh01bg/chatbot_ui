@@ -5,20 +5,13 @@ const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 // GET /api/sites
 export async function GET(request: NextRequest) {
   try {
-    console.log('Sites API: Request received');
-    
     // Log all available cookies for debugging
     const allCookies = request.cookies.getAll();
-    console.log('Sites API: All cookies available:', JSON.stringify(allCookies.map(c => c.name)));
-    
+
     // Get access token directly from request cookies
     const accessToken = request.cookies.get('access_token')?.value;
-    console.log('Sites API: Direct cookie access token:', accessToken ? `Found token of length ${accessToken.length}` : 'No token');
     // Try client token as fallback
-    const clientToken = request.cookies.get('client_access_token')?.value;
-    console.log('Sites API: Client access token:', clientToken);
-    console.log('Sites API: Client token fallback:', clientToken ? 'Available' : 'Not available');
-    
+    const clientToken = request.cookies.get('client_access_token')?.value;    
     // Use the appropriate token
     const token = accessToken || clientToken;
     
@@ -30,10 +23,6 @@ export async function GET(request: NextRequest) {
 
     // Fix IPv6 issue by replacing localhost with 127.0.0.1
     const backendUrl = NEXT_PUBLIC_BACKEND_URL?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:8001';
-    console.log('Sites API: Using backend URL:', backendUrl);
-
-    // Call backend API with the token
-    console.log('Sites API: Using token for authorization');
     const response = await fetch(`${backendUrl}/api/v1/sites`, {
       method: 'GET',
       headers: {
@@ -45,9 +34,14 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Backend API error:', response.status, errorData);
+      const rawDetail = (errorData?.detail ?? errorData?.error) as any;
+      let message = typeof rawDetail === 'string' ? rawDetail : undefined;
+      if (Array.isArray(rawDetail)) {
+        message = rawDetail.find((d: any) => typeof d?.msg === 'string')?.msg;
+      }
       return NextResponse.json(
-        { error: errorData.detail || 'Failed to fetch sites' }, 
-        { status: response.status }
+        { error: message || 'Failed to fetch sites' }, 
+        { status: response.status, headers: { 'x-auth-error': '1' } }
       );
     }
 
