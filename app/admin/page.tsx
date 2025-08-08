@@ -83,21 +83,6 @@ export default function AdminDashboard() {
     fetchSites();
   }, []);
 
-  // Fake data for dashboard
-  const fakeStats = {
-    totalUsers: 1247,
-    totalSites: sites.length,
-    totalQuestions: 15420,
-    totalSessions: 8923,
-    totalRevenue: 45231,
-    activeChats: 234,
-    documentsProcessed: 567,
-    averageResponseTime: 1.2,
-    userGrowth: 12.5,
-    revenueGrowth: 8.2,
-    sessionGrowth: 15.3,
-    documentGrowth: 23.1
-  };
 
   const siteKeys = Array.isArray(sites) ? sites.map(site => site.key || site._id) : [];
   const siteNames = Array.isArray(sites) ? sites.reduce((acc, site) => {

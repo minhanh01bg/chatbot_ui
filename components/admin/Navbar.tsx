@@ -27,7 +27,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 flex w-full bg-white/80 backdrop-blur-sm border-b border-gray-200 h-16 shadow-sm">
-      <div className="flex flex-col items-center justify-between w-full lg:flex-row lg:px-6">
+      <div className="flex flex-col items-center justify-between w-full lg:flex-row">
         <div className="flex items-center justify-between w-full gap-2 px-4 py-3 border-b border-gray-100 sm:gap-4 lg:justify-normal lg:border-b-0 lg:py-4">
           <button
             className="flex items-center justify-center w-10 h-10 text-gray-600 border border-gray-200 rounded-lg z-40 hover:bg-gray-50 hover:text-gray-900 transition-colors"
@@ -65,9 +65,9 @@ export default function Navbar() {
             </svg>
           </button>
 
-          <div className="hidden lg:block">
+          {/* <div className="hidden lg:block">
             <SearchBar />
-          </div>
+          </div> */}
         </div>
         
         <div
