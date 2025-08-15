@@ -3,6 +3,7 @@ import Navbar from '@/components/admin/Navbar';
 import Backdrop from '@/components/admin/Backdrop';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import SessionProvider from '@/components/providers/SessionProvider';
+import { Footer } from '@/components/footer';
 
 export default function AdminLayout({
   children,
@@ -29,9 +30,7 @@ export default function AdminLayout({
             </main>
 
             {/* Footer */}
-            <footer className="py-4 px-6 border-t border-gray-200 bg-white/50 backdrop-blur-sm text-sm text-gray-600 text-center">
-              <p>© {new Date().getFullYear()} Admin Dashboard. All rights reserved.</p>
-            </footer>
+            <Footer variant="admin" />
           </div>
         </div>
       </SidebarProvider>

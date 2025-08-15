@@ -11,6 +11,7 @@ import type { Subscription } from '@/types/plan';
 import { cancelMySubscription } from '@/services/subscription.service';
 import { toast } from 'sonner';
 import { LoadingSpinner } from '@/components/loading-spinner';
+import { Footer } from '@/components/footer';
 import {
   Dialog,
   DialogContent,
@@ -309,6 +310,9 @@ export default function SubscriptionsPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer variant="simple" />
 
       {/* Cancel Confirmation Dialog */}
       <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>

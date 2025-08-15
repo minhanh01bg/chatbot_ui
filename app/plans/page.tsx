@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Footer } from '@/components/footer';
 
 export default function PlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -320,6 +321,9 @@ export default function PlansPage() {
           </Card>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer variant="simple" />
     </div>
   );
 }
