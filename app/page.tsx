@@ -1,381 +1,395 @@
 "use client"
 
-import { motion } from "framer-motion";
-import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import Link from "next/link";
-import { Check, Star, ArrowRight, Zap, Shield, Users, Globe, MessageSquare, Bot, Sparkles } from "lucide-react";
+import { 
+  Check, 
+  Star, 
+  ArrowRight, 
+  Zap, 
+  Shield, 
+  Users, 
+  Globe, 
+  MessageSquare, 
+  Bot, 
+  Sparkles,
+  Play,
+  ChevronDown,
+  Rocket,
+  Brain,
+  Lock,
+  Cpu,
+  Eye,
+  Heart,
+  TrendingUp,
+  Award,
+  Clock,
+  Target
+} from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, -1000]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div ref={containerRef} className="min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
       <Navbar variant="landing" />
 
       {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-purple-50 via-white to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="flex items-center space-x-2 mb-6">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="text-purple-600 font-semibold">AI-Powered Conversations</span>
-              </div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Experience the Future of
-                <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"> AI Chat</span>
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Transform your conversations with our advanced AI chatbot. Get instant, intelligent responses 
-                that understand context, learn from interactions, and provide human-like conversations.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/chat"
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all flex items-center justify-center space-x-2"
-                >
-                  <span>Start Chatting</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link
-                  href="/plans"
-                  className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:border-purple-600 hover:text-purple-600 transition-all"
-                >
-                  View Plans
-                </Link>
-              </div>
-              <div className="flex items-center space-x-6 mt-8">
-                <div className="flex items-center space-x-2">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-white"></div>
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600">10,000+ users</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                  <span className="text-sm text-gray-600 ml-2">4.9/5 rating</span>
-                </div>
-              </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3 max-w-xs">
-                      <p className="text-sm text-gray-700">Hello! How can I help you today?</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3 justify-end">
-                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 max-w-xs">
-                      <p className="text-sm text-white">I need help with my project</p>
-                    </div>
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <Users className="w-4 h-4 text-gray-600" />
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3 max-w-xs">
-                      <p className="text-sm text-gray-700">I'd be happy to help! What kind of project are you working on?</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+          <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="mb-8"
+          >
+            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-3 rounded-full mb-8">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              <span className="text-purple-300 font-medium">Next-Generation AI Chat Platform</span>
+            </div>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="text-6xl lg:text-8xl font-bold mb-6"
+          >
+            Experience the Future of{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              AI Conversations
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed"
+          >
+            Transform your digital interactions with our cutting-edge AI chatbot. Experience human-like conversations, instant responses, and intelligent context understanding that adapts to your needs.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-1"
+            >
+              <Link
+                href="/chat"
+                className="flex items-center space-x-3 text-white font-semibold text-lg px-8 py-4 bg-black/20 backdrop-blur-xl rounded-lg"
+              >
+                <Rocket className="w-6 h-6" />
+                <span>Start Your Journey</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl"
+            >
+              <Link
+                href="/plans"
+                className="flex items-center space-x-3 text-white font-semibold text-lg px-8 py-4"
+              >
+                <Play className="w-6 h-6" />
+                <span>Watch Demo</span>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="flex items-center justify-center space-x-8 text-gray-400"
+          >
+            <div className="flex items-center space-x-2">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1.2 + i * 0.1 }}
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-white/20"
+                  />
+                ))}
+              </div>
+              <span className="text-sm">50,000+ users worldwide</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 1.5 + i * 0.1, type: "spring" }}
+                >
+                  <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                </motion.div>
+              ))}
+              <span className="text-sm ml-2">4.9/5 rating</span>
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <ChevronDown className="w-8 h-8 text-white/60" />
+        </motion.div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section className="relative py-32 bg-gradient-to-b from-black via-gray-900 to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-20"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Powerful Features for Modern Conversations
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the next generation of AI chat with advanced features designed to enhance your productivity and creativity.
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6">Revolutionary Features</h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Discover the advanced capabilities that make our AI chatbot the most intelligent and responsive platform available.
             </p>
           </motion.div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
+                icon: <Brain className="w-8 h-8" />,
+                title: "Advanced AI Intelligence",
+                description: "Powered by cutting-edge machine learning models that understand context, emotions, and intent with remarkable accuracy.",
+                gradient: "from-purple-600 to-pink-600",
+                delay: 0.1
+              },
+              {
                 icon: <Zap className="w-8 h-8" />,
-                title: "Lightning Fast",
-                description: "Get instant responses with our optimized AI models that process requests in milliseconds.",
-                color: "from-yellow-400 to-orange-500"
+                title: "Lightning Fast Responses",
+                description: "Experience near-instant responses with our optimized AI infrastructure that processes requests in milliseconds.",
+                gradient: "from-yellow-500 to-orange-500",
+                delay: 0.2
               },
               {
                 icon: <Shield className="w-8 h-8" />,
                 title: "Enterprise Security",
-                description: "Bank-level encryption and privacy protection ensure your conversations remain confidential.",
-                color: "from-green-400 to-blue-500"
+                description: "Bank-level encryption and privacy protection ensure your conversations remain completely confidential and secure.",
+                gradient: "from-green-500 to-blue-500",
+                delay: 0.3
               },
               {
                 icon: <Globe className="w-8 h-8" />,
                 title: "Multi-Language Support",
-                description: "Communicate in over 50 languages with native-level understanding and responses.",
-                color: "from-purple-400 to-pink-500"
+                description: "Communicate seamlessly in over 50 languages with native-level understanding and culturally appropriate responses.",
+                gradient: "from-blue-500 to-cyan-500",
+                delay: 0.4
               },
               {
-                icon: <MessageSquare className="w-8 h-8" />,
-                title: "Context Awareness",
-                description: "Advanced context understanding maintains conversation flow and remembers previous interactions.",
-                color: "from-blue-400 to-cyan-500"
-              },
-              {
-                icon: <Bot className="w-8 h-8" />,
+                icon: <Cpu className="w-8 h-8" />,
                 title: "Custom AI Models",
-                description: "Train and deploy custom AI models tailored to your specific business needs and industry.",
-                color: "from-indigo-400 to-purple-500"
+                description: "Train and deploy specialized AI models tailored to your specific business needs and industry requirements.",
+                gradient: "from-indigo-500 to-purple-500",
+                delay: 0.5
               },
               {
                 icon: <Users className="w-8 h-8" />,
                 title: "Team Collaboration",
-                description: "Share conversations, collaborate with team members, and manage access permissions easily.",
-                color: "from-red-400 to-pink-500"
+                description: "Advanced team features including conversation sharing, collaborative training, and role-based access control.",
+                gradient: "from-red-500 to-pink-500",
+                delay: 0.6
               }
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300"
+                transition={{ duration: 0.8, delay: feature.delay }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10 }}
+                className="group"
               >
-                <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-lg flex items-center justify-center text-white mb-6`}>
-                  {feature.icon}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 h-full hover:bg-white/10 transition-all duration-300">
+                  <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Demo Section */}
+      <section className="relative py-32 bg-gradient-to-r from-purple-900/50 via-blue-900/50 to-purple-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-5xl font-bold mb-6">See It In Action</h2>
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                Experience the power of our AI chatbot with this interactive demonstration. Watch as it understands context, provides intelligent responses, and adapts to your conversation style.
+              </p>
+              
+              <div className="space-y-6">
+                {[
+                  "Real-time conversation processing",
+                  "Context-aware responses",
+                  "Multi-language understanding",
+                  "Emotional intelligence"
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center space-x-3"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-gray-300">{feature}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <motion.div
+                animate={{ y: [-10, 10, -10] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8"
+              >
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                
+                <div className="space-y-6">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1 }}
+                    className="flex items-start space-x-3"
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="bg-gray-800/50 rounded-2xl p-4 max-w-xs">
+                      <p className="text-white">Hello! I'm your AI assistant. How can I help you today?</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 2 }}
+                    className="flex items-start space-x-3 justify-end"
+                  >
+                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-4 max-w-xs">
+                      <p className="text-white">I need help with my project</p>
+                    </div>
+                    <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 3 }}
+                    className="flex items-start space-x-3"
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="bg-gray-800/50 rounded-2xl p-4 max-w-xs">
+                      <p className="text-white">I'd be happy to help! What kind of project are you working on? I can assist with coding, design, research, and much more.</p>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Statistics Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600">
+      <section className="relative py-32 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { number: "10M+", label: "Conversations" },
-              { number: "50+", label: "Languages" },
-              { number: "99.9%", label: "Uptime" },
-              { number: "24/7", label: "Support" }
+              { number: "10M+", label: "Conversations", icon: <MessageSquare className="w-8 h-8" /> },
+              { number: "50+", label: "Languages", icon: <Globe className="w-8 h-8" /> },
+              { number: "99.9%", label: "Uptime", icon: <Clock className="w-8 h-8" /> },
+              { number: "24/7", label: "Support", icon: <Heart className="w-8 h-8" /> }
             ].map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-white"
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center group"
               >
-                <div className="text-4xl font-bold mb-2">{stat.number}</div>
-                <div className="text-purple-100">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Choose Your Perfect Plan
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Start with our free tier and scale up as your needs grow. All plans include our core AI features.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Starter",
-                price: "Free",
-                description: "Perfect for individuals and small projects",
-                features: [
-                  "100 conversations per month",
-                  "Basic AI models",
-                  "Email support",
-                  "Standard response time"
-                ],
-                button: "Get Started",
-                popular: false
-              },
-              {
-                name: "Pro",
-                price: "$29",
-                period: "/month",
-                description: "Ideal for professionals and growing teams",
-                features: [
-                  "Unlimited conversations",
-                  "Advanced AI models",
-                  "Priority support",
-                  "Custom integrations",
-                  "Analytics dashboard"
-                ],
-                button: "Start Free Trial",
-                popular: true
-              },
-              {
-                name: "Enterprise",
-                price: "Custom",
-                description: "For large organizations with specific needs",
-                features: [
-                  "Custom AI model training",
-                  "Dedicated support",
-                  "SLA guarantees",
-                  "Advanced security",
-                  "White-label options"
-                ],
-                button: "Contact Sales",
-                popular: false
-              }
-            ].map((plan, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`bg-white rounded-xl p-8 shadow-lg border-2 ${
-                  plan.popular ? 'border-purple-500 relative' : 'border-gray-200'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                      Most Popular
-                    </span>
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl p-8 hover:bg-gray-800 transition-all duration-300">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                    {stat.icon}
                   </div>
-                )}
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline justify-center mb-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                    {plan.period && <span className="text-gray-600 ml-1">{plan.period}</span>}
+                  <div className="text-4xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                    {stat.number}
                   </div>
-                  <p className="text-gray-600">{plan.description}</p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center space-x-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={plan.name === "Starter" ? "/register" : "/plans"}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all ${
-                    plan.popular
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700'
-                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  }`}
-                >
-                  {plan.button}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Loved by Users Worldwide
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See what our customers have to say about their experience with ChatAI Pro.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "Product Manager",
-                company: "TechCorp",
-                content: "ChatAI Pro has revolutionized how we handle customer support. The AI responses are incredibly accurate and our response times have improved by 80%.",
-                rating: 5
-              },
-              {
-                name: "Michael Chen",
-                role: "Developer",
-                company: "StartupXYZ",
-                content: "The custom AI model training feature is game-changing. We've been able to create specialized chatbots for different departments with amazing results.",
-                rating: 5
-              },
-              {
-                name: "Emily Rodriguez",
-                role: "Marketing Director",
-                company: "GlobalBrand",
-                content: "The multi-language support is fantastic. We can now serve customers in their native language, which has significantly improved our customer satisfaction scores.",
-                rating: 5
-              }
-            ].map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-50 rounded-xl p-8"
-              >
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 leading-relaxed">"{testimonial.content}"</p>
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                  <div className="text-gray-600">{testimonial.role} at {testimonial.company}</div>
+                  <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
+                    {stat.label}
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -384,34 +398,54 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-32 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 overflow-hidden">
+        <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+        <div className="absolute bottom-1/2 right-1/4 w-96 h-96 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8">
               Ready to Transform Your Conversations?
             </h2>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of users who are already experiencing the future of AI-powered conversations. 
-              Start your free trial today and see the difference.
+            
+            <p className="text-xl text-purple-100 mb-12 max-w-3xl mx-auto">
+              Join thousands of users who are already experiencing the future of AI-powered conversations. Start your free trial today and see the difference.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/register"
-                className="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-purple-50 transition-all flex items-center justify-center space-x-2"
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-purple-600 rounded-xl p-1"
               >
-                <span>Start Free Trial</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/chat"
-                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all"
+                <Link
+                  href="/register"
+                  className="flex items-center space-x-3 font-semibold text-lg px-8 py-4 bg-black/20 backdrop-blur-xl rounded-lg"
+                >
+                  <Rocket className="w-6 h-6" />
+                  <span>Start Free Trial</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl"
               >
-                Try Demo
-              </Link>
+                <Link
+                  href="/chat"
+                  className="flex items-center space-x-3 text-white font-semibold text-lg px-8 py-4"
+                >
+                  <Play className="w-6 h-6" />
+                  <span>Try Demo Now</span>
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         </div>
