@@ -701,3 +701,224 @@
 .chat-scroll-area {
   @apply scroll-smooth;
 }
+
+/* Document Tab Specific Styles */
+.document-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.document-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transition: left 0.6s ease;
+}
+
+.document-card:hover::before {
+  left: 100%;
+}
+
+.document-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.document-icon {
+  transition: all 0.3s ease;
+}
+
+.document-card:hover .document-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.document-selection {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.document-selection:checked {
+  animation: scale-in 0.2s ease;
+}
+
+.document-upload-zone {
+  border: 2px dashed rgba(147, 51, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.document-upload-zone:hover {
+  border-color: rgba(147, 51, 234, 0.6);
+  background: rgba(147, 51, 234, 0.05);
+}
+
+.document-upload-zone.dragover {
+  border-color: rgba(147, 51, 234, 0.8);
+  background: rgba(147, 51, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.document-progress {
+  background: linear-gradient(90deg, #a855f7, #3b82f6);
+  background-size: 200% 100%;
+  animation: gradient-shift 2s ease infinite;
+}
+
+.document-search {
+  transition: all 0.3s ease;
+}
+
+.document-search:focus {
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.document-pagination {
+  transition: all 0.2s ease;
+}
+
+.document-pagination:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.document-empty-state {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.document-loading-skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.document-view-toggle {
+  transition: all 0.2s ease;
+}
+
+.document-view-toggle:hover {
+  transform: scale(1.05);
+}
+
+.document-bulk-actions {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+  backdrop-filter: blur(10px);
+  animation: fade-in-up 0.3s ease;
+}
+
+.document-file-type-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.document-file-type-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.document-file-type-badge:hover::before {
+  left: 100%;
+}
+
+.document-action-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.document-action-button:hover {
+  transform: scale(1.1);
+}
+
+.document-action-button:active {
+  transform: scale(0.95);
+}
+
+.document-delete-button {
+  transition: all 0.2s ease;
+}
+
+.document-delete-button:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.document-header {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(88, 28, 135, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.document-content {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(88, 28, 135, 0.8) 100%);
+}
+
+.document-floating-elements {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.document-floating-element {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(59, 130, 246, 0.1));
+  animation: float 6s ease-in-out infinite;
+}
+
+.document-floating-element:nth-child(1) {
+  width: 60px;
+  height: 60px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.document-floating-element:nth-child(2) {
+  width: 40px;
+  height: 40px;
+  top: 20%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.document-floating-element:nth-child(3) {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+.document-floating-element:nth-child(4) {
+  width: 30px;
+  height: 30px;
+  bottom: 10%;
+  right: 10%;
+  animation-delay: 1s;
+}
+
+.document-floating-element:nth-child(5) {
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 5%;
+  animation-delay: 3s;
+}
+
+.document-floating-element:nth-child(6) {
+  width: 35px;
+  height: 35px;
+  top: 30%;
+  right: 5%;
+  animation-delay: 5s;
+}
