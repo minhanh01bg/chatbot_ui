@@ -270,11 +270,7 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
       {/* Pagination Controls */}
       {totalDocs > 0 && totalPages > 1 && (
         <div className="flex items-center justify-between flex-shrink-0 mb-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">
-              Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
-            </span>
-          </div>
+          
 
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
@@ -370,12 +366,17 @@ export default function DocumentsTab({ siteId, site }: DocumentsTabProps) {
               </div>
             ) : (
               <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {endIndex} of {totalDocs} documents
+                  </span>
+                </div>
                 {paginatedDocuments.map((doc) => (
                   <div key={doc.id} className="flex items-center justify-between p-2 border rounded-lg">
                     <div className="flex items-center space-x-3">
                       <FileText className="h-6 w-6 text-blue-500" />
                       <div>
-                        <h3 className="font-medium text-sm">{doc.name}</h3>
+                        <h3 className="font-medium text-sm truncate max-w-xs">{doc.name}</h3>
                         <p className="text-sm text-muted-foreground">
                           Created: {new Date(doc.createdAt).toLocaleDateString()} •
                           Type: {doc.type}

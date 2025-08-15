@@ -14,9 +14,30 @@ import {
 } from '../../../components/ui/table';
 import { Pagination } from '../../../components/ui/pagination';
 import { Button } from '../../../components/ui/button';
-import { Eye, Edit, Trash2, Plus, Search, Globe, Database, Key, Mail, MessageCircle, BarChart3 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
+import { 
+  Eye, 
+  Edit, 
+  Trash2, 
+  Plus, 
+  Search, 
+  Globe, 
+  Database, 
+  Key, 
+  Mail, 
+  MessageCircle, 
+  BarChart3,
+  Settings,
+  Calendar,
+  ExternalLink,
+  Sparkles,
+  Zap,
+  Shield,
+  Activity
+} from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
+import { Skeleton } from '../../../components/ui/skeleton';
 import SiteChatButton from './SiteChatButton';
 import CreateSiteModal from './CreateSiteModal';
 import { deleteSite } from '@/services/site.service';
@@ -54,8 +75,9 @@ export default function SitesTable() {
   const [deletingSiteId, setDeletingSiteId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
 
   const fetchSites = async () => {
     try {
@@ -192,10 +214,11 @@ export default function SitesTable() {
       setSites(prev => prev.filter(site => getSiteId(site) !== siteId));
       
       // Show success message
-      console.log('Site deleted successfully');
+      toast.success('Site deleted successfully');
     } catch (error) {
       console.error('Error deleting site:', error);
       setError('Failed to delete site. Please try again.');
+      toast.error('Failed to delete site');
     } finally {
       setDeletingSiteId(null);
       setShowDeleteDialog(false);
@@ -208,186 +231,434 @@ export default function SitesTable() {
     setSiteToDelete(null);
   };
 
+  const getModelBadgeColor = (modelType?: string) => {
+    switch (modelType) {
+      case 'gpt-4':
+      case 'gpt-4-turbo':
+      case 'gpt-4o':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'gpt-4o-mini':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      default:
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+    }
+  };
+
+  const getModelIcon = (modelType?: string) => {
+    switch (modelType) {
+      case 'gpt-4':
+      case 'gpt-4-turbo':
+      case 'gpt-4o':
+        return <Sparkles className="h-3 w-3" />;
+      case 'gpt-4o-mini':
+        return <Zap className="h-3 w-3" />;
+      default:
+        return <Sparkles className="h-3 w-3" />;
+    }
+  };
+
+  // Loading skeleton for grid view
+  const GridSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Card key={i} className="animate-pulse">
+          <CardHeader className="pb-3">
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-16" />
+              <Skeleton className="h-6 w-20" />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
+  // Grid view component
+  const GridView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {filteredSites.map((site, index) => (
+        <Card 
+          key={getSiteId(site) || site.name} 
+          className="group hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border-0 shadow-md bg-gradient-to-br from-white to-gray-50/50"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors duration-200 truncate max-w-[200px]">
+                  {site.name}
+                </CardTitle>
+                <CardDescription className="flex items-center gap-1 mt-1 text-sm text-gray-500">
+                  <Globe className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate max-w-[180px]">{site.domain || site.url || 'No domain'}</span>
+                </CardDescription>
+              </div>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
+                  onClick={() => getSiteId(site) && router.push(`/admin/sites/${getSiteId(site)}`)}
+                  title="View Analytics"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
+                  onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
+                  title="View Documents"
+                >
+                  <Database className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Configuration Info */}
+            <div className="space-y-2">
+              {site.email && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <Mail className="mr-2 h-3 w-3 text-gray-400" />
+                  <span className="truncate max-w-[150px]">{site.email}</span>
+                </div>
+              )}
+              {site.openai_api_key && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <Key className="mr-2 h-3 w-3 text-gray-400" />
+                  <span className="font-mono text-xs">{truncate(site.openai_api_key, 15)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-2">
+              {site.model_type && (
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${getModelBadgeColor(site.model_type)} flex items-center gap-1`}
+                >
+                  {getModelIcon(site.model_type)}
+                  {site.model_type}
+                </Badge>
+              )}
+              {site.document_count !== undefined && (
+                <Badge 
+                  variant="outline" 
+                  className="text-xs bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1 cursor-pointer hover:bg-purple-100 transition-colors"
+                  onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
+                >
+                  <Database className="h-3 w-3" />
+                  {site.document_count} docs
+                </Badge>
+              )}
+            </div>
+
+            {/* Created Date */}
+            <div className="flex items-center text-xs text-gray-500">
+              <Calendar className="mr-1 h-3 w-3" />
+              Created {formatDate(site.created_at || site.created_time)}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between pt-2 border-t border-gray-100 gap-2">
+              <SiteChatButton site={site} variant="compact" />
+              <div className="flex gap-1 flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
+                  onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
+                  title="View Details"
+                  disabled={!getSiteId(site)}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                  title="Edit"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  title="Delete"
+                  onClick={() => handleDeleteClick(site)}
+                  disabled={deletingSiteId === getSiteId(site)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Sites</h2>
-          <p className="text-muted-foreground">
-            Manage your AI chat sites and configurations.
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            AI Sites Management
+          </h1>
+          <p className="text-gray-600 max-w-2xl">
+            Create and manage your AI-powered chat sites. Monitor performance, configure settings, and deploy chatbots across multiple domains.
           </p>
         </div>
-        <CreateSiteModal onSiteCreated={fetchSites} />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search sites..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
+        <div className="flex items-center gap-3">
+          <CreateSiteModal onSiteCreated={fetchSites} />
         </div>
       </div>
 
-      <div className="rounded-md border">
-        <div className="relative">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Site</TableHead>
-                <TableHead>Configuration</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    Loading sites...
-                  </TableCell>
-                </TableRow>
-              ) : error ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center text-red-500">
-                    {error}
-                  </TableCell>
-                </TableRow>
-              ) : filteredSites.length > 0 ? (
-                filteredSites.map((site) => (
-                  <TableRow key={getSiteId(site) || site.name}>
-                    <TableCell className="font-medium">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span>{site.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                            onClick={() => getSiteId(site) && router.push(`/admin/sites/${getSiteId(site)}`)}
-                            title="View Analytics"
-                          >
-                            <BarChart3 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        {site.domain && (
-                          <div className="text-sm text-muted-foreground flex items-center">
-                            <Globe className="h-3 w-3 mr-1" />
-                            {site.domain}
-                          </div>
-                        )}
-                        {site.url && !site.domain && (
-                          <div className="text-sm text-muted-foreground flex items-center">
-                            <Globe className="h-3 w-3 mr-1" />
-                            {site.url}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {site.email && (
-                        <div className="flex items-center mb-1 text-sm">
-                          <Mail className="mr-2 h-3 w-3 text-gray-500" />
-                          <span>{site.email}</span>
-                        </div>
-                      )}
-                      {site.openai_api_key && (
-                        <div className="flex items-center text-sm">
-                          <Key className="mr-2 h-3 w-3 text-gray-500" />
-                          <span className="font-mono">{truncate(site.openai_api_key, 20)}</span>
-                        </div>
-                      )}
-                      {site.model_type && (
-                        <Badge variant="outline" className="mt-1">
-                          {site.model_type}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(site.created_at || site.created_time)}
-                      {site.document_count !== undefined && (
-                        <Badge 
-                          variant="outline" 
-                          className="ml-2 flex items-center gap-1 w-fit cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                          onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
-                        >
-                          <Database className="h-3 w-3" />
-                          {site.document_count}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <SiteChatButton site={site} />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
-                          title="View Details"
-                          disabled={!getSiteId(site)}
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span className="sr-only">View Details</span>
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-                          title="Delete"
-                          onClick={() => handleDeleteClick(site)}
-                          disabled={deletingSiteId === getSiteId(site)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No sites found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center p-4 border-t border-gray-200 dark:border-gray-800">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+      {/* Search and Filters */}
+      <Card className="border-0 shadow-sm bg-gradient-to-r from-white to-gray-50/30">
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search sites by name, domain, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 border-0 bg-white/50 backdrop-blur-sm focus:bg-white transition-all duration-200"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="flex items-center gap-2"
+              >
+                <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+                  <div className="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                  <div className="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                  <div className="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                  <div className="w-1.5 h-1.5 bg-current rounded-sm"></div>
+                </div>
+                Grid
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="flex items-center gap-2"
+              >
+                <div className="flex flex-col gap-0.5 w-4 h-4">
+                  <div className="w-full h-0.5 bg-current rounded-sm"></div>
+                  <div className="w-full h-0.5 bg-current rounded-sm"></div>
+                  <div className="w-full h-0.5 bg-current rounded-sm"></div>
+                </div>
+                Table
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
+
+      {/* Content */}
+      {loading ? (
+        <GridSkeleton />
+      ) : error ? (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-8 text-center">
+            <div className="text-red-600 mb-2">
+              <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-semibold mb-2">Error Loading Sites</h3>
+              <p className="text-sm">{error}</p>
+            </div>
+            <Button onClick={fetchSites} variant="outline" className="mt-4">
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      ) : filteredSites.length > 0 ? (
+        <>
+          {viewMode === 'grid' ? (
+            <GridView />
+          ) : (
+            <Card className="border-0 shadow-sm overflow-hidden">
+              <div className="relative">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50/50">
+                      <TableHead className="font-semibold">Site</TableHead>
+                      <TableHead className="font-semibold">Configuration</TableHead>
+                      <TableHead className="font-semibold">Created</TableHead>
+                      <TableHead className="text-right font-semibold">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredSites.map((site) => (
+                      <TableRow key={getSiteId(site) || site.name} className="hover:bg-gray-50/50 transition-colors duration-150">
+                        <TableCell className="font-medium">
+                          <div>
+                            <div className="flex items-center gap-2">
+                                                             <span className="font-semibold text-gray-900 truncate max-w-[200px]">{site.name}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                onClick={() => getSiteId(site) && router.push(`/admin/sites/${getSiteId(site)}`)}
+                                title="View Analytics"
+                              >
+                                <BarChart3 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            {site.domain && (
+                                                             <div className="text-sm text-gray-500 flex items-center mt-1">
+                                 <Globe className="h-3 w-3 mr-1 flex-shrink-0" />
+                                 <span className="truncate max-w-[180px]">{site.domain}</span>
+                               </div>
+                            )}
+                            {site.url && !site.domain && (
+                                                             <div className="text-sm text-gray-500 flex items-center mt-1">
+                                 <Globe className="h-3 w-3 mr-1 flex-shrink-0" />
+                                 <span className="truncate max-w-[180px]">{site.url}</span>
+                               </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {site.email && (
+                            <div className="flex items-center mb-1 text-sm">
+                              <Mail className="mr-2 h-3 w-3 text-gray-500" />
+                              <span>{site.email}</span>
+                            </div>
+                          )}
+                          {site.openai_api_key && (
+                            <div className="flex items-center text-sm">
+                              <Key className="mr-2 h-3 w-3 text-gray-500" />
+                              <span className="font-mono">{truncate(site.openai_api_key, 20)}</span>
+                            </div>
+                          )}
+                          {site.model_type && (
+                            <Badge variant="outline" className={`mt-1 text-xs ${getModelBadgeColor(site.model_type)} flex items-center gap-1 w-fit`}>
+                              {getModelIcon(site.model_type)}
+                              {site.model_type}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">{formatDate(site.created_at || site.created_time)}</span>
+                                                         {site.document_count !== undefined && (
+                               <Badge 
+                                 variant="outline" 
+                                 className="text-xs bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1 cursor-pointer hover:bg-purple-100 transition-colors"
+                                 onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
+                               >
+                                 <Database className="h-3 w-3" />
+                                 {site.document_count}
+                               </Badge>
+                             )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <SiteChatButton site={site} />
+                                                         <Button
+                               variant="ghost"
+                               size="sm"
+                               className="h-8 w-8 p-0 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
+                               onClick={() => getSiteId(site) && navigateToSiteDocuments(site)}
+                               title="View Details"
+                               disabled={!getSiteId(site)}
+                             >
+                               <Eye className="h-4 w-4" />
+                             </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 text-gray-400 hover:text-green-600 hover:bg-green-50"
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                              title="Delete"
+                              onClick={() => handleDeleteClick(site)}
+                              disabled={deletingSiteId === getSiteId(site)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          )}
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center pt-6">
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-4">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </>
+      ) : (
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-400 mb-4">
+              <Globe className="h-16 w-16 mx-auto mb-4 opacity-30" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No sites found</h3>
+              <p className="text-sm text-gray-500 mb-6">
+                {searchTerm ? 'No sites match your search criteria.' : 'Get started by creating your first AI-powered site.'}
+              </p>
+              {!searchTerm && <CreateSiteModal onSiteCreated={fetchSites} />}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Delete Confirmation Dialog */}
       {showDeleteDialog && siteToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">Delete Site</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to delete <strong>{siteToDelete.name}</strong>? 
-              This action cannot be undone and will remove all associated data.
-            </p>
-            <div className="flex justify-end space-x-3">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <Card className="max-w-md mx-4 border-0 shadow-2xl animate-in zoom-in-95 duration-200">
+            <CardHeader>
+              <CardTitle className="text-red-600 flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
+                Delete Site
+              </CardTitle>
+              <CardDescription>
+                This action cannot be undone. All associated data will be permanently removed.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Are you sure you want to delete <strong className="text-gray-900">{siteToDelete.name}</strong>?
+              </p>
+            </CardContent>
+            <CardContent className="flex justify-end gap-3 pt-0">
               <Button
                 variant="outline"
                 onClick={handleDeleteCancel}
@@ -399,13 +670,72 @@ export default function SitesTable() {
                 variant="destructive"
                 onClick={handleDeleteConfirm}
                 disabled={deletingSiteId === getSiteId(siteToDelete)}
+                className="bg-red-600 hover:bg-red-700"
               >
-                {deletingSiteId === getSiteId(siteToDelete) ? 'Deleting...' : 'Delete'}
+                {deletingSiteId === getSiteId(siteToDelete) ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Site'
+                )}
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slide-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+          animation: slide-in-right 0.4s ease-out forwards;
+        }
+
+        .card-hover {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .text-overflow-safe {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .flex-shrink-0 {
+          flex-shrink: 0;
+        }
+      `}</style>
     </div>
   );
 } 
