@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bot, Menu, X, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, Menu, X, ChevronDown, Sparkles, Rocket, BookOpen, Zap } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-current-user';
 
 interface NavbarProps {
@@ -13,84 +14,170 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
   const { user, isLoading, isAuthenticated } = useCurrentUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navigationItems = variant === 'landing' 
     ? [
-        { name: 'Features', href: '#features' },
-        { name: 'Pricing', href: '#pricing' },
-        { name: 'Reviews', href: '#testimonials' },
-        { name: 'Blog', href: '/blogs' }
+        { name: 'Features', href: '#features', icon: <Zap className="w-4 h-4" /> },
+        { name: 'Pricing', href: '#pricing', icon: <Sparkles className="w-4 h-4" /> },
+        { name: 'Reviews', href: '#testimonials', icon: <BookOpen className="w-4 h-4" /> },
+        { name: 'Blog', href: '/blogs', icon: <BookOpen className="w-4 h-4" /> }
       ]
     : [
-        { name: 'Home', href: '/' },
-        { name: 'Features', href: '/#features' },
-        { name: 'Pricing', href: '/#pricing' },
-        { name: 'Blog', href: '/blogs' }
+        { name: 'Home', href: '/', icon: <Rocket className="w-4 h-4" /> },
+        { name: 'Features', href: '/#features', icon: <Zap className="w-4 h-4" /> },
+        { name: 'Pricing', href: '/#pricing', icon: <Sparkles className="w-4 h-4" /> },
+        { name: 'Blog', href: '/blogs', icon: <BookOpen className="w-4 h-4" /> }
       ];
 
   const productMenuItems = [
-    { name: 'AI Chat', href: '/chat', description: 'Start chatting with AI' },
-    { name: 'Documentation', href: '/docs', description: 'API and guides' },
-    { name: 'API', href: '/api', description: 'Developer resources' },
-    { name: 'Integrations', href: '/integrations', description: 'Connect with your tools' }
+    { 
+      name: 'AI Chat', 
+      href: '/chat', 
+      description: 'Start chatting with AI',
+      icon: <Bot className="w-5 h-5" />,
+      color: 'from-purple-500 to-blue-500'
+    },
+    { 
+      name: 'Documentation', 
+      href: '/docs', 
+      description: 'API and guides',
+      icon: <BookOpen className="w-5 h-5" />,
+      color: 'from-green-500 to-blue-500'
+    },
+    { 
+      name: 'API', 
+      href: '/api', 
+      description: 'Developer resources',
+      icon: <Zap className="w-5 h-5" />,
+      color: 'from-orange-500 to-red-500'
+    },
+    { 
+      name: 'Integrations', 
+      href: '/integrations', 
+      description: 'Connect with your tools',
+      icon: <Sparkles className="w-5 h-5" />,
+      color: 'from-pink-500 to-purple-500'
+    }
   ];
 
   return (
-    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200/50 shadow-sm">
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/20' 
+          : 'bg-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <motion.div 
+            className="flex items-center space-x-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          >
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-9 h-9 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <Bot className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+              <motion.div 
+                className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Bot className="w-6 h-6 text-white" />
+              </motion.div>
+              <span className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
                 ChatAI Pro
               </span>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-2">
             {/* Product Dropdown */}
             <div className="relative">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                className="flex items-center space-x-1 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                className="flex items-center space-x-2 px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 backdrop-blur-sm"
               >
                 <span>Product</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProductDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+                <motion.div
+                  animate={{ rotate: isProductDropdownOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </motion.div>
+              </motion.button>
               
-              {isProductDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-                  <div className="grid grid-cols-2 gap-1 p-2">
-                    {productMenuItems.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex flex-col p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsProductDropdownOpen(false)}
-                      >
-                        <span className="font-medium text-gray-900">{item.name}</span>
-                        <span className="text-sm text-gray-500">{item.description}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <AnimatePresence>
+                {isProductDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 mt-2 w-96 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 py-3 z-50"
+                  >
+                    <div className="grid grid-cols-2 gap-2 p-3">
+                      {productMenuItems.map((item, index) => (
+                        <motion.div
+                          key={item.name}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <Link
+                            href={item.href}
+                            className="flex flex-col p-3 rounded-xl hover:bg-white/10 transition-all duration-200 group"
+                            onClick={() => setIsProductDropdownOpen(false)}
+                          >
+                            <div className="flex items-center space-x-2 mb-2">
+                              <div className={`w-8 h-8 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                                {item.icon}
+                              </div>
+                              <span className="font-medium text-white">{item.name}</span>
+                            </div>
+                            <span className="text-sm text-white/60 group-hover:text-white/80 transition-colors">{item.description}</span>
+                          </Link>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Navigation Links */}
-            {navigationItems.map((item) => (
-              <Link
+            {navigationItems.map((item, index) => (
+              <motion.div
                 key={item.name}
-                href={item.href}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {item.name}
-              </Link>
+                <Link
+                  href={item.href}
+                  className="flex items-center space-x-2 px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 backdrop-blur-sm group"
+                >
+                  <span className="text-purple-300 group-hover:scale-110 transition-transform duration-200">
+                    {item.icon}
+                  </span>
+                  <span>{item.name}</span>
+                </Link>
+              </motion.div>
             ))}
           </div>
 
@@ -100,30 +187,45 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               <>
                 {isAuthenticated ? (
                   <>
-                    <span className="text-gray-600 text-sm">
+                    <span className="text-white/80 text-sm">
                       Welcome, {user?.name || 'User'}!
                     </span>
-                    <Link
-                      href="/admin"
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      Dashboard
-                    </Link>
+                      <Link
+                        href="/admin"
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                      >
+                        Dashboard
+                      </Link>
+                    </motion.div>
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
-                      className="text-gray-600 hover:text-gray-900 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50"
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                      <Link
+                        href="/login"
+                        className="text-white/80 hover:text-white transition-colors px-6 py-2 rounded-xl hover:bg-white/10 backdrop-blur-sm"
+                      >
+                        Sign In
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      Get Started
-                    </Link>
+                      <Link
+                        href="/register"
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                      >
+                        Get Started
+                      </Link>
+                    </motion.div>
                   </>
                 )}
               </>
@@ -132,97 +234,135 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              className="p-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 backdrop-blur-sm"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {/* Product Menu for Mobile */}
-              <div className="px-3 py-2">
-                <div className="text-sm font-medium text-gray-500 mb-2">Product</div>
-                <div className="space-y-1">
-                  {productMenuItems.map((item) => (
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="lg:hidden border-t border-white/10 bg-black/80 backdrop-blur-xl"
+            >
+              <div className="px-2 pt-4 pb-6 space-y-3">
+                {/* Product Menu for Mobile */}
+                <div className="px-3 py-2">
+                  <div className="text-sm font-medium text-white/60 mb-3">Product</div>
+                  <div className="space-y-2">
+                    {productMenuItems.map((item, index) => (
+                      <motion.div
+                        key={item.name}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Link
+                          href={item.href}
+                          className="flex items-center space-x-3 p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <div className={`w-8 h-8 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center`}>
+                            {item.icon}
+                          </div>
+                          <div>
+                            <div className="font-medium">{item.name}</div>
+                            <div className="text-sm text-white/60">{item.description}</div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Navigation Links */}
+                {navigationItems.map((item, index) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
                     <Link
-                      key={item.name}
                       href={item.href}
-                      className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                      className="flex items-center space-x-3 px-3 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-sm text-gray-500">{item.description}</div>
+                      <span className="text-purple-300">{item.icon}</span>
+                      <span>{item.name}</span>
                     </Link>
-                  ))}
-                </div>
-              </div>
+                  </motion.div>
+                ))}
 
-              {/* Navigation Links */}
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-
-              {/* Mobile Auth Buttons */}
-              {!isLoading && (
-                <div className="pt-4 border-t border-gray-200">
-                  {isAuthenticated ? (
-                    <div className="space-y-2">
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        Welcome, {user?.name || 'User'}!
+                {/* Mobile Auth Buttons */}
+                {!isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="pt-4 border-t border-white/10"
+                  >
+                    {isAuthenticated ? (
+                      <div className="space-y-3">
+                        <div className="px-3 py-2 text-sm text-white/60">
+                          Welcome, {user?.name || 'User'}!
+                        </div>
+                        <Link
+                          href="/admin"
+                          className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Go to Dashboard
+                        </Link>
                       </div>
-                      <Link
-                        href="/admin"
-                        className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Go to Dashboard
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Link
-                        href="/login"
-                        className="block w-full text-center text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        href="/register"
-                        className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Get Started
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+                    ) : (
+                      <div className="space-y-3">
+                        <Link
+                          href="/login"
+                          className="block w-full text-center text-white/80 hover:text-white px-6 py-3 rounded-xl hover:bg-white/10 transition-all duration-200"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          href="/register"
+                          className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Get Started
+                        </Link>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Backdrop for mobile menu */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
-    </nav>
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 } 
