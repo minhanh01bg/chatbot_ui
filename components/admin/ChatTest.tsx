@@ -9,15 +9,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, User, ArrowDown, Send, MessageSquare, Zap } from 'lucide-react';
+import { Bot, User, ArrowDown, Send, MessageSquare, Zap, Sparkles, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
+import styles from './ChatTest.module.css';
+import MessageBubble from './MessageBubble';
+import WelcomeScreen from './WelcomeScreen';
 
 interface ChatTestProps {
   variant?: 'embedded' | 'fullpage';
   site?: Site;
 }
+
+// Typing indicator component
+const TypingIndicator = () => (
+  <div className={cn(
+    "flex items-center gap-2 p-3 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-100 dark:border-blue-800/50 max-w-[80%] mr-auto",
+    styles.typingIndicator
+  )}>
+    <Avatar className={cn("h-8 w-8", styles.avatar)}>
+      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+        <Bot className="h-4 w-4" />
+      </AvatarFallback>
+    </Avatar>
+    <div className="flex space-x-1">
+      <div className={cn("w-2 h-2 bg-blue-400 rounded-full", styles.typingDot)} style={{ animationDelay: '0ms' }}></div>
+      <div className={cn("w-2 h-2 bg-blue-400 rounded-full", styles.typingDot)} style={{ animationDelay: '150ms' }}></div>
+      <div className={cn("w-2 h-2 bg-blue-400 rounded-full", styles.typingDot)} style={{ animationDelay: '300ms' }}></div>
+    </div>
+  </div>
+);
 
 export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -111,7 +132,6 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
           return updated;
         });
       }
-      // setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error fetching response:', error);
       
@@ -129,172 +149,113 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
 
   return (
     <Card className={cn(
-      "flex flex-col h-[calc(100vh-9rem)] w-full",
-      variant === 'fullpage' ? "max-w-3xl mx-auto" : ""
+      "flex flex-col h-[calc(100vh-9rem)] w-full overflow-hidden",
+      variant === 'fullpage' ? "max-w-4xl mx-auto" : "",
+      "bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50 dark:from-gray-900 dark:via-blue-950/20 dark:to-indigo-950/20",
+      "border-0 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/5",
+      "backdrop-blur-sm"
     )}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 flex-shrink-0">
-        <div>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Chat Test
-          </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            Test your AI assistant with {site?.name || 'this site'}
-          </p>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 flex-shrink-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 dark:from-blue-600/20 dark:via-indigo-600/20 dark:to-purple-600/20 border-b border-blue-200/50 dark:border-blue-800/50">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+            <MessageSquare className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-100">
+              AI Chat Assistant
+              <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
+            </CardTitle>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
+              Powered by {site?.name || 'your documents'}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="flex items-center gap-1">
-            <Zap className="h-3 w-3" />
-            {messages.length} messages
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="flex items-center gap-1.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-blue-200 dark:border-blue-700">
+            <Zap className="h-3 w-3 text-blue-500" />
+            <span className="text-gray-700 dark:text-gray-300 font-medium">{messages.length}</span>
           </Badge>
           {site?.chat_token && (
-            <Badge variant="secondary">Connected</Badge>
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-md">
+              Connected
+            </Badge>
           )}
         </div>
       </CardHeader>
 
       <CardContent className="flex-1 min-h-0 p-0 flex flex-col">
         <div className="flex-1 min-h-0 relative">
-        <ScrollArea
+                  <ScrollArea
           ref={scrollAreaRef}
           onScroll={handleScroll}
-          className="h-full"
+          className={cn("h-full", styles.customScrollbar, styles.smoothScroll)}
         >
-          <div className="p-4 space-y-4">
-            {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center px-4 py-10 text-muted-foreground">
-                <Bot className="h-12 w-12 mb-4 opacity-50" />
-                <h3 className="font-medium text-lg mb-2">Test Your Documents</h3>
-                <p className="max-w-sm">
-                  Ask questions to see how your AI responds using the documents you've imported.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message, index) => (
-                  <div 
-                    key={index}
-                    className={cn(
-                      "flex items-start gap-3 rounded-lg p-3 chat-message",
-                      message.role === 'user' ? "ml-auto max-w-[80%] chat-message-user" : "mr-auto max-w-[80%] chat-message-assistant"
-                    )}
-                  >
-                    {message.role === 'assistant' && (
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-blue-600 text-white">
-                          <Bot className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div className="flex-1 overflow-hidden">
-                      {message.role === 'assistant' ? (
-                        <div className="prose prose-sm max-w-none dark:prose-invert text-gray-800 dark:text-gray-200">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                              code: ({ className, children, ...props }: any) => {
-                                const match = /language-(\w+)/.exec(className || '');
-                                const isInline = !match;
-                                return isInline ? (
-                                  <code className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                                    {children}
-                                  </code>
-                                ) : (
-                                  <pre className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-lg overflow-x-auto my-3 border border-gray-200 dark:border-gray-700">
-                                    <code className={`${className} text-sm font-mono`} {...props}>
-                                      {children}
-                                    </code>
-                                  </pre>
-                                );
-                              },
-                              pre: ({ children }) => <div>{children}</div>,
-                              h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-4 first:mt-0 pb-1 border-b border-gray-200 dark:border-gray-700">{children}</h1>,
-                              h2: ({ children }) => <h2 className="text-lg font-semibold mb-2 mt-3 first:mt-0 pb-0.5">{children}</h2>,
-                              h3: ({ children }) => <h3 className="text-base font-medium mb-1 mt-2 first:mt-0">{children}</h3>,
-                              ul: ({ children }) => <ul className="list-disc ml-5 mb-4 space-y-1">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal ml-5 mb-4 space-y-1">{children}</ol>,
-                              li: ({ children }) => <li className="leading-relaxed pl-1">{children}</li>,
-                              p: ({ children }) => <p className="mb-3 last:mb-0 leading-relaxed text-gray-800 dark:text-gray-200">{children}</p>,
-                              blockquote: ({ children }) => (
-                                <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-3 bg-gray-50 dark:bg-gray-800/50 py-2 rounded-r text-gray-700 dark:text-gray-300">
-                                  {children}
-                                </blockquote>
-                              ),
-                              strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
-                              em: ({ children }) => <em className="italic text-gray-800 dark:text-gray-200">{children}</em>,
-                              table: ({ children }) => (
-                                <div className="overflow-x-auto my-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                                  <table className="min-w-full border-collapse">
-                                    {children}
-                                  </table>
-                                </div>
-                              ),
-                              th: ({ children }) => (
-                                <th className="border-b border-r last:border-r-0 border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800 font-semibold text-left text-gray-700 dark:text-gray-300">
-                                  {children}
-                                </th>
-                              ),
-                              td: ({ children }) => (
-                                <td className="border-b border-r last:border-r-0 border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-800 dark:text-gray-200">
-                                  {children}
-                                </td>
-                              ),
-                            }}
-                          >
-                            {message.content}
-                          </ReactMarkdown>
-                        </div>
-                      ) : (
-                        <p className="whitespace-pre-wrap break-words leading-relaxed">
-                          {message.content}
-                        </p>
-                      )}
-                      <p className="mt-1 text-xs opacity-50">
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    </div>
-                    {message.role === 'user' && (
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-background text-foreground">
-                          <User className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+            <div className="p-6 space-y-6">
+              {messages.length === 0 ? (
+                <WelcomeScreen siteName={site?.name} />
+              ) : (
+                <div className="space-y-6">
+                  {messages.map((message, index) => (
+                    <MessageBubble 
+                      key={index}
+                      message={message}
+                      index={index}
+                    />
+                  ))}
+                  
+                  {isLoading && <TypingIndicator />}
+                  
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
+            </div>
+          </ScrollArea>
 
-        {showScrollButton && (
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute bottom-20 right-6 rounded-full shadow-md z-10"
-            onClick={scrollToBottom}
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        )}
+          {showScrollButton && (
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                "absolute bottom-24 right-6 rounded-full shadow-lg z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-blue-200 dark:border-blue-700 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110",
+                styles.scrollButton
+              )}
+              onClick={scrollToBottom}
+            >
+              <ArrowDown className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </Button>
+          )}
         </div>
 
-        <div className="border-t p-4 flex-shrink-0">
-          <form onSubmit={handleSubmit} className="flex items-center gap-2">
-            <Input
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              disabled={isLoading}
-              className="flex-1"
-            />
+        <div className="border-t border-gray-200 dark:border-gray-700 p-6 flex-shrink-0 bg-gradient-to-r from-gray-50/50 to-blue-50/50 dark:from-gray-800/50 dark:to-blue-950/20">
+          <form onSubmit={handleSubmit} className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Input
+                placeholder="Ask me anything about your documents..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+                className={cn(
+                  "w-full pl-4 pr-12 py-3 rounded-2xl border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 transition-all duration-300 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md focus:outline-none focus-visible:outline-none focus:ring-0 focus:ring-offset-0",
+                  styles.inputField
+                )}
+                style={{ outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
+              />
+              {isLoading && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <Loader2 className={cn("h-5 w-5 text-blue-500", styles.loadingSpinner)} />
+                </div>
+              )}
+            </div>
             <Button
               type="submit"
               size="icon"
               disabled={isLoading || !input.trim()}
+              className={cn(
+                "h-12 w-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+                styles.sendButton
+              )}
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
             </Button>
           </form>
         </div>

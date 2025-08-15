@@ -39,11 +39,11 @@ export default function SiteDocuments({ siteId, site }: SiteDocumentsProps) {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="documents" className="flex-1 min-h-0 mt-4">
+            <TabsContent value="documents" className="flex-1 min-h-0">
               <DocumentsTab siteId={siteId} site={site} />
             </TabsContent>
 
-            <TabsContent value="crawler" className="flex-1 min-h-0 mt-4">
+            <TabsContent value="crawler" className="flex-1 min-h-0">
               <CrawlerTab siteId={siteId} site={site} />
             </TabsContent>
           </Tabs>
