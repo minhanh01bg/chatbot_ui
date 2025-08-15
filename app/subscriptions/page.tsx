@@ -6,7 +6,7 @@ import { ArrowLeft, CreditCard, Sparkles, CheckCircle, AlertCircle, Clock, Users
 import Link from 'next/link';
 import { getMySubscriptions } from '@/services/subscription.service';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { Subscription } from '@/types/plan';
 import { cancelMySubscription } from '@/services/subscription.service';
 import { toast } from 'sonner';
@@ -21,19 +21,21 @@ import {
 } from '@/components/ui/dialog';
 
 export default function SubscriptionsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [subscriptionToCancel, setSubscriptionToCancel] = useState<Subscription | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const hasLoadedRef = useRef(false);
 
   const loadSubscriptions = async () => {
-    if (session?.accessToken) {
+    if (session?.accessToken && !hasLoadedRef.current) {
       setIsLoading(true);
       try {
         const subscriptions = await getMySubscriptions(session.accessToken);
         setSubscriptions(subscriptions);
+        hasLoadedRef.current = true;
       } catch (error) {
         console.error('Failed to load subscriptions:', error);
         toast.error('Failed to load subscriptions');
@@ -43,14 +45,18 @@ export default function SubscriptionsPage() {
     }
   };
 
+  // Only load when session is authenticated and not loading
   useEffect(() => {
-    loadSubscriptions();
-  }, [session]);
+    if (status === 'authenticated' && session?.accessToken && !hasLoadedRef.current) {
+      loadSubscriptions();
+    }
+  }, [session, status]);
 
   // Refresh data when page becomes visible (e.g., when returning from success page)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!document.hidden && session?.accessToken) {
+      if (!document.hidden && session?.accessToken && hasLoadedRef.current) {
+        // Only refresh if we've already loaded once
         loadSubscriptions();
       }
     };
@@ -88,12 +94,6 @@ export default function SubscriptionsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-4">
-            {/* <Link href="/plans">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-purple-600">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Plans
-              </Button>
-            </Link> */}
             <div>
               <div className="flex items-center space-x-2 mb-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
