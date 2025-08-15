@@ -1,53 +1,33 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { useAuthRedirect } from '@/hooks/use-auth-redirect';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { LoadingSpinner } from './loading-spinner';
-import { RedirectNotice } from './redirect-notice';
-import { AuthRequiredNotice } from './auth-required-notice';
 
 interface AuthGuardProps {
-  children: ReactNode;
-  redirectTo?: string;
-  redirectIfAuthenticated?: boolean;
-  loadingComponent?: ReactNode;
-  requireAuth?: boolean;
-  authRequiredMessage?: string;
+  children: React.ReactNode;
 }
 
-export function AuthGuard({ 
-  children, 
-  redirectTo = '/admin',
-  redirectIfAuthenticated = true,
-  loadingComponent = null,
-  requireAuth = false,
-  authRequiredMessage = "Please log in to access this page."
-}: AuthGuardProps) {
-  const { isLoading, loadingFallback, showRedirectNotice, isAuthenticated } = useAuthRedirect({
-    redirectTo,
-    redirectIfAuthenticated,
-    loadingFallback: loadingComponent
-  });
+export function AuthGuard({ children }: AuthGuardProps) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  // Hiển thị loading component nếu đang loading
-  if (isLoading) {
-    return loadingComponent ? (
-      <>{loadingComponent}</>
-    ) : (
-      <LoadingSpinner text="Checking authentication..." />
-    );
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (!session) {
+      router.push('/login');
+    }
+  }, [session, status, router]);
+
+  if (status === 'loading') {
+    return <LoadingSpinner />;
   }
 
-  // Hiển thị thông báo redirect nếu cần
-  if (showRedirectNotice) {
-    return <RedirectNotice redirectTo={redirectTo} />;
+  if (!session) {
+    return null;
   }
 
-  // Nếu yêu cầu auth và user chưa đăng nhập
-  if (requireAuth && !isLoading && !isAuthenticated) {
-    return <AuthRequiredNotice message={authRequiredMessage} />;
-  }
-
-  // Nếu không loading và không redirect, hiển thị children
   return <>{children}</>;
 } 

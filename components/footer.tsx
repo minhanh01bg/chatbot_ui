@@ -15,32 +15,9 @@ import {
   Award
 } from "lucide-react";
 
-interface FooterProps {
-  variant?: 'landing' | 'admin' | 'simple';
-}
-
-export function Footer({ variant = 'landing' }: FooterProps) {
+export function Footer() {
   const currentYear = new Date().getFullYear();
 
-  // Simple footer for admin and other pages
-  if (variant === 'simple') {
-    return (
-      <footer className="py-4 px-6 border-t border-gray-200 bg-white/50 backdrop-blur-sm text-sm text-gray-600 text-center">
-        <p>© {currentYear} ChatAI Pro. All rights reserved.</p>
-      </footer>
-    );
-  }
-
-  // Admin footer
-  if (variant === 'admin') {
-    return (
-      <footer className="py-4 px-6 border-t border-gray-200 bg-white/50 backdrop-blur-sm text-sm text-gray-600 text-center">
-        <p>© {currentYear} Admin Dashboard. All rights reserved.</p>
-      </footer>
-    );
-  }
-
-  // Landing page footer (full version)
   const footerSections = [
     {
       title: "Product",
