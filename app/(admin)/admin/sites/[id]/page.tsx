@@ -21,6 +21,13 @@ interface Site {
 }
 
 export default function SiteDetailPage() {
+  // Custom number formatting to avoid hydration issues
+  const formatNumber = (num: number) => {
+    const parts = num.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  };
+
   const params = useParams();
   const siteId = params.id as string;
   const [site, setSite] = useState<Site | null>(null);
@@ -163,7 +170,7 @@ export default function SiteDetailPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-purple-100 text-sm font-medium">Total Visitors</p>
-                      <p className="text-3xl font-bold">{fakeSiteStats.totalVisitors.toLocaleString()}</p>
+                      <p className="text-3xl font-bold">{formatNumber(fakeSiteStats.totalVisitors)}</p>
                       <p className="text-purple-200 text-sm">+{fakeSiteStats.monthlyGrowth}% from last month</p>
                     </div>
                     <Users className="w-12 h-12 text-purple-200" />
@@ -176,7 +183,7 @@ export default function SiteDetailPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-green-100 text-sm font-medium">Revenue</p>
-                      <p className="text-3xl font-bold">${fakeSiteStats.totalRevenue.toLocaleString()}</p>
+                      <p className="text-3xl font-bold">${formatNumber(fakeSiteStats.totalRevenue)}</p>
                       <p className="text-green-200 text-sm">+{fakeSiteStats.conversionRate}% conversion rate</p>
                     </div>
                     <DollarSign className="w-12 h-12 text-green-200" />
@@ -299,7 +306,7 @@ export default function SiteDetailPage() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">{page.page}</p>
-                          <p className="text-xs text-gray-500">{page.views.toLocaleString()} views</p>
+                          <p className="text-xs text-gray-500">{formatNumber(page.views)} views</p>
                         </div>
                       </div>
                       <div className="text-right">

@@ -170,15 +170,16 @@ export default function SiteDashboardStats({ siteKey, siteName, rangeDays = 7 }:
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
+    // Use consistent formatting to avoid hydration issues
+    return `$${amount.toFixed(2)}`;
   };
 
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num);
+    // Use consistent formatting to avoid hydration issues
+    // Custom implementation that doesn't rely on locale
+    const parts = num.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
   };
 
   // If we have a specific siteKey, show that site's stats

@@ -100,13 +100,6 @@ export const {
   callbacks: {
     // Add timestamp to ensure token is always refreshed
     async jwt({ token, user }) {
-      console.log('JWT callback called with:', {
-        hasUser: !!user,
-        hasToken: !!token,
-        tokenId: token?.id,
-        tokenAccessToken: token?.accessToken ? 'exists' : 'none'
-      });
-
       if (user) {
         const customUser = user as CustomUser;
         token.id = customUser.id;
@@ -142,14 +135,6 @@ export const {
       session: ExtendedSession;
       token: any;
     }) {
-      console.log('Session callback called with:', {
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        hasToken: !!token,
-        tokenAccessToken: token?.accessToken ? 'exists' : 'none',
-        tokenRole: token?.role
-      });
-
       if (session.user) {
         session.user.id = token.id as string;
         // Add token information to session

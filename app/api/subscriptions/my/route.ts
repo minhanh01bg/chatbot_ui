@@ -150,13 +150,6 @@ export async function GET(request: NextRequest) {
       }
 
       const data = await response.json();
-      console.log('Subscription data received:', {
-        hasSubscription: !!data,
-        subscriptionId: data?.id,
-        productName: data?.product_name,
-        status: data?.status
-      });
-
       return NextResponse.json(data);
       
     } catch (fetchError) {

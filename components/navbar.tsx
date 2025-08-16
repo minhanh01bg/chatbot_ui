@@ -129,7 +129,11 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-96 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 py-3 z-50"
+                    className={`absolute top-full left-0 mt-2 w-96 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 py-3 z-50 ${
+                      scrolled 
+                        ? 'bg-black/90' 
+                        : 'bg-white/10'
+                    }`}
                   >
                     <div className="grid grid-cols-2 gap-2 p-3">
                       {productMenuItems.map((item, index) => (

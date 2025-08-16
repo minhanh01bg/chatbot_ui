@@ -165,6 +165,12 @@ const categories = [
 const ITEMS_PER_PAGE = 6;
 
 export default function BlogsPage() {
+  // Custom number formatting to avoid hydration issues
+  const formatNumber = (num: number) => {
+    const parts = num.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -369,7 +375,7 @@ export default function BlogsPage() {
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-1 text-gray-400">
                             <Eye className="w-4 h-4" />
-                            <span>{post.views.toLocaleString()}</span>
+                            <span>{formatNumber(post.views)}</span>
                           </div>
                           <div className="flex items-center space-x-1 text-gray-400">
                             <Heart className="w-4 h-4" />
@@ -534,7 +540,7 @@ export default function BlogsPage() {
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-1 text-gray-400">
                               <Eye className="w-4 h-4" />
-                              <span>{post.views.toLocaleString()}</span>
+                              <span>{formatNumber(post.views)}</span>
                             </div>
                             <div className="flex items-center space-x-1 text-gray-400 hover:text-red-400 transition-colors cursor-pointer">
                               <Heart className="w-4 h-4" />
