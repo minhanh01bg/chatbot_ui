@@ -41,14 +41,14 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-black text-white overflow-hidden">
+    <div ref={containerRef} className="min-h-screen bg-background text-foreground overflow-hidden">
       {/* Navigation */}
       <Navbar variant="landing" />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="absolute inset-0 bg-gradient-dark">
           <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
           <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
           <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
@@ -61,7 +61,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2 }}
             className="mb-8"
           >
-            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-3 rounded-full mb-8">
+            <div className="inline-flex items-center space-x-2 glass px-6 py-3 rounded-full mb-8">
               <Sparkles className="w-5 h-5 text-purple-400" />
               <span className="text-purple-300 font-medium">Next-Generation AI Chat Platform</span>
             </div>
@@ -74,7 +74,7 @@ export default function Home() {
             className="text-6xl lg:text-8xl font-bold mb-6"
           >
             Experience the Future of{" "}
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="gradient-text">
               AI Conversations
             </span>
           </motion.h1>
@@ -83,7 +83,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed"
+            className="text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed"
           >
             Transform your digital interactions with our cutting-edge AI chatbot. Experience human-like conversations, instant responses, and intelligent context understanding that adapts to your needs.
           </motion.p>

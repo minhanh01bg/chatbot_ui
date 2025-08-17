@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Menu, X, ChevronDown, Sparkles, Rocket, BookOpen, Zap } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
 interface NavbarProps {
   variant?: 'landing' | 'blog';
@@ -75,11 +76,11 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/20' 
-          : 'bg-transparent'
-      }`}
+             className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+         scrolled 
+           ? 'bg-background/80 backdrop-blur-xl border-b border-border shadow-2xl' 
+           : 'bg-transparent'
+       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
@@ -97,9 +98,9 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               >
                 <Bot className="w-6 h-6 text-white" />
               </motion.div>
-              <span className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
-                ChatAI Pro
-              </span>
+                             <span className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
+                 ChatAI Pro
+               </span>
             </Link>
           </motion.div>
 
@@ -111,7 +112,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 backdrop-blur-sm"
+                                 className="flex items-center space-x-2 px-4 py-2 text-foreground hover:text-primary hover:bg-muted rounded-xl transition-all duration-200"
               >
                 <span>Product</span>
                 <motion.div
@@ -129,11 +130,11 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute top-full left-0 mt-2 w-96 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 py-3 z-50 ${
-                      scrolled 
-                        ? 'bg-black/90' 
-                        : 'bg-white/10'
-                    }`}
+                                         className={`absolute top-full left-0 mt-2 w-96 backdrop-blur-xl border border-border rounded-2xl shadow-2xl py-3 z-50 ${
+                       scrolled 
+                         ? 'bg-background/90' 
+                         : 'bg-background/10'
+                     }`}
                   >
                     <div className="grid grid-cols-2 gap-2 p-3">
                       {productMenuItems.map((item, index) => (
@@ -145,16 +146,16 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                         >
                           <Link
                             href={item.href}
-                            className="flex flex-col p-3 rounded-xl hover:bg-white/10 transition-all duration-200 group"
+                                                         className="flex flex-col p-3 rounded-xl hover:bg-foreground/10 transition-all duration-200 group"
                             onClick={() => setIsProductDropdownOpen(false)}
                           >
                             <div className="flex items-center space-x-2 mb-2">
                               <div className={`w-8 h-8 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                                 {item.icon}
                               </div>
-                              <span className="font-medium text-white">{item.name}</span>
+                                                             <span className="font-medium text-foreground">{item.name}</span>
                             </div>
-                            <span className="text-sm text-white/60 group-hover:text-white/80 transition-colors">{item.description}</span>
+                                                         <span className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors">{item.description}</span>
                           </Link>
                         </motion.div>
                       ))}
@@ -174,7 +175,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-2 px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 backdrop-blur-sm group"
+                                     className="flex items-center space-x-2 px-4 py-2 text-foreground hover:text-primary hover:bg-muted rounded-xl transition-all duration-200 group"
                 >
                   <span className="text-purple-300 group-hover:scale-110 transition-transform duration-200">
                     {item.icon}
@@ -187,13 +188,16 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-3">
+            {/* Theme Switcher */}
+            <ThemeSwitcher />
+            
             {!isLoading && (
               <>
                 {isAuthenticated ? (
                   <>
-                    <span className="text-white/80 text-sm">
-                      Welcome, {user?.name || 'User'}!
-                    </span>
+                                         <span className="text-muted-foreground text-sm">
+                       Welcome, {user?.name || 'User'}!
+                     </span>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -214,7 +218,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     >
                       <Link
                         href="/login"
-                        className="text-white/80 hover:text-white transition-colors px-6 py-2 rounded-xl hover:bg-white/10 backdrop-blur-sm"
+                                                 className="text-muted-foreground hover:text-foreground transition-colors px-6 py-2 rounded-xl hover:bg-muted"
                       >
                         Sign In
                       </Link>
@@ -242,7 +246,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 backdrop-blur-sm"
+                             className="p-2 rounded-xl text-foreground hover:text-primary hover:bg-muted transition-all duration-200"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </motion.button>
@@ -257,12 +261,12 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden border-t border-white/10 bg-black/80 backdrop-blur-xl"
+                             className="lg:hidden border-t border-border bg-background/80 backdrop-blur-xl"
             >
               <div className="px-2 pt-4 pb-6 space-y-3">
                 {/* Product Menu for Mobile */}
                 <div className="px-3 py-2">
-                  <div className="text-sm font-medium text-white/60 mb-3">Product</div>
+                                     <div className="text-sm font-medium text-muted-foreground mb-3">Product</div>
                   <div className="space-y-2">
                     {productMenuItems.map((item, index) => (
                       <motion.div
@@ -273,7 +277,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                       >
                         <Link
                           href={item.href}
-                          className="flex items-center space-x-3 p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+                                                     className="flex items-center space-x-3 p-3 text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-xl transition-all duration-200"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <div className={`w-8 h-8 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center`}>
@@ -299,7 +303,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                   >
                     <Link
                       href={item.href}
-                      className="flex items-center space-x-3 px-3 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+                      className="flex items-center space-x-3 px-3 py-3 text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-xl transition-all duration-200"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <span className="text-purple-300">{item.icon}</span>
@@ -308,19 +312,31 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                   </motion.div>
                 ))}
 
+                {/* Dark Mode Toggle for Mobile */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="pt-4 border-t border-white/10"
+                >
+                  <div className="px-3 py-2">
+                    <ThemeSwitcher />
+                  </div>
+                </motion.div>
+
                 {/* Mobile Auth Buttons */}
                 {!isLoading && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="pt-4 border-t border-white/10"
+                    className="pt-4 border-t border-border"
                   >
                     {isAuthenticated ? (
                       <div className="space-y-3">
-                        <div className="px-3 py-2 text-sm text-white/60">
-                          Welcome, {user?.name || 'User'}!
-                        </div>
+                                                 <div className="px-3 py-2 text-sm text-muted-foreground">
+                           Welcome, {user?.name || 'User'}!
+                         </div>
                         <Link
                           href="/admin"
                           className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg"
@@ -333,7 +349,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                       <div className="space-y-3">
                         <Link
                           href="/login"
-                          className="block w-full text-center text-white/80 hover:text-white px-6 py-3 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                                     className="block w-full text-center text-muted-foreground hover:text-foreground px-6 py-3 rounded-xl hover:bg-foreground/10 transition-all duration-200"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Sign In
@@ -362,7 +378,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+                         className="fixed inset-0 bg-background/50 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setIsMenuOpen(false)}
           />
         )}
