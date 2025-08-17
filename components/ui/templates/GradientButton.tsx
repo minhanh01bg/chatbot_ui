@@ -1,44 +1,51 @@
 'use client';
 
-import { motion, HTMLMotionProps } from 'framer-motion';
-import { ReactNode } from 'react';
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { getThemeColors } from '@/lib/theme';
 
-interface GradientButtonProps extends HTMLMotionProps<'button'> {
-  children: ReactNode;
-  className?: string;
+interface GradientButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
+  themeName?: string;
 }
 
 export function GradientButton({ 
+  variant = 'primary', 
+  size = 'md', 
+  className, 
   children, 
-  className = '', 
-  variant = 'primary',
-  size = 'md',
+  themeName = 'default',
   ...props 
 }: GradientButtonProps) {
-  const baseClasses = 'font-medium transition-all duration-300 flex items-center justify-center space-x-2 rounded-xl';
+  const theme = getThemeColors(themeName as any);
+  
+  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  
+  const sizeClasses = {
+    sm: "px-4 py-2 text-sm rounded-lg",
+    md: "px-6 py-3 text-base rounded-xl",
+    lg: "px-8 py-4 text-lg rounded-2xl"
+  };
   
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105',
-    secondary: 'bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transform hover:scale-105',
-    outline: 'border border-white/20 text-white hover:bg-white/10 hover:border-white/30 transform hover:scale-105'
+    primary: `bg-gradient-to-r from-[${theme.primary.main}] to-[${theme.secondary.main}] text-white hover:from-[${theme.primary.dark}] hover:to-[${theme.secondary.dark}] shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.primary.main}]`,
+    secondary: `bg-gradient-to-r from-[${theme.secondary.main}] to-[${theme.primary.main}] text-white hover:from-[${theme.secondary.dark}] hover:to-[${theme.primary.dark}] shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.secondary.main}]`,
+    outline: `bg-transparent border-2 border-[${theme.primary.main}] text-[${theme.primary.main}] hover:bg-[${theme.primary.main}] hover:text-white shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.primary.main}]`
   };
-
-  const sizeClasses = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
-  };
-
+  
   return (
-    <motion.button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+    <button
+      className={cn(
+        baseClasses,
+        sizeClasses[size],
+        variantClasses[variant],
+        className
+      )}
       {...props}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }

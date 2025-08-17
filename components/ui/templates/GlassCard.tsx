@@ -1,22 +1,41 @@
 'use client';
 
-import { motion, HTMLMotionProps } from 'framer-motion';
-import { ReactNode } from 'react';
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { getThemeColors } from '@/lib/theme';
 
-interface GlassCardProps extends HTMLMotionProps<'div'> {
-  children: ReactNode;
-  className?: string;
-  hover?: boolean;
+interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'light' | 'dark';
+  children: React.ReactNode;
+  themeName?: string;
 }
 
-export function GlassCard({ children, className = '', hover = true, ...props }: GlassCardProps) {
+export function GlassCard({ 
+  variant = 'light', 
+  className, 
+  children, 
+  themeName = 'default',
+  ...props 
+}: GlassCardProps) {
+  const theme = getThemeColors(themeName as any);
+  
+  const baseClasses = "rounded-2xl backdrop-blur-xl transition-all duration-300";
+  
+  const variantClasses = {
+    light: `bg-[${theme.background.glass}] border border-[${theme.border.glass}]`,
+    dark: `bg-[${theme.background.glassDark}] border border-[${theme.border.secondary}]`
+  };
+  
   return (
-    <motion.div
-      className={`bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl ${hover ? 'hover:bg-white/20 transition-all duration-300' : ''} ${className}`}
-      whileHover={hover ? { y: -5, scale: 1.02 } : undefined}
+    <div
+      className={cn(
+        baseClasses,
+        variantClasses[variant],
+        className
+      )}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
