@@ -88,7 +88,7 @@ const relatedPosts = [
   }
 ];
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <div className="min-h-screen bg-white">
       <Navbar variant="blog" />
@@ -156,13 +156,22 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500">Share:</span>
               <div className="flex space-x-2">
-                <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <button 
+                  className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  aria-label="Share on Facebook"
+                >
                   <Facebook className="w-4 h-4" />
                 </button>
-                <button className="p-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors">
+                <button 
+                  className="p-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-colors"
+                  aria-label="Share on Twitter"
+                >
                   <Twitter className="w-4 h-4" />
                 </button>
-                <button className="p-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors">
+                <button 
+                  className="p-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors"
+                  aria-label="Share on LinkedIn"
+                >
                   <Linkedin className="w-4 h-4" />
                 </button>
               </div>

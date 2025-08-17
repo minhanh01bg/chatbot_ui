@@ -196,12 +196,14 @@
 /* Glassmorphism effect */
 .glass {
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .glassDark {
   background: rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -486,18 +488,4 @@
   background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-/* Global input outline removal */
-input:focus,
-input:focus-visible,
-input:focus-within {
-  outline: none !important;
-}
-
-/* Ensure no default browser outline */
-*:focus {
-  outline: none;
-}
-
-*:focus-visible {
-  outline: none;
-} 
+/* Note: Global styles should be moved to globals.css */ 

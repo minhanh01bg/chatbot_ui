@@ -9,9 +9,9 @@ import { getSiteById } from '@/services/site.service';
 import { getClientAuthToken } from '@/lib/auth-utils';
 
 interface SiteDocumentsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function SiteDocumentsPage({ }: SiteDocumentsPageProps) {
