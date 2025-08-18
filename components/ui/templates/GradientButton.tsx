@@ -2,26 +2,21 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { getThemeColors } from '@/lib/theme';
 
 interface GradientButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
-  themeName?: string;
 }
 
 export function GradientButton({ 
   variant = 'primary', 
   size = 'md', 
   className, 
-  children, 
-  themeName = 'default',
+  children,
   ...props 
 }: GradientButtonProps) {
-  const theme = getThemeColors(themeName as any);
-  
-  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:scale-105";
   
   const sizeClasses = {
     sm: "px-4 py-2 text-sm rounded-lg",
@@ -30,9 +25,9 @@ export function GradientButton({
   };
   
   const variantClasses = {
-    primary: `bg-gradient-to-r from-[${theme.primary.main}] to-[${theme.secondary.main}] text-white hover:from-[${theme.primary.dark}] hover:to-[${theme.secondary.dark}] shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.primary.main}]`,
-    secondary: `bg-gradient-to-r from-[${theme.secondary.main}] to-[${theme.primary.main}] text-white hover:from-[${theme.secondary.dark}] hover:to-[${theme.primary.dark}] shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.secondary.main}]`,
-    outline: `bg-transparent border-2 border-[${theme.primary.main}] text-[${theme.primary.main}] hover:bg-[${theme.primary.main}] hover:text-white shadow-lg hover:shadow-xl transform hover:scale-105 focus:ring-[${theme.primary.main}]`
+    primary: "bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 focus:ring-purple-500",
+    secondary: "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500",
+    outline: "bg-transparent border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white focus:ring-purple-500"
   };
   
   return (
