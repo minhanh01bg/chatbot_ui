@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeInitializer } from "@/components/theme-initializer";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { SiteChatProvider } from "@/contexts/SiteChatContext";
 
 export const metadata: Metadata = {
   title: "ChatAI Pro - Next-Generation AI Chat Platform",
@@ -75,7 +76,9 @@ export default function RootLayout({
             storageKey="chataipro-theme"
           >
             <ThemeInitializer />
-            {children}
+            <SiteChatProvider>
+              {children}
+            </SiteChatProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

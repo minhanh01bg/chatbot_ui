@@ -19,39 +19,89 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        // Background Colors
+        background: 'var(--background)',
+        'background-secondary': 'var(--backgroundSecondary)',
+        'background-tertiary': 'var(--backgroundTertiary)',
+        'background-overlay': 'var(--backgroundOverlay)',
+        
+        // Content Colors
+        foreground: 'var(--content)',
+        content: 'var(--content)',
+        'content-secondary': 'var(--contentSecondary)',
+        'content-tertiary': 'var(--contentTertiary)',
+        'content-muted': 'var(--contentMuted)',
+        
+        // Button Colors
+        'button-primary': 'var(--button-primary)',
+        'button-primary-hover': 'var(--button-primaryHover)',
+        'button-primary-text': 'var(--button-primaryText)',
+        'button-secondary': 'var(--button-secondary)',
+        'button-secondary-hover': 'var(--button-secondaryHover)',
+        'button-secondary-text': 'var(--button-secondaryText)',
+        'button-outline': 'var(--button-outline)',
+        'button-outline-hover': 'var(--button-outlineHover)',
+        'button-outline-text': 'var(--button-outlineText)',
+        'button-ghost': 'var(--button-ghost)',
+        'button-ghost-hover': 'var(--button-ghostHover)',
+        'button-ghost-text': 'var(--button-ghostText)',
+        'button-destructive': 'var(--button-destructive)',
+        'button-destructive-hover': 'var(--button-destructiveHover)',
+        'button-destructive-text': 'var(--button-destructiveText)',
+        
+        // Border Colors
+        border: 'var(--border)',
+        'border-secondary': 'var(--borderSecondary)',
+        'border-accent': 'var(--borderAccent)',
+        
+        // Accent Colors
+        accent: 'var(--accent)',
+        'accent-foreground': 'var(--content)',
+        'accent-secondary': 'var(--accentSecondary)',
+        'accent-muted': 'var(--accentMuted)',
+        
+        // Status Colors
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        error: 'var(--error)',
+        info: 'var(--info)',
+        
+        // Shadow Colors
+        shadow: 'var(--shadow)',
+        'shadow-hover': 'var(--shadowHover)',
+        
+        // Glass Effects
+        'glass-bg': 'var(--glass-background)',
+        'glass-border': 'var(--glass-border)',
+        'glass-shadow': 'var(--glass-shadow)',
+        
+        // Legacy Support
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--content)',
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--content)',
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--button-primary-text)',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: 'var(--background-secondary)',
+          foreground: 'var(--content)',
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: 'var(--background-secondary)',
+          foreground: 'var(--content-muted)',
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: 'var(--error)',
+          foreground: 'var(--button-destructive-text)',
         },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
+        input: 'var(--border)',
+        ring: 'var(--accent)',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -60,14 +110,14 @@ const config: Config = {
           '5': 'hsl(var(--chart-5))',
         },
         sidebar: {
-          DEFAULT: 'hsl(var(--sidebar-background))',
-          foreground: 'hsl(var(--sidebar-foreground))',
-          primary: 'hsl(var(--sidebar-primary))',
-          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-          accent: 'hsl(var(--sidebar-accent))',
-          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-          border: 'hsl(var(--sidebar-border))',
-          ring: 'hsl(var(--sidebar-ring))',
+          DEFAULT: 'var(--background-secondary)',
+          foreground: 'var(--content)',
+          primary: 'var(--accent)',
+          'primary-foreground': 'var(--button-primary-text)',
+          accent: 'var(--accent-secondary)',
+          'accent-foreground': 'var(--content)',
+          border: 'var(--border)',
+          ring: 'var(--accent)',
         },
       },
     },
