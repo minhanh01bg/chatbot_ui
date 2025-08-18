@@ -1,293 +1,267 @@
-# Theme System Guide
+# 🎨 Professional Theme System Guide
 
-## Overview
+## 📋 Tổng quan
 
-This project uses a comprehensive and professional theme system that supports both **dark/light mode** and **custom color themes**. The system is built with CSS custom properties (CSS variables) and provides a seamless experience across all components.
+Hệ thống theme mới được thiết kế để cung cấp một cách tiếp cận chuyên nghiệp, dễ mở rộng và dễ bảo trì cho việc quản lý màu sắc trong ứng dụng.
 
-## Features
+## 🏗️ Cấu trúc hệ thống
 
-### 🌙 Dark/Light Mode
-- **Light Mode**: Clean, bright interface with high contrast
-- **Dark Mode**: Easy on the eyes with reduced brightness
-- **System Mode**: Automatically follows your operating system preference
+### 1. **Theme Configuration** (`lib/theme-config.ts`)
+- Định nghĩa các interface và type cho theme
+- Chứa các preset theme (default, ocean, forest, sunset)
+- Cung cấp các utility function để áp dụng theme
 
-### 🎨 Custom Color Themes
-- **Default**: Purple/Blue gradient theme
-- **Ocean**: Cyan/Sky blue theme
-- **Forest**: Green/Emerald theme  
-- **Sunset**: Orange/Red theme
+### 2. **Theme Provider** (`components/theme-provider.tsx`)
+- Quản lý state của theme (light/dark/system)
+- Quản lý color theme (default, ocean, forest, sunset)
+- Áp dụng theme vào CSS custom properties
 
-## Architecture
+### 3. **Theme Components**
+- `ThemeButton` - Button với các variant khác nhau
+- `ThemeCard` - Card với các variant khác nhau
+- `ThemeSwitcher` - Dropdown để chuyển đổi theme
 
-### CSS Variables Structure
+## 🎯 Các tính năng chính
 
-The theme system uses CSS custom properties organized in layers:
-
-```css
-:root {
-  /* Base colors */
-  --background: 0 0% 100%;        /* Light mode background */
-  --foreground: 240 10% 3.9%;     /* Light mode text */
-  
-  /* Custom theme colors */
-  --gradient-primary: linear-gradient(...);
-  --bg-gradient-primary: linear-gradient(...);
-  
-  /* Glass effects */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.dark {
-  /* Dark mode overrides */
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  
-  /* Dark mode specific colors */
-  --glass-bg: rgba(0, 0, 0, 0.2);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
+### ✅ **Background Colors**
+```typescript
+background: 'var(--background)'           // Background chính
+background-secondary: 'var(--backgroundSecondary)'  // Background phụ
+background-tertiary: 'var(--backgroundTertiary)'    // Background bậc 3
+background-overlay: 'var(--backgroundOverlay)'      // Background overlay
 ```
 
-### Theme Provider
+### ✅ **Content Colors**
+```typescript
+foreground: 'var(--content)'              // Text chính
+content-secondary: 'var(--contentSecondary)'  // Text phụ
+content-muted: 'var(--contentMuted)'      // Text mờ
+```
 
-The `ThemeProvider` manages theme state and provides context:
+### ✅ **Button Colors**
+```typescript
+button-primary: 'var(--button-primary)'   // Button chính
+button-secondary: 'var(--button-secondary)'  // Button phụ
+button-outline: 'var(--button-outline)'   // Button outline
+button-ghost: 'var(--button-ghost)'       // Button ghost
+button-destructive: 'var(--button-destructive)'  // Button hủy
+```
 
+### ✅ **Border Colors**
+```typescript
+border: 'var(--border)'                   // Border chính
+border-secondary: 'var(--borderSecondary)'  // Border phụ
+border-accent: 'var(--borderAccent)'      // Border accent
+```
+
+### ✅ **Accent Colors**
+```typescript
+accent: 'var(--accent)'                   // Accent chính
+accent-secondary: 'var(--accentSecondary)'  // Accent phụ
+accent-muted: 'var(--accentMuted)'        // Accent mờ
+```
+
+### ✅ **Status Colors**
+```typescript
+success: 'var(--success)'                 // Màu thành công
+warning: 'var(--warning)'                 // Màu cảnh báo
+error: 'var(--error)'                     // Màu lỗi
+info: 'var(--info)'                       // Màu thông tin
+```
+
+### ✅ **Glass Effects**
+```typescript
+glass-bg: 'var(--glass-background)'       // Background glass
+glass-border: 'var(--glass-border)'       // Border glass
+glass-shadow: 'var(--glass-shadow)'       // Shadow glass
+```
+
+## 🚀 Cách sử dụng
+
+### 1. **Sử dụng Theme Provider**
 ```tsx
 import { ThemeProvider } from '@/components/theme-provider';
 
-export default function RootLayout({ children }) {
+function App() {
   return (
-    <html lang="en">
-      <body>
-        <ThemeProvider defaultTheme="system" storageKey="chataipro-theme">
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider defaultTheme="system" defaultColorTheme="ocean">
+      <YourApp />
+    </ThemeProvider>
   );
 }
 ```
 
-## Usage
-
-### Theme Switcher Components
-
-#### 1. Main Theme Switcher (Recommended)
-```tsx
-import { ThemeSwitcher } from '@/components/theme-switcher';
-
-// Complete theme switcher with mode and color options
-<ThemeSwitcher />
-```
-
-#### 2. Dark/Light Mode Only
-```tsx
-import { DarkModeToggle } from '@/components/theme-switcher';
-
-// Simple toggle between dark and light
-<DarkModeToggle />
-```
-
-#### 3. Compact Version
-```tsx
-import { CompactDarkModeToggle } from '@/components/theme-switcher';
-
-// Icon-only toggle for space-constrained areas
-<CompactDarkModeToggle />
-```
-
-#### 4. Color Themes Only
-```tsx
-import { ColorThemeSelector } from '@/components/theme-switcher';
-
-// Only color theme selection
-<ColorThemeSelector />
-```
-
-### Using Theme in Components
-
-#### CSS Classes
-```tsx
-// Theme-aware classes
-<div className="bg-background text-foreground">
-<div className="bg-card text-card-foreground">
-<div className="text-muted-foreground">
-<div className="border-border">
-
-// Glass effects
-<div className="glass">
-<div className="bg-gradient-primary">
-
-// Shadows
-<div className="shadow-theme-sm">
-<div className="shadow-theme-lg">
-```
-
-#### CSS Variables
-```css
-.my-component {
-  background: var(--background);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-}
-```
-
-#### JavaScript/TypeScript
+### 2. **Sử dụng Theme Hook**
 ```tsx
 import { useTheme } from '@/components/theme-provider';
 
 function MyComponent() {
-  const { theme, setTheme, customTheme, setCustomTheme } = useTheme();
+  const { theme, setTheme, colorTheme, setColorTheme } = useTheme();
   
   return (
     <div>
       <p>Current mode: {theme}</p>
-      <p>Current color theme: {customTheme}</p>
-      <button onClick={() => setTheme('dark')}>Switch to Dark</button>
+      <p>Current color theme: {colorTheme}</p>
     </div>
   );
 }
 ```
 
-## Theme Configuration
-
-### Adding New Color Themes
-
-1. **Define the theme in `lib/theme.ts`:**
+### 3. **Sử dụng Theme Components**
 ```tsx
-export const myTheme: ThemeColors = {
-  primary: {
-    main: '#your-color',
-    light: '#your-light-color',
-    dark: '#your-dark-color',
-    contrast: '#ffffff',
-  },
-  secondary: {
-    main: '#your-secondary-color',
-    // ... other properties
-  },
-  // ... other theme properties
-};
+import { ThemeButton } from '@/components/ui/theme-button';
+import { ThemeCard } from '@/components/ui/theme-card';
+
+function MyComponent() {
+  return (
+    <ThemeCard variant="glass">
+      <h2>Glass Card</h2>
+      <ThemeButton variant="primary">Primary Button</ThemeButton>
+      <ThemeButton variant="secondary">Secondary Button</ThemeButton>
+    </ThemeCard>
+  );
+}
 ```
 
-2. **Add to themes registry:**
+### 4. **Sử dụng CSS Classes**
 ```tsx
-export const themes = {
-  default: defaultTheme,
-  ocean: oceanTheme,
-  forest: forestTheme,
-  sunset: sunsetTheme,
-  myTheme: myTheme, // Add your theme here
-} as const;
+// Background
+<div className="bg-background">Main background</div>
+<div className="bg-background-secondary">Secondary background</div>
+
+// Text
+<p className="text-foreground">Primary text</p>
+<p className="text-content-secondary">Secondary text</p>
+<p className="text-content-muted">Muted text</p>
+
+// Buttons
+<button className="bg-button-primary text-button-primary-text">
+  Primary Button
+</button>
 ```
 
-3. **The theme will automatically appear in all theme switchers**
+## 🎨 Thêm theme mới
 
-### Customizing CSS Variables
+### 1. **Thêm preset trong `theme-config.ts`**
+```typescript
+export const themePresets: Record<string, ThemeConfig> = {
+  // ... existing themes
+  midnight: {
+    name: 'midnight',
+    displayName: 'Midnight',
+    description: 'Deep midnight blue theme',
+    colors: {
+      background: 'hsl(220 50% 8%)',
+      backgroundSecondary: 'hsl(220 50% 12%)',
+      // ... define all colors
+    },
+  },
+}
+```
 
-You can add custom CSS variables in `app/globals.css`:
+### 2. **Thêm dark variant**
+```typescript
+export const darkThemePresets: Record<string, ThemeConfig> = {
+  // ... existing dark themes
+  midnight: {
+    name: 'midnight-dark',
+    displayName: 'Midnight Dark',
+    description: 'Deep midnight dark theme',
+    colors: {
+      background: 'hsl(220 50% 4%)',
+      backgroundSecondary: 'hsl(220 50% 8%)',
+      // ... define all dark colors
+    },
+  },
+}
+```
 
+## 🔧 Tùy chỉnh nâng cao
+
+### 1. **Tạo component mới với theme**
+```tsx
+import { cn } from '@/lib/utils';
+
+interface CustomComponentProps {
+  variant?: 'default' | 'accent';
+  className?: string;
+}
+
+export function CustomComponent({ variant = 'default', className }: CustomComponentProps) {
+  const variantClasses = {
+    default: 'bg-background border-border',
+    accent: 'bg-accent border-accent',
+  };
+
+  return (
+    <div className={cn('rounded-lg border p-4', variantClasses[variant], className)}>
+      Content
+    </div>
+  );
+}
+```
+
+### 2. **Sử dụng CSS custom properties trực tiếp**
 ```css
-:root {
-  /* Your custom variables */
-  --my-custom-color: #your-color;
-  --my-custom-gradient: linear-gradient(...);
-}
-
-.dark {
-  /* Dark mode overrides */
-  --my-custom-color: #your-dark-color;
+.my-custom-component {
+  background-color: var(--background);
+  color: var(--content);
+  border: 1px solid var(--border);
 }
 ```
 
-## Best Practices
+## 📱 Responsive Design
 
-### 1. Use Semantic Color Names
+Hệ thống theme hỗ trợ responsive design thông qua Tailwind CSS:
+
 ```tsx
-// ✅ Good
-<div className="bg-background text-foreground">
-<div className="text-muted-foreground">
-
-// ❌ Avoid
-<div className="bg-white text-black">
-<div className="text-gray-500">
+<div className="bg-background md:bg-background-secondary lg:bg-background-tertiary">
+  Responsive background
+</div>
 ```
 
-### 2. Use Theme-Aware Components
-```tsx
-// ✅ Good
-<Button variant="outline" className="border-border">
+## 🌙 Dark Mode Support
 
-// ❌ Avoid
-<Button variant="outline" className="border-gray-300">
+Hệ thống tự động hỗ trợ dark mode:
+
+- **System**: Tự động theo cài đặt hệ thống
+- **Light**: Luôn sáng
+- **Dark**: Luôn tối
+
+## 🎯 Best Practices
+
+### ✅ **Do's**
+- Sử dụng các class có sẵn thay vì hardcode màu
+- Tạo component mới với theme support
+- Test trên cả light và dark mode
+- Sử dụng semantic color names
+
+### ❌ **Don'ts**
+- Không hardcode màu sắc
+- Không sử dụng inline styles cho màu
+- Không tạo quá nhiều variant không cần thiết
+
+## 🔍 Debugging
+
+### 1. **Kiểm tra theme hiện tại**
+```tsx
+const { theme, colorTheme } = useTheme();
+console.log('Current theme:', { theme, colorTheme });
 ```
 
-### 3. Test Both Modes
-Always test your components in both light and dark modes to ensure proper contrast and readability.
-
-### 4. Use Glass Effects Sparingly
-Glass effects work best for overlays and floating elements, not for main content areas.
-
-## Troubleshooting
-
-### Theme Not Switching
-1. Check if `ThemeProvider` is wrapping your app
-2. Verify localStorage is working (check browser dev tools)
-3. Ensure CSS variables are properly defined
-
-### Colors Not Updating
-1. Check if custom theme is properly applied in `lib/theme.ts`
-2. Verify CSS custom properties are being set correctly
-3. Clear browser cache and localStorage
-
-### Performance Issues
-1. Use CSS variables instead of JavaScript for color changes
-2. Avoid complex gradients in frequently updated components
-3. Use `will-change` CSS property for animated elements
-
-## Migration Guide
-
-### From Old Theme System
-1. Replace hardcoded colors with CSS variables
-2. Update component imports to use new theme switchers
-3. Replace `bg-black text-white` with `bg-background text-foreground`
-4. Update glass effects to use new `.glass` class
-
-### Example Migration
-```tsx
-// Old
-<div className="bg-black text-white border border-gray-600">
-  <button className="bg-purple-600 hover:bg-purple-700">
-
-// New
-<div className="bg-background text-foreground border border-border">
-  <button className="bg-primary hover:bg-primary/90">
+### 2. **Kiểm tra CSS variables**
+```javascript
+// Trong browser console
+getComputedStyle(document.documentElement).getPropertyValue('--background');
 ```
 
-## Accessibility
+### 3. **Theme Demo**
+Truy cập `/theme-demo` để xem demo đầy đủ của hệ thống theme.
 
-The theme system includes:
-- High contrast ratios for both light and dark modes
-- Proper focus indicators
-- Screen reader support with aria-labels
-- Keyboard navigation support
-- Reduced motion support for animations
+## 📚 Ví dụ thực tế
 
-## Browser Support
+Xem file `components/theme-demo.tsx` để có ví dụ đầy đủ về cách sử dụng hệ thống theme.
 
-- **Modern browsers**: Full support
-- **Safari**: Requires `-webkit-` prefixes for backdrop-filter
-- **Internet Explorer**: Not supported (use modern browsers)
+---
 
-## Performance
-
-- CSS variables provide instant theme switching
-- No layout shifts during theme changes
-- Optimized for 60fps animations
-- Minimal JavaScript overhead
+**🎉 Hệ thống theme này cung cấp một foundation vững chắc cho việc xây dựng UI chuyên nghiệp và dễ bảo trì!**
