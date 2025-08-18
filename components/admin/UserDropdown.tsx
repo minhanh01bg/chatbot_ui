@@ -67,7 +67,7 @@ export default function UserDropdown() {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white border border-gray-200 shadow-lg">
+      <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-md border border-gray-200 shadow-lg">
         <DropdownMenuLabel className="p-3">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none text-gray-900">{userName}</p>

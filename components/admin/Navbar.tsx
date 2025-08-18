@@ -26,7 +26,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex w-full bg-white/80 backdrop-blur-sm border-b border-gray-200 h-16 shadow-sm">
+    <header className="sticky top-0 z-40 flex w-full bg-white/95 backdrop-blur-md border-b border-gray-200 h-16 shadow-sm">
       <div className="flex flex-col items-center justify-between w-full lg:flex-row">
         <div className="flex items-center justify-between w-full gap-2 px-4 py-3 border-b border-gray-100 sm:gap-4 lg:justify-normal lg:border-b-0 lg:py-4">
           <button
@@ -73,7 +73,7 @@ export default function Navbar() {
         <div
           className={`${
             isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-lg lg:shadow-none absolute top-16 left-0 right-0 bg-white border-b border-gray-200 lg:static lg:border-0`}
+          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-lg lg:shadow-none absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 lg:static lg:border-0`}
         >
           <div className="flex items-center gap-3">
             <NotificationDropdown />

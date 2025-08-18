@@ -94,7 +94,7 @@ export default function Sidebar() {
 
   return (
     <UISidebar 
-      className="group-data-[side=left]:border-r-0 bg-white/90 backdrop-blur-xl border-r border-gray-200/50 shadow-lg"
+      className="group-data-[side=left]:border-r-0 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
