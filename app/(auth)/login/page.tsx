@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useFormState } from 'react-dom';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Eye, EyeOff, Mail, Lock, ArrowRight, LogIn, Shield } from 'lucide-react';
@@ -14,13 +15,10 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const [state, formAction] = useActionState<LoginActionState, FormData>(
+  const [state, formAction] = useFormState<LoginActionState, FormData>(
     login,
     {
       status: 'idle',
@@ -55,7 +53,9 @@ export default function LoginPage() {
       }
     }
 
-    if (state.status === 'failed') {
+    if (state.status === 'in_progress') {
+      // Loading state is handled by the button
+    } else if (state.status === 'failed') {
       toast.error('Invalid credentials or server error. Please try again.');
     } else if (state.status === 'invalid_data') {
       toast.error('Please enter a valid username and password (minimum 6 characters).');
@@ -196,24 +196,7 @@ export default function LoginPage() {
     }
   }, [state, router, searchParams]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!identifier || !password) {
-      toast.error('Please enter both username/email and password');
-      return;
-    }
 
-    setIsLoading(true);
-    
-    const formData = new FormData();
-    formData.append('identifier', identifier);
-    formData.append('password', password);
-    
-    formAction(formData);
-    
-    setTimeout(() => setIsLoading(false), 1000);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
@@ -281,7 +264,7 @@ export default function LoginPage() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form action={formAction} className="space-y-6">
               {/* Email/Username Field */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -298,8 +281,7 @@ export default function LoginPage() {
                   </div>
                   <input
                     type="text"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
+                    name="identifier"
                     className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter your email or username"
                     required
@@ -324,8 +306,7 @@ export default function LoginPage() {
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                     className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter your password"
                     required
@@ -348,14 +329,14 @@ export default function LoginPage() {
               >
                 <button
                   type="submit"
-                  disabled={isLoading || !identifier || !password}
+                  disabled={state.status === 'in_progress'}
                   className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
-                    isLoading || !identifier || !password
+                    state.status === 'in_progress'
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105'
                   }`}
                 >
-                  {isLoading ? (
+                  {state.status === 'in_progress' ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}

@@ -62,8 +62,8 @@ export default function Home() {
             className="mb-8"
           >
             <div className="inline-flex items-center space-x-2 glass px-6 py-3 rounded-full mb-8">
-              <Sparkles className="w-5 h-5 text-purple-400" />
-              <span className="text-purple-300 font-medium">Next-Generation AI Chat Platform</span>
+              <Sparkles className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+              <span className="text-purple-600 dark:text-purple-300 font-medium">Next-Generation AI Chat Platform</span>
             </div>
           </motion.div>
 
@@ -112,11 +112,11 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl"
+              className="bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-xl"
             >
               <Link
                 href="/plans"
-                className="flex items-center space-x-3 text-white font-semibold text-lg px-8 py-4"
+                className="flex items-center space-x-3 text-foreground dark:text-white font-semibold text-lg px-8 py-4"
               >
                 <Play className="w-6 h-6" />
                 <span>Watch Demo</span>
@@ -138,7 +138,7 @@ export default function Home() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.2 + i * 0.1 }}
-                    className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-white/20"
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-border dark:border-white/20"
                   />
                 ))}
               </div>
@@ -170,7 +170,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 bg-gradient-to-b from-black via-gray-900 to-black">
+      <section className="relative py-32 bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50 dark:from-black dark:via-gray-900 dark:to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -179,8 +179,8 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-5xl lg:text-6xl font-bold mb-6">Revolutionary Features</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6 text-gray-900 dark:text-white">Revolutionary Features</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Discover the advanced capabilities that make our AI chatbot the most intelligent and responsive platform available.
             </p>
           </motion.div>
@@ -239,14 +239,14 @@ export default function Home() {
                 whileHover={{ y: -10 }}
                 className="group"
               >
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 h-full hover:bg-white/10 transition-all duration-300">
+                <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-border dark:border-white/10 rounded-2xl p-8 h-full hover:bg-white/90 dark:hover:bg-white/10 transition-all duration-300">
                   <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
                     {feature.description}
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export default function Home() {
       </section>
 
       {/* Interactive Demo Section */}
-      <section className="relative py-32 bg-gradient-to-r from-purple-900/50 via-blue-900/50 to-purple-900/50">
+      <section className="relative py-32 bg-gradient-to-r from-purple-100/50 via-blue-100/50 to-purple-100/50 dark:from-purple-900/50 dark:via-blue-900/50 dark:to-purple-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -266,8 +266,8 @@ export default function Home() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-5xl font-bold mb-6">See It In Action</h2>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+              <h2 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">See It In Action</h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                 Experience the power of our AI chatbot with this interactive demonstration. Watch as it understands context, provides intelligent responses, and adapts to your conversation style.
               </p>
               
@@ -289,7 +289,7 @@ export default function Home() {
                     <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                   </motion.div>
                 ))}
               </div>
@@ -305,7 +305,7 @@ export default function Home() {
               <motion.div
                 animate={{ y: [-10, 10, -10] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8"
+                className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-3xl p-8"
               >
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -323,8 +323,8 @@ export default function Home() {
                     <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
-                    <div className="bg-gray-800/50 rounded-2xl p-4 max-w-xs">
-                      <p className="text-white">Hello! I'm your AI assistant. How can I help you today?</p>
+                    <div className="bg-gray-100/80 dark:bg-gray-800/50 rounded-2xl p-4 max-w-xs">
+                      <p className="text-gray-800 dark:text-white">Hello! I'm your AI assistant. How can I help you today?</p>
                     </div>
                   </motion.div>
 
@@ -351,8 +351,8 @@ export default function Home() {
                     <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
-                    <div className="bg-gray-800/50 rounded-2xl p-4 max-w-xs">
-                      <p className="text-white">I'd be happy to help! What kind of project are you working on? I can assist with coding, design, research, and much more.</p>
+                    <div className="bg-gray-100/80 dark:bg-gray-800/50 rounded-2xl p-4 max-w-xs">
+                      <p className="text-gray-800 dark:text-white">I'd be happy to help! What kind of project are you working on? I can assist with coding, design, research, and much more.</p>
                     </div>
                   </motion.div>
                 </div>
@@ -363,7 +363,7 @@ export default function Home() {
       </section>
 
       {/* Statistics Section */}
-      <section className="relative py-32 bg-black">
+      <section className="relative py-32 bg-gray-50 dark:bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -380,14 +380,14 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="text-center group"
               >
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl p-8 hover:bg-gray-800 transition-all duration-300">
+                <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300">
                   <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                     {stat.icon}
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                  <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                     {stat.number}
                   </div>
-                  <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
+                  <div className="text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
                     {stat.label}
                   </div>
                 </div>
@@ -436,7 +436,7 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl"
+                className="bg-white/20 backdrop-blur-xl border border-border dark:border-white/30 rounded-xl"
               >
                 <Link
                   href="/chat"

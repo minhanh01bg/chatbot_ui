@@ -17,7 +17,7 @@ export interface LoginActionState {
 }
 
 export const login = async (
-  _: LoginActionState,
+  prevState: LoginActionState,
   formData: FormData,
 ): Promise<LoginActionState> => {
   try {
