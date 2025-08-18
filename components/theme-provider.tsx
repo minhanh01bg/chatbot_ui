@@ -1,28 +1,35 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { type ThemeName, getCurrentTheme, applyTheme, themes } from "@/lib/theme"
-
-type Theme = "dark" | "light" | "system"
+import { 
+  ThemeMode, 
+  ThemeConfig, 
+  getThemeConfig, 
+  applyThemeToCSS, 
+  getAvailableThemes 
+} from "@/lib/theme-config"
 
 type ThemeProviderProps = {
   children: React.ReactNode
-  defaultTheme?: Theme
+  defaultTheme?: ThemeMode
+  defaultColorTheme?: string
   storageKey?: string
 }
 
 type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-  customTheme: ThemeName
-  setCustomTheme: (theme: ThemeName) => void
+  theme: ThemeMode
+  setTheme: (theme: ThemeMode) => void
+  colorTheme: string
+  setColorTheme: (theme: string) => void
+  availableThemes: Array<{ name: string; displayName: string; description: string }>
 }
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
-  customTheme: "default",
-  setCustomTheme: () => null,
+  colorTheme: "default",
+  setColorTheme: () => null,
+  availableThemes: getAvailableThemes(),
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -30,39 +37,39 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 export function ThemeProvider({
   children,
   defaultTheme = "system",
+  defaultColorTheme = "default",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-  
-  const [customTheme, setCustomTheme] = useState<ThemeName>('light')
+  const [theme, setTheme] = useState<ThemeMode>(defaultTheme)
+  const [colorTheme, setColorTheme] = useState<string>(defaultColorTheme)
 
   // Initialize theme from localStorage on client-side
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedTheme = localStorage.getItem(storageKey) as Theme
+      const storedTheme = localStorage.getItem(storageKey) as ThemeMode
+      const storedColorTheme = localStorage.getItem(`${storageKey}-color`) || defaultColorTheme
       if (storedTheme) {
         setTheme(storedTheme)
       }
+      if (storedColorTheme) {
+        setColorTheme(storedColorTheme)
+      }
     }
-  }, [storageKey])
+  }, [storageKey, defaultColorTheme])
 
+  // Apply theme when theme or colorTheme changes
   useEffect(() => {
-    const root = window.document.documentElement
-
-    root.classList.remove("light", "dark")
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light"
-
-      root.classList.add(systemTheme)
-    } else {
-      root.classList.add(theme)
+    if (typeof window !== 'undefined') {
+      const currentMode = theme === "system" 
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : theme
+      
+      const isDark = currentMode === "dark"
+      const themeConfig = getThemeConfig(colorTheme, isDark)
+      applyThemeToCSS(themeConfig, isDark)
     }
-  }, [theme])
+  }, [theme, colorTheme])
 
   // Listen for system theme changes
   useEffect(() => {
@@ -70,42 +77,32 @@ export function ThemeProvider({
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
       
       const handleChange = () => {
-        const root = window.document.documentElement
-        root.classList.remove("light", "dark")
-        root.classList.add(mediaQuery.matches ? "dark" : "light")
+        const isDark = mediaQuery.matches
+        const themeConfig = getThemeConfig(colorTheme, isDark)
+        applyThemeToCSS(themeConfig, isDark)
       }
 
       mediaQuery.addEventListener("change", handleChange)
       return () => mediaQuery.removeEventListener("change", handleChange)
     }
-  }, [theme])
-
-  useEffect(() => {
-    // Apply theme based on current mode
-    const currentMode = theme === 'system' 
-      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light')
-      : theme;
-    
-    // Apply custom theme colors based on mode
-    if (currentMode === 'dark') {
-      applyTheme('dark');
-    } else {
-      applyTheme('light');
-    }
-  }, [theme, customTheme])
+  }, [theme, colorTheme])
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
+    setTheme: (theme: ThemeMode) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem(storageKey, theme)
       }
       setTheme(theme)
     },
-    customTheme,
-    setCustomTheme: (theme: ThemeName) => {
-      setCustomTheme(theme)
+    colorTheme,
+    setColorTheme: (theme: string) => {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`${storageKey}-color`, theme)
+      }
+      setColorTheme(theme)
     },
+    availableThemes: getAvailableThemes(),
   }
 
   return (
@@ -124,27 +121,4 @@ export const useTheme = () => {
   return context
 }
 
-// Theme selector component
-export function ThemeSelector() {
-  const { customTheme, setCustomTheme } = useTheme()
-  
-  return (
-    <div className="flex flex-col space-y-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        Theme
-      </label>
-      <select
-        value={customTheme}
-        onChange={(e) => setCustomTheme(e.target.value as ThemeName)}
-        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label="Select theme"
-      >
-        {Object.keys(themes).map((themeName) => (
-          <option key={themeName} value={themeName}>
-            {themeName.charAt(0).toUpperCase() + themeName.slice(1)}
-          </option>
-        ))}
-      </select>
-    </div>
-  )
-}
+
