@@ -78,7 +78,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
       transition={{ duration: 0.8, ease: "easeOut" }}
              className={`fixed top-0 w-full z-50 transition-all duration-300 ${
          scrolled 
-           ? 'bg-background/80 backdrop-blur-xl border-b border-border shadow-2xl' 
+           ? 'bg-background/95 backdrop-blur-xl border-b border-border shadow-2xl' 
            : 'bg-transparent'
        }`}
     >
@@ -132,8 +132,8 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     transition={{ duration: 0.2 }}
                                          className={`absolute top-full left-0 mt-2 w-96 backdrop-blur-xl border border-border rounded-2xl shadow-2xl py-3 z-50 ${
                        scrolled 
-                         ? 'bg-background/90' 
-                         : 'bg-background/10'
+                         ? 'bg-background/95' 
+                         : 'bg-background/95'
                      }`}
                   >
                     <div className="grid grid-cols-2 gap-2 p-3">
@@ -261,7 +261,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-                             className="lg:hidden border-t border-border bg-background/80 backdrop-blur-xl"
+                             className="lg:hidden border-t border-border bg-background/95 backdrop-blur-xl"
             >
               <div className="px-2 pt-4 pb-6 space-y-3">
                 {/* Product Menu for Mobile */}

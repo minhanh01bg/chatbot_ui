@@ -71,7 +71,7 @@ const ChatLayout = ({
         "transition-all duration-300 ease-in-out flex-1"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sticky top-0 bg-white/80 backdrop-blur-sm z-10">
+        <div className="flex items-center justify-between p-4 sticky top-0 bg-white/95 backdrop-blur-md z-10">
           <div className="flex items-center gap-3">
             <SidebarToggle />
             {/* check if sidebar is open */}
@@ -156,7 +156,7 @@ const ChatLayout = ({
                     
                     {/* Features */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                      <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 shadow-sm">
+                      <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-gray-200/50 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
                             <Sparkles className="w-4 h-4 text-white" />
@@ -166,7 +166,7 @@ const ChatLayout = ({
                         <p className="text-sm text-gray-600">Advanced AI that understands context and provides intelligent responses</p>
                       </div>
                       
-                      <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 shadow-sm">
+                      <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-gray-200/50 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                             <Bot className="w-4 h-4 text-white" />
@@ -176,7 +176,7 @@ const ChatLayout = ({
                         <p className="text-sm text-gray-600">Always ready to help, anytime you need assistance</p>
                       </div>
                       
-                      <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 shadow-sm">
+                      <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 border border-gray-200/50 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center">
                             <Globe className="w-4 h-4 text-white" />
@@ -188,7 +188,7 @@ const ChatLayout = ({
                     </div>
                     
                     {siteInfo && (
-                      <div className="flex items-center justify-center gap-2 text-sm text-gray-500 bg-white/60 backdrop-blur-sm rounded-lg px-4 py-2 border border-gray-200/50">
+                      <div className="flex items-center justify-center gap-2 text-sm text-gray-500 bg-white/80 backdrop-blur-md rounded-lg px-4 py-2 border border-gray-200/50">
                         <Globe className="h-4 w-4" />
                         <span>Chatting with {siteInfo.siteName}</span>
                       </div>

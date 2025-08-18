@@ -17,7 +17,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, isBot = false, showAvatar 
       ) : (
         <div className={cn(
           "flex gap-4 w-full box-border p-4",
-          isBot ? "bg-white/60 backdrop-blur-sm border-b border-gray-200/30" : "py-4"
+          isBot ? "bg-white/80 backdrop-blur-md border-b border-gray-200/30" : "py-4"
         )}>
           <div className="flex-none">
             <div className={cn(

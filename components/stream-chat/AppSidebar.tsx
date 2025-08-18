@@ -32,7 +32,7 @@ const AppSidebar = ({ onSelectSession, onDeleteSession, activeSessionId, refresh
   };
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0 bg-white/80 backdrop-blur-sm border-r border-gray-200/50">
+    <Sidebar className="group-data-[side=left]:border-r-0 bg-white/95 backdrop-blur-md border-r border-gray-200/50">
       <SidebarHeader className="bg-gradient-to-r from-purple-50 to-blue-50 p-3">
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">
