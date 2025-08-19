@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Eye, EyeOff, Mail, Lock, ArrowRight, LogIn, Shield } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [state, formAction] = useFormState<LoginActionState, FormData>(
+  const [state, formAction] = useActionState<LoginActionState, FormData>(
     login,
     {
       status: 'idle',
