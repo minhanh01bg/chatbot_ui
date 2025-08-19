@@ -26,11 +26,11 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex w-full bg-white/95 backdrop-blur-md border-b border-gray-200 h-16 shadow-sm">
+    <header className="sticky top-0 z-40 flex w-full admin-glass border-b admin-border-primary h-16 shadow-sm">
       <div className="flex flex-col items-center justify-between w-full lg:flex-row">
-        <div className="flex items-center justify-between w-full gap-2 px-4 py-3 border-b border-gray-100 sm:gap-4 lg:justify-normal lg:border-b-0 lg:py-4">
+        <div className="flex items-center justify-between w-full gap-2 px-4 py-3 border-b admin-border-secondary sm:gap-4 lg:justify-normal lg:border-b-0 lg:py-4">
           <button
-            className="flex items-center justify-center w-10 h-10 text-gray-600 border border-gray-200 rounded-lg z-40 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+            className="flex items-center justify-center w-10 h-10 admin-text-secondary border admin-border-primary rounded-lg z-40 hover:admin-accent-secondary hover:admin-text-primary transition-colors"
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
           >
@@ -41,11 +41,11 @@ export default function Navbar() {
             )}
           </button>
 
-          <div className="lg:hidden font-semibold text-xl text-gray-900">Admin Panel</div>
+          <div className="lg:hidden font-semibold text-xl admin-text-primary">Admin Panel</div>
 
           <button
             onClick={toggleApplicationMenu}
-            className="flex items-center justify-center w-10 h-10 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors lg:hidden"
+            className="flex items-center justify-center w-10 h-10 admin-text-secondary rounded-lg hover:admin-accent-secondary hover:admin-text-primary transition-colors lg:hidden"
             aria-label="Toggle Menu"
           >
             <svg
@@ -73,7 +73,7 @@ export default function Navbar() {
         <div
           className={`${
             isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-lg lg:shadow-none absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 lg:static lg:border-0`}
+          } items-center justify-between w-full gap-4 px-4 py-3 lg:flex lg:w-auto lg:justify-end lg:py-0 shadow-lg lg:shadow-none absolute top-16 left-0 right-0 admin-glass border-b admin-border-primary lg:static lg:border-0`}
         >
           <div className="flex items-center gap-3">
             <NotificationDropdown />

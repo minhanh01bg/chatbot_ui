@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Clock, TrendingUp, Users, Globe } from 'lucide-react';
 
@@ -15,13 +16,32 @@ interface WelcomeMessageProps {
 
 export function WelcomeMessage({ 
   userName = 'Admin', 
-  currentTime = new Date().toLocaleTimeString(),
+  currentTime,
   stats = {
     totalUsers: 2847,
     totalSites: 12,
     growthRate: '+12%'
   }
 }: WelcomeMessageProps) {
+  // Use currentTime prop or fallback to current time
+  const [displayTime, setDisplayTime] = React.useState('');
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+    if (!currentTime) {
+      setDisplayTime(new Date().toLocaleTimeString());
+      
+      // Update time every second
+      const interval = setInterval(() => {
+        setDisplayTime(new Date().toLocaleTimeString());
+      }, 1000);
+      
+      return () => clearInterval(interval);
+    } else {
+      setDisplayTime(currentTime);
+    }
+  }, [currentTime]);
   // Custom number formatting to avoid hydration issues
   const formatNumber = (num: number) => {
     const parts = num.toString().split('.');
@@ -33,7 +53,7 @@ export function WelcomeMessage({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl"
+      className="relative overflow-hidden rounded-2xl admin-glass border admin-border-primary shadow-2xl"
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -76,14 +96,14 @@ export function WelcomeMessage({
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-medium text-purple-300">Welcome back!</span>
+              <span className="text-sm font-medium admin-accent">Welcome back!</span>
             </motion.div>
             
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-2xl lg:text-3xl font-bold text-white"
+              className="text-2xl lg:text-3xl font-bold admin-text-primary"
             >
               Hello, <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{userName}</span>! 👋
             </motion.h2>
@@ -92,7 +112,7 @@ export function WelcomeMessage({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-gray-300 text-sm lg:text-base"
+              className="admin-text-secondary text-sm lg:text-base"
             >
               Here's what's happening with your platform today. Everything is running smoothly!
             </motion.p>
@@ -105,24 +125,26 @@ export function WelcomeMessage({
             transition={{ delay: 0.8, duration: 0.6 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-2">
-              <Clock className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-gray-300">{currentTime}</span>
+            <div className="flex items-center space-x-2 admin-accent-secondary rounded-lg px-3 py-2 backdrop-blur-sm">
+              <Clock className="w-4 h-4 admin-accent" />
+              <span className="text-sm admin-text-secondary font-medium">
+                {isClient ? displayTime : '--:--:--'}
+              </span>
             </div>
             
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-2">
-              <Users className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-gray-300">{stats.totalUsers ? formatNumber(stats.totalUsers) : '0'} users</span>
+            <div className="flex items-center space-x-2 admin-accent-secondary rounded-lg px-3 py-2 backdrop-blur-sm">
+              <Users className="w-4 h-4 admin-accent" />
+              <span className="text-sm admin-text-secondary font-medium">{stats.totalUsers ? formatNumber(stats.totalUsers) : '0'} users</span>
             </div>
             
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-2">
-              <Globe className="w-4 h-4 text-purple-400" />
-              <span className="text-sm text-gray-300">{stats.totalSites} sites</span>
+            <div className="flex items-center space-x-2 admin-accent-secondary rounded-lg px-3 py-2 backdrop-blur-sm">
+              <Globe className="w-4 h-4 admin-accent" />
+              <span className="text-sm admin-text-secondary font-medium">{stats.totalSites} sites</span>
             </div>
             
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-2">
-              <TrendingUp className="w-4 h-4 text-orange-400" />
-              <span className="text-sm text-gray-300">{stats.growthRate}</span>
+            <div className="flex items-center space-x-2 admin-accent-secondary rounded-lg px-3 py-2 backdrop-blur-sm">
+              <TrendingUp className="w-4 h-4 admin-accent" />
+              <span className="text-sm admin-text-secondary font-medium">{stats.growthRate}</span>
             </div>
           </motion.div>
         </div>
@@ -134,11 +156,11 @@ export function WelcomeMessage({
           transition={{ delay: 1, duration: 0.6 }}
           className="mt-6"
         >
-          <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
+          <div className="flex items-center justify-between text-sm admin-text-secondary mb-2">
             <span>System Health</span>
             <span>98%</span>
           </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
+          <div className="w-full admin-accent-secondary rounded-full h-2">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: "98%" }}

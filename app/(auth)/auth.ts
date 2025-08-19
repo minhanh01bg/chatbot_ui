@@ -33,6 +33,7 @@ export const {
     // Use "jwt" strategy for easier management, with shorter maxAge to avoid long caching
     strategy: "jwt",
     maxAge: 60 * 60, // 1 hour instead of default 30 days
+    updateAge: 60 * 5, // Update session every 5 minutes instead of default 24 hours
   },
   providers: [
     Credentials({

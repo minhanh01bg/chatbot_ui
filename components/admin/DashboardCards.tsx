@@ -14,11 +14,11 @@ type StatCardProps = {
 
 const StatCard = ({ title, value, description, icon, trend, percentage, gradient }: StatCardProps) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl hover:shadow-purple-200/20 transition-all duration-300 overflow-hidden group">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <div className={`p-3 rounded-lg bg-gradient-to-r ${gradient} text-white`}>
+          <p className="text-sm font-medium admin-text-secondary">{title}</p>
+          <div className={`p-3 rounded-lg bg-gradient-to-r ${gradient} text-gray-900 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
             {icon}
           </div>
         </div>
@@ -26,10 +26,10 @@ const StatCard = ({ title, value, description, icon, trend, percentage, gradient
         <div className="flex items-center text-sm">
           <div className={`mr-2 p-1.5 rounded-md ${
             trend === 'up' 
-              ? 'text-green-500 bg-green-500/10' 
+              ? 'admin-status-success admin-bg-status-success' 
               : trend === 'down' 
-                ? 'text-red-500 bg-red-500/10' 
-                : 'text-yellow-500 bg-yellow-500/10'
+                ? 'admin-status-error admin-bg-status-error' 
+                : 'admin-status-warning admin-bg-status-warning'
           }`}>
             {trend === 'up' ? (
               <ArrowUp className="h-4 w-4" />
@@ -39,14 +39,14 @@ const StatCard = ({ title, value, description, icon, trend, percentage, gradient
           </div>
           <p className={`font-medium ${
             trend === 'up' 
-              ? 'text-green-500' 
+              ? 'admin-status-success' 
               : trend === 'down' 
-                ? 'text-red-500' 
-                : 'text-yellow-500'
+                ? 'admin-status-error' 
+                : 'admin-status-warning'
           }`}>
             {percentage}
           </p>
-          <p className="text-gray-500 ml-2">{description}</p>
+          <p className="admin-text-muted ml-2">{description}</p>
         </div>
       </div>
     </div>

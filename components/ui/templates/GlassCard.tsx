@@ -17,8 +17,8 @@ export function GlassCard({
   const baseClasses = "rounded-2xl backdrop-blur-xl transition-all duration-300";
   
   const variantClasses = {
-    light: "bg-white/80 border border-white/20",
-    dark: "bg-black/20 border border-white/10"
+    light: "admin-bg-glass border admin-border-primary",
+    dark: "admin-bg-glass border admin-border-primary"
   };
   
   return (

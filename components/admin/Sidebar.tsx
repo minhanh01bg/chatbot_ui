@@ -94,11 +94,11 @@ export default function Sidebar() {
 
   return (
     <UISidebar 
-      className="group-data-[side=left]:border-r-0 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 shadow-lg"
+      className="group-data-[side=left]:border-r-0 admin-glass border-r admin-border-primary shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <SidebarHeader className="h-16 flex items-center justify-center border-b border-gray-200/50 bg-gradient-to-r from-white/50 to-gray-50/50">
+      <SidebarHeader className="h-16 flex items-center justify-center border-b admin-border-secondary admin-bg-secondary">
         <div className="flex flex-row justify-between items-center px-4 w-full">
           {(open || isHovered) && (
             <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -108,7 +108,7 @@ export default function Sidebar() {
           {!open && !isHovered && (
             <div className="w-full flex justify-center">
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300 hover:shadow-xl">
-                <span className="font-bold text-white text-sm">A</span>
+                <span className="font-bold text-gray-900 text-sm">A</span>
               </div>
             </div>
           )}
@@ -118,7 +118,7 @@ export default function Sidebar() {
         <div className="relative flex w-full min-w-0 flex-col p-3 mt-2">
           <div className="w-full">
             {(open || isHovered) && (
-              <div className="px-3 py-2 text-xs text-gray-500 mb-3 font-medium tracking-wide uppercase opacity-75 animate-fade-in">
+              <div className="px-3 py-2 text-xs admin-text-muted mb-3 font-medium tracking-wide uppercase opacity-75 animate-fade-in">
                 Main Navigation
               </div>
             )}
@@ -143,14 +143,14 @@ export default function Sidebar() {
                         >
                           <div className={`flex w-full items-center justify-between rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-md
                           ${isItemActive ? 
-                            'bg-gradient-to-r from-purple-100 to-blue-100 border-l-4 border-purple-600 text-purple-700 shadow-md' : 
-                            'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50/30 hover:text-gray-900 hover:shadow-sm'
+                            'admin-accent-secondary border-l-4 admin-border-accent admin-accent shadow-md' : 
+                            'admin-text-primary hover:admin-accent-secondary hover:admin-accent hover:shadow-sm'
                           }`}>
                             <div className="flex items-center">
                               <div className={`relative ${isHovered && !isItemActive ? 'animate-bounce' : ''}`}>
                                 <item.icon
                                   className={`h-5 w-5 mr-3 flex-shrink-0 transition-all duration-300
-                                  ${isItemActive ? 'text-purple-600' : 'text-gray-500 group-hover:text-gray-700'}`}
+                                  ${isItemActive ? 'admin-accent' : 'admin-text-muted group-hover:admin-text-primary'}`}
                                   aria-hidden="true"
                                 />
                               </div>
@@ -161,7 +161,7 @@ export default function Sidebar() {
                             {(open || isHovered) && (
                               <ChevronDownIcon
                                 className={`h-4 w-4 transition-all duration-300 ease-out
-                                ${openSubmenu === index ? 'rotate-180 text-purple-600' : 'text-gray-400 group-hover:text-gray-600'}`}
+                                ${openSubmenu === index ? 'rotate-180 admin-accent' : 'admin-text-muted group-hover:admin-text-secondary'}`}
                               />
                             )}
                           </div>
@@ -175,8 +175,8 @@ export default function Sidebar() {
                                 onClick={() => setOpenMobile(false)}
                                 className={`block rounded-lg px-3 py-2 text-sm transition-all duration-300 ease-out transform hover:scale-[1.02] hover:translate-x-1
                                 ${isActive(subItem.href) || pathname.startsWith(subItem.href) ?
-                                  'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 font-medium shadow-sm' :
-                                  'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
+                                  'admin-accent-secondary admin-accent font-medium shadow-sm' :
+                                  'admin-text-secondary hover:admin-accent-secondary hover:admin-text-primary hover:shadow-sm'
                                 }`}
                                 style={{
                                   animationDelay: `${subIndex * 100}ms`
@@ -201,14 +201,14 @@ export default function Sidebar() {
                           onMouseLeave={() => setHoveredItem(null)}
                           className={`flex items-center rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-md
                           ${isItemActive ? 
-                            'bg-gradient-to-r from-purple-100 to-blue-100 border-l-4 border-purple-600 text-purple-700 shadow-md' : 
-                            'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50/30 hover:text-gray-900 hover:shadow-sm'
+                            'admin-accent-secondary border-l-4 admin-border-accent admin-accent shadow-md' : 
+                            'admin-text-primary hover:admin-accent-secondary hover:admin-accent hover:shadow-sm'
                           }`}
                         >
                           <div className={`relative ${isHovered && !isItemActive ? 'animate-bounce' : ''}`}>
                             <item.icon
                               className={`h-5 w-5 mr-3 flex-shrink-0 transition-all duration-300
-                              ${isItemActive ? 'text-purple-600' : 'text-gray-500 group-hover:text-gray-700'}`}
+                              ${isItemActive ? 'admin-accent' : 'admin-text-muted group-hover:admin-text-primary'}`}
                               aria-hidden="true"
                             />
                           </div>
@@ -226,7 +226,7 @@ export default function Sidebar() {
               {isSuperAdmin && (
                 <>
                   {(open || isHovered) && (
-                    <div className="px-3 py-2 text-xs text-gray-500 mb-3 font-medium tracking-wide uppercase opacity-75 mt-6 animate-fade-in">
+                    <div className="px-3 py-2 text-xs admin-text-muted mb-3 font-medium tracking-wide uppercase opacity-75 mt-6 animate-fade-in">
                       Admin Tools
                     </div>
                   )}

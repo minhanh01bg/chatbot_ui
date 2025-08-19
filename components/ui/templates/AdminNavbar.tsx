@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Menu, 
@@ -11,14 +11,14 @@ import {
   User, 
   LogOut, 
   HelpCircle,
-  Sun,
-  Moon,
   ChevronDown,
   Sparkles
 } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { performLogout } from '@/lib/auth-utils';
 import { useRouter } from 'next/navigation';
+import { ThemeToggle } from '@/components/admin/ThemeToggle';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 
 interface AdminNavbarProps {
   onSidebarToggle: () => void;
@@ -29,6 +29,7 @@ interface AdminNavbarProps {
 export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: AdminNavbarProps) {
   const { user } = useCurrentUser();
   const router = useRouter();
+  const { currentTheme } = useAdminTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -71,12 +72,15 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Check if current theme is an admin theme
+  const isAdminTheme = currentTheme.startsWith('admin');
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className={`h-16 sticky top-0 z-50 w-full bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-lg ${className}`}
+      className={`h-16 sticky top-0 z-50 w-full backdrop-blur-xl shadow-lg admin-navbar ${className}`}
     >
       <div className="flex items-center justify-between h-16 px-4">
         {/* Left Section */}
@@ -85,7 +89,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
             onClick={onSidebarToggle}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center w-10 h-10 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300"
+            className="flex items-center justify-center w-10 h-10 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary hover:admin-accent-muted transition-all duration-300"
           >
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </motion.button>
@@ -99,7 +103,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
             <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold admin-text-primary">
               Admin Panel
             </h1>
           </motion.div>
@@ -113,11 +117,11 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
           className="flex-1 max-w-md mx-4 hidden lg:block"
         >
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 admin-text-muted" />
             <input
               type="text"
               placeholder="Search anything..."
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+              className="w-full pl-10 pr-4 py-2 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary placeholder-admin-text-muted focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
             />
           </div>
         </motion.div>
@@ -129,20 +133,13 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="lg:hidden flex items-center justify-center w-10 h-10 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300"
+            className="lg:hidden flex items-center justify-center w-10 h-10 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary hover:admin-accent-muted transition-all duration-300"
           >
             <Search className="w-5 h-5" />
           </motion.button>
 
-          {/* Dark Mode Toggle */}
-          <motion.button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center w-10 h-10 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300"
-          >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </motion.button>
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           {/* Notifications */}
           <div className="relative">
@@ -150,7 +147,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative flex items-center justify-center w-10 h-10 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300"
+              className="relative flex items-center justify-center w-10 h-10 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary hover:admin-accent-muted transition-all duration-300"
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
@@ -159,7 +156,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ scale: 1 }}
                   className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
                 >
-                  <span className="text-xs text-white font-bold">{unreadCount}</span>
+                  <span className="text-xs text-gray-900 font-bold">{unreadCount}</span>
                 </motion.div>
               )}
             </motion.button>
@@ -171,10 +168,10 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute right-0 mt-2 w-80 admin-dropdown rounded-xl shadow-2xl overflow-hidden"
                 >
-                  <div className="p-4 border-b border-white/20">
-                    <h3 className="text-white font-semibold">Notifications</h3>
+                  <div className="p-4 border-b admin-border-secondary">
+                    <h3 className="admin-text-primary font-semibold">Notifications</h3>
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {notifications.map((notification, index) => (
@@ -183,8 +180,8 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1, duration: 0.3 }}
-                        className={`p-4 border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer ${
-                          !notification.read ? 'bg-white/5' : ''
+                        className={`p-4 border-b admin-border-secondary hover:admin-accent-muted transition-colors cursor-pointer ${
+                          !notification.read ? 'admin-accent-secondary' : ''
                         }`}
                       >
                         <div className="flex items-start space-x-3">
@@ -194,16 +191,16 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                             'bg-orange-400'
                           }`} />
                           <div className="flex-1">
-                            <p className="text-white font-medium text-sm">{notification.title}</p>
-                            <p className="text-gray-300 text-xs mt-1">{notification.message}</p>
-                            <p className="text-gray-400 text-xs mt-2">{notification.time}</p>
+                            <p className="admin-text-primary font-medium text-sm">{notification.title}</p>
+                            <p className="admin-text-secondary text-xs mt-1">{notification.message}</p>
+                            <p className="admin-text-muted text-xs mt-2">{notification.time}</p>
                           </div>
                         </div>
                       </motion.div>
                     ))}
                   </div>
-                  <div className="p-4 border-t border-white/20">
-                    <button className="w-full text-center text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors">
+                  <div className="p-4 border-t admin-border-secondary">
+                    <button className="w-full text-center admin-accent hover:admin-accent text-sm font-medium transition-colors">
                       View all notifications
                     </button>
                   </div>
@@ -218,14 +215,14 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center space-x-3 p-2 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300"
+              className="flex items-center space-x-3 p-2 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary hover:admin-accent-muted transition-all duration-300"
             >
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <User className="w-4 h-4 text-white" />
+                <User className="w-4 h-4 text-gray-900" />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-white">{user?.name || 'Admin'}</p>
-                <p className="text-xs text-gray-300">Administrator</p>
+                <p className="text-sm font-medium admin-text-primary">{user?.name || 'Admin'}</p>
+                <p className="text-xs admin-text-secondary">Administrator</p>
               </div>
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </motion.button>
@@ -237,36 +234,36 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-56 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute right-0 mt-2 w-56 admin-dropdown rounded-xl shadow-2xl overflow-hidden"
                 >
-                  <div className="p-4 border-b border-white/20">
-                    <p className="text-white font-semibold">{user?.name || 'Admin'}</p>
-                    <p className="text-gray-300 text-sm">{user?.email}</p>
+                  <div className="p-4 border-b admin-border-secondary">
+                    <p className="admin-text-primary font-semibold">{user?.name || 'Admin'}</p>
+                    <p className="admin-text-secondary text-sm">{user?.email}</p>
                   </div>
                   <div className="py-2">
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-white hover:bg-white/10 transition-colors"
+                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
+                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
                     >
                       <User className="w-4 h-4" />
                       <span>Profile</span>
                     </motion.button>
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-white hover:bg-white/10 transition-colors"
+                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
+                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       <span>Settings</span>
                     </motion.button>
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-white hover:bg-white/10 transition-colors"
+                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
+                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
                     >
                       <HelpCircle className="w-4 h-4" />
                       <span>Help</span>
                     </motion.button>
                   </div>
-                  <div className="p-4 border-t border-white/20">
+                  <div className="p-4 border-t admin-border-secondary">
                     <motion.button
                       onClick={handleLogout}
                       whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}
@@ -291,15 +288,15 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden border-t border-white/20 bg-white/5"
+            className="lg:hidden border-t admin-border-secondary admin-accent-secondary"
           >
             <div className="p-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 admin-text-muted" />
                 <input
                   type="text"
                   placeholder="Search anything..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-2 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary placeholder-admin-text-muted focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
                 />
               </div>
             </div>

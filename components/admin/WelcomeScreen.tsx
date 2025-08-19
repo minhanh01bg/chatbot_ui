@@ -40,7 +40,7 @@ export default function WelcomeScreen({ siteName }: WelcomeScreenProps) {
       <div className={cn("relative mb-8", styles.floating)}>
         <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
         <div className="relative p-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-2xl">
-          <Bot className="h-12 w-12 text-white" />
+          <Bot className="h-12 w-12 text-gray-900" />
         </div>
         <div className="absolute -top-2 -right-2">
           <div className="p-2 rounded-full bg-yellow-400 shadow-lg animate-bounce">
@@ -55,10 +55,10 @@ export default function WelcomeScreen({ siteName }: WelcomeScreenProps) {
       </h3>
       
       {/* Subtitle */}
-      <p className="max-w-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
+      <p className="max-w-sm admin-text-secondary leading-relaxed mb-8">
         Ask questions about your documents and get intelligent responses from your AI assistant.
         {siteName && (
-          <span className="block mt-2 font-medium text-blue-600 dark:text-blue-400">
+          <span className="block mt-2 font-medium admin-accent">
             Powered by {siteName}
           </span>
         )}
@@ -70,19 +70,19 @@ export default function WelcomeScreen({ siteName }: WelcomeScreenProps) {
           <div 
             key={index}
             className={cn(
-              "p-4 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50",
+              "p-4 rounded-xl admin-bg-glass backdrop-blur-sm border admin-border-primary",
               "transition-all duration-300 hover:scale-105 hover:shadow-lg",
               "animate-in slide-in-from-bottom-2 duration-500"
             )}
             style={{ animationDelay: `${index * 200}ms` }}
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white mb-3 mx-auto">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-gray-900 mb-3 mx-auto">
               {feature.icon}
             </div>
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">
+            <h4 className="font-semibold admin-text-primary mb-1">
               {feature.title}
             </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm admin-text-secondary">
               {feature.description}
             </p>
           </div>
@@ -90,15 +90,15 @@ export default function WelcomeScreen({ siteName }: WelcomeScreenProps) {
       </div>
 
       {/* Status indicator */}
-      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+      <div className="flex items-center gap-2 text-sm admin-text-muted">
+        <div className="w-2 h-2 admin-bg-status-success rounded-full animate-pulse"></div>
         <span className="font-medium">AI is ready to help</span>
       </div>
 
       {/* Quick start tips */}
-      <div className="mt-8 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 max-w-md">
-        <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">💡 Quick Start Tips</h4>
-        <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-1 text-left">
+      <div className="mt-8 p-4 rounded-xl admin-accent-secondary border admin-border-accent max-w-md">
+        <h4 className="font-semibold admin-accent mb-2">💡 Quick Start Tips</h4>
+        <ul className="text-sm admin-text-secondary space-y-1 text-left">
           <li>• Ask specific questions for better answers</li>
           <li>• Try asking about document content</li>
           <li>• Use natural language - the AI understands context</li>

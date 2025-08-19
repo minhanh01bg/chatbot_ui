@@ -27,6 +27,7 @@ import {
   X
 } from 'lucide-react';
 import { useSuperAdmin } from '@/hooks/use-superadmin';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 
 interface NavItem {
   name: string;
@@ -47,8 +48,12 @@ interface AdminSidebarProps {
 export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: AdminSidebarProps) {
   const pathname = usePathname();
   const { isSuperAdmin } = useSuperAdmin();
+  const { currentTheme } = useAdminTheme();
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+
+  // Check if current theme is an admin theme
+  const isAdminTheme = currentTheme.startsWith('admin');
 
   const navigation: NavItem[] = [
     { 
@@ -112,13 +117,15 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
       initial={{ width: isOpen ? 280 : 80 }}
       animate={{ width: isOpen || isHovered ? 280 : 80 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="relative h-screen bg-white/10 backdrop-blur-xl border-r border-white/20 shadow-2xl"
+      className={`relative h-screen ${isAdminTheme ? 'admin-sidebar' : ''} backdrop-blur-xl shadow-2xl`}
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
     >
       {/* Header */}
       <motion.div 
-        className="h-16 flex items-center justify-center border-b border-white/20 bg-white/5"
+        className={`h-16 flex items-center justify-center border-b ${
+          isAdminTheme ? 'border-white/20 bg-white/5' : 'border-gray-200/50 bg-gray-100/50'
+        }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.6 }}
@@ -135,7 +142,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 className="flex items-center space-x-3"
               >
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
+                  <Sparkles className="w-4 h-4 text-gray-900" />
                 </div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                   Admin Panel
@@ -151,7 +158,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 className="w-full flex justify-center"
               >
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300">
-                  <Sparkles className="w-4 h-4 text-white" />
+                  <Sparkles className="w-4 h-4 text-gray-900" />
                 </div>
               </motion.div>
             )}
@@ -170,7 +177,9 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
-                className="px-3 py-2 text-xs text-gray-400 font-medium tracking-wide uppercase"
+                className={`px-3 py-2 text-xs font-medium tracking-wide uppercase ${
+                  isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                }`}
               >
                 Main Navigation
               </motion.div>
@@ -199,15 +208,15 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                         onMouseLeave={() => setHoveredItem(null)}
                         className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-300 group
                         ${isItemActive 
-                          ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-white shadow-lg' 
-                          : 'text-gray-300 hover:bg-white/10 hover:text-white hover:shadow-md'
+                          ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-gray-900 shadow-lg' 
+                          : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <div className="flex items-center space-x-3">
                           <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
-                            <item.icon className={`w-5 h-5 ${item.color || 'text-gray-400'} group-hover:text-white transition-colors`} />
+                            <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
                             {isItemActive && (
                               <motion.div
                                 className="absolute -right-1 -top-1 w-2 h-2 bg-green-400 rounded-full"
@@ -241,7 +250,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                             >
                               <ChevronDown 
                                 className={`w-4 h-4 transition-transform duration-300 ${
-                                  openSubmenu === index ? 'rotate-180 text-purple-400' : 'text-gray-400'
+                                  openSubmenu === index ? 'rotate-180 text-purple-400' : `${isAdminTheme ? 'text-gray-600' : 'text-gray-600'}`
                                 }`} 
                               />
                             </motion.div>
@@ -269,8 +278,8 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                                   href={subItem.href}
                                   className={`block px-3 py-2 rounded-lg text-sm transition-all duration-300 group
                                   ${isActive(subItem.href) || pathname.startsWith(subItem.href)
-                                    ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white shadow-md'
-                                    : 'text-gray-400 hover:bg-white/10 hover:text-white hover:shadow-sm'
+                                    ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-gray-900 shadow-md'
+                                    : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-sm`
                                   }`}
                                 >
                                   <div className="flex items-center space-x-2">
@@ -293,13 +302,13 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                       onMouseLeave={() => setHoveredItem(null)}
                       className={`block p-3 rounded-xl transition-all duration-300 group
                       ${isItemActive 
-                        ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-white shadow-lg' 
-                        : 'text-gray-300 hover:bg-white/10 hover:text-white hover:shadow-md'
+                        ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-gray-900 shadow-lg' 
+                        : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
-                          <item.icon className={`w-5 h-5 ${item.color || 'text-gray-400'} group-hover:text-white transition-colors`} />
+                          <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
                           {isItemActive && (
                             <motion.div
                               className="absolute -right-1 -top-1 w-2 h-2 bg-green-400 rounded-full"
@@ -340,7 +349,9 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ delay: 0.4, duration: 0.4 }}
-                    className="px-3 py-2 text-xs text-gray-400 font-medium tracking-wide uppercase"
+                    className={`px-3 py-2 text-xs font-medium tracking-wide uppercase ${
+                      isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                    }`}
                   >
                     Admin Tools
                   </motion.div>
@@ -364,13 +375,13 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                       onMouseLeave={() => setHoveredItem(null)}
                       className={`block p-3 rounded-xl transition-all duration-300 group
                       ${isItemActive 
-                        ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 text-white shadow-lg' 
-                        : 'text-gray-300 hover:bg-white/10 hover:text-white hover:shadow-md'
+                        ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 text-gray-900 shadow-lg' 
+                        : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
-                          <item.icon className={`w-5 h-5 ${item.color || 'text-gray-400'} group-hover:text-white transition-colors`} />
+                          <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
                           {isItemActive && (
                             <motion.div
                               className="absolute -right-1 -top-1 w-2 h-2 bg-red-400 rounded-full"
@@ -405,7 +416,9 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
 
       {/* Footer */}
       <motion.div 
-        className="p-4 border-t border-white/20"
+        className={`p-4 border-t ${
+          isAdminTheme ? 'border-white/20' : 'border-gray-200/50'
+        }`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.4 }}
@@ -419,7 +432,9 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center space-x-2 text-xs text-gray-400"
+                className={`flex items-center space-x-2 text-xs ${
+                  isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                }`}
               >
                 <Shield className="w-3 h-3" />
                 <span>Admin Panel v1.0</span>
@@ -432,7 +447,9 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
               >
-                <Shield className="w-4 h-4 text-gray-400" />
+                <Shield className={`w-4 h-4 ${
+                  isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                }`} />
               </motion.div>
             )}
           </AnimatePresence>

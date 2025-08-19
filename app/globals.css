@@ -88,7 +88,105 @@
     --sidebar-ring: var(--accent);
   }
 
+  .dark {
+    --background: 220 13% 18%;
+    --foreground: 0 0% 98%;
+    --card: 220 13% 22%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 13% 22%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 270 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 26%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 13% 26%;
+    --muted-foreground: 220 9% 60%;
+    --accent: 270 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 26%;
+    --input: 220 13% 26%;
+    --ring: 270 100% 50%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 
+  /* Admin Theme Custom Properties */
+  .admin-theme {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 270 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 270 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 4.8% 95.9%;
+    --input-foreground: 240 10% 3.9%;
+    --ring: 270 100% 50%;
+    
+    /* Admin-specific colors */
+    --admin-bg-primary: 0 0% 98%;
+    --admin-bg-secondary: 240 4.8% 95.9%;
+    --admin-bg-tertiary: 240 5.9% 90%;
+    --admin-bg-glass: 255 255% 255% 0.8;
+    --admin-border-primary: 240 5.9% 90%;
+    --admin-border-secondary: 240 4.8% 95.9%;
+    --admin-border-accent: 270 100% 50%;
+    --admin-text-primary: 240 10% 3.9%;
+    --admin-text-secondary: 240 3.8% 46.1%;
+    --admin-text-muted: 240 5% 64.9%;
+    --admin-accent: 270 100% 50%;
+    --admin-accent-secondary: 240 4.8% 95.9%;
+    --admin-accent-muted: 240 5.9% 90%;
+  }
+
+  /* Admin Dark Theme Custom Properties */
+  .admin-theme[data-theme="adminDark"] {
+    --admin-bg-primary: 220 13% 18%;
+    --admin-bg-secondary: 220 13% 26%;
+    --admin-bg-tertiary: 220 13% 22%;
+    --admin-bg-glass: 255 255% 255% 0.1;
+    --admin-border-primary: 220 13% 26%;
+    --admin-border-secondary: 220 13% 22%;
+    --admin-border-accent: 270 100% 50%;
+    --admin-text-primary: 0 0% 98%;
+    --admin-text-secondary: 220 9% 75%;
+    --admin-text-muted: 220 9% 60%;
+    --admin-accent: 270 100% 50%;
+    --admin-accent-secondary: 220 13% 26%;
+    --admin-accent-muted: 220 13% 22%;
+  }
+
+  /* Admin Dark Enhanced Theme Custom Properties */
+  .admin-theme[data-theme="adminDarkEnhanced"] {
+    --admin-bg-primary: 0 0% 6%;
+    --admin-bg-secondary: 0 0% 8%;
+    --admin-bg-tertiary: 0 0% 10%;
+    --admin-bg-glass: 255 255% 255% 0.08;
+    --admin-border-primary: 0 0% 15%;
+    --admin-border-secondary: 0 0% 12%;
+    --admin-border-accent: 270 100% 50%;
+    --admin-text-primary: 0 0% 100%;
+    --admin-text-secondary: 0 0% 90%;
+    --admin-text-muted: 0 0% 75%;
+    --admin-accent: 270 100% 50%;
+    --admin-accent-secondary: 0 0% 12%;
+    --admin-accent-muted: 0 0% 8%;
+  }
 
   /* Base Styles */
   * {
@@ -158,6 +256,231 @@
   
   .shadow-theme-xl {
     box-shadow: var(--shadowHover);
+  }
+
+  /* Admin-specific utility classes */
+  .admin-card {
+    @apply bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl;
+  }
+  
+  .admin-card-hover {
+    @apply hover:shadow-purple-500/20 transition-all duration-300;
+  }
+  
+  .admin-border {
+    @apply border-purple-500/30;
+  }
+  
+  .admin-border-light {
+    @apply border-purple-500/20;
+  }
+
+  /* Enhanced admin accent classes for better dark theme support */
+  .admin-accent {
+    color: hsl(var(--admin-accent, 270 100% 50%));
+  }
+  
+  .admin-accent-secondary {
+    background-color: hsl(var(--admin-accent-secondary, 240 4.8% 95.9%));
+    border: 1px solid hsl(var(--admin-border-secondary, 240 4.8% 95.9%));
+  }
+  
+  .admin-text-secondary {
+    color: hsl(var(--admin-text-secondary, 240 3.8% 46.1%));
+  }
+
+  /* New theme-aware admin utility classes */
+  .admin-bg-primary {
+    background-color: hsl(var(--admin-bg-primary));
+  }
+  
+  .admin-bg-secondary {
+    background-color: hsl(var(--admin-bg-secondary));
+  }
+  
+  .admin-bg-tertiary {
+    background-color: hsl(var(--admin-bg-tertiary));
+  }
+  
+  .admin-bg-glass {
+    background-color: hsla(var(--admin-bg-glass));
+  }
+  
+  .admin-text-primary {
+    color: hsl(var(--admin-text-primary));
+  }
+  
+  .admin-text-secondary {
+    color: hsl(var(--admin-text-secondary));
+  }
+  
+  .admin-text-muted {
+    color: hsl(var(--admin-text-muted));
+  }
+  
+  .placeholder-admin-text-muted::placeholder {
+    color: hsl(var(--admin-text-muted));
+  }
+  
+  .admin-border-primary {
+    border-color: hsla(var(--admin-border-primary));
+  }
+  
+  .admin-border-secondary {
+    border-color: hsla(var(--admin-border-secondary));
+  }
+  
+  .admin-border-accent {
+    border-color: hsl(var(--admin-border-accent));
+  }
+  
+  .admin-accent {
+    color: hsl(var(--admin-accent));
+  }
+  
+  .admin-accent-bg {
+    background-color: hsl(var(--admin-accent));
+  }
+  
+  .admin-accent-bg-hover:hover {
+    background-color: hsl(var(--admin-accent));
+  }
+  
+  .admin-accent-secondary {
+    background-color: hsl(var(--admin-accent-secondary));
+    border: 1px solid hsla(var(--admin-border-secondary));
+  }
+  
+  .admin-accent-muted {
+    background-color: hsl(var(--admin-accent-muted));
+  }
+  
+  /* Glass effects for admin */
+  .admin-glass {
+    background: hsla(var(--admin-bg-glass));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid hsla(var(--admin-border-primary));
+  }
+  
+  .admin-glass-light {
+    background: hsla(var(--admin-bg-glass) / 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid hsla(var(--admin-border-secondary));
+  }
+  
+  /* Hover effects */
+  .hover\:admin-accent-secondary:hover {
+    background-color: hsl(var(--admin-accent-secondary));
+  }
+  
+  .hover\:admin-accent:hover {
+    color: hsl(var(--admin-accent));
+  }
+  
+  .hover\:admin-text-primary:hover {
+    color: hsl(var(--admin-text-primary));
+  }
+  
+  .hover\:admin-text-secondary:hover {
+    color: hsl(var(--admin-text-secondary));
+  }
+  
+  .hover\:admin-border-primary:hover {
+    border-color: hsla(var(--admin-border-primary));
+  }
+  
+  .hover\:admin-accent-bg:hover {
+    background-color: hsl(var(--admin-accent));
+  }
+  
+  .hover\:admin-accent-muted:hover {
+    background-color: hsl(var(--admin-accent-muted));
+  }
+  
+  .hover\:admin-border-accent:hover {
+    border-color: hsl(var(--admin-border-accent));
+  }
+  
+  .hover\:opacity-90:hover {
+    opacity: 0.9;
+  }
+  
+  /* Group hover effects */
+  .group:hover .group-hover\:admin-text-primary {
+    color: hsl(var(--admin-text-primary));
+  }
+  
+  .group:hover .group-hover\:admin-accent {
+    color: hsl(var(--admin-accent));
+  }
+  
+  /* Additional admin theme utilities */
+  .admin-bg-glass-hover:hover {
+    background: hsla(var(--admin-bg-glass));
+  }
+  
+  .admin-border-accent-hover:hover {
+    border-color: hsl(var(--admin-border-accent));
+  }
+  
+  .admin-text-accent {
+    color: hsl(var(--admin-accent));
+  }
+  
+  .admin-bg-accent {
+    background-color: hsl(var(--admin-accent));
+  }
+  
+  .admin-bg-accent-secondary {
+    background-color: hsl(var(--admin-accent-secondary));
+  }
+  
+  .admin-bg-accent-muted {
+    background-color: hsl(var(--admin-accent-muted));
+  }
+  
+  .hover\:admin-border-accent:hover {
+    border-color: hsl(var(--admin-border-accent));
+  }
+  
+  .hover\:opacity-90:hover {
+    opacity: 0.9;
+  }
+  
+  /* Status colors for admin theme */
+  .admin-status-success {
+    color: hsl(142 76% 36%);
+  }
+  
+  .admin-status-warning {
+    color: hsl(38 92% 50%);
+  }
+  
+  .admin-status-error {
+    color: hsl(0 84.2% 60.2%);
+  }
+  
+  .admin-status-info {
+    color: hsl(221 83% 53%);
+  }
+  
+  /* Status background colors for admin theme */
+  .admin-bg-status-success {
+    background-color: hsl(142 76% 36%);
+  }
+  
+  .admin-bg-status-warning {
+    background-color: hsl(38 92% 50%);
+  }
+  
+  .admin-bg-status-error {
+    background-color: hsl(0 84.2% 60.2% / 0.1);
+  }
+  
+  .admin-bg-status-info {
+    background-color: hsl(221 83% 53% / 0.1);
   }
 }
 
@@ -1256,4 +1579,1200 @@ input:focus-within {
   background-color: var(--background-secondary) !important;
   border-color: var(--border) !important;
   color: var(--content) !important;
+}
+
+/* Admin Theme Specific Styles */
+.admin-theme {
+  --admin-text-primary: 0 0% 0%;
+  --admin-text-secondary: 0 0% 20%;
+  --admin-text-muted: 0 0% 45%;
+  --admin-text-subtle: 0 0% 60%;
+}
+
+/* Admin Background Styles */
+.admin-theme {
+  background: var(--admin-gradient-background, linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(250 10% 5%) 100%));
+  min-height: 100vh;
+}
+
+/* Admin Light Theme Overrides */
+.admin-theme[data-theme="adminLight"] {
+  background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(240 4.8% 95.9%) 100%);
+  --admin-text-primary: 240 10% 3.9%;
+  --admin-text-secondary: 240 5% 20%;
+  --admin-text-muted: 240 5% 45%;
+  --admin-text-subtle: 240 5% 60%;
+}
+
+/* Admin Navbar Styles */
+.admin-theme .admin-navbar {
+  background: var(--admin-navbar-background, hsla(255 255% 255% 0.08));
+  border-bottom: 1px solid var(--admin-navbar-border, hsla(255 255% 255% 0.15));
+  color: var(--admin-navbar-text, hsl(0 0% 98%));
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.1);
+}
+
+/* Enhanced Admin Navbar for Light Theme */
+.admin-theme[data-theme="adminLight"] .admin-navbar {
+  background: hsla(270 100% 50% 0.05);
+  border-bottom: 1px solid hsla(270 100% 50% 0.1);
+  color: hsl(240 10% 3.9%);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.05);
+}
+
+/* Enhanced Admin Navbar for Dark Theme */
+.admin-theme[data-theme="adminDark"] .admin-navbar {
+  background: hsla(255 255% 255% 0.08);
+  border-bottom: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 98%);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.2);
+}
+
+/* Enhanced Admin Navbar for Enhanced Dark Theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-navbar {
+  background: hsla(255 255% 255% 0.06);
+  border-bottom: 1px solid hsla(255 255% 255% 0.12);
+  color: hsl(0 0% 100%);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.3);
+}
+
+/* Admin Sidebar Styles */
+.admin-theme .admin-sidebar {
+  background: var(--admin-sidebar-background, hsl(240 3.7% 15.9%));
+  border-right: 1px solid var(--admin-sidebar-border, hsla(255 255% 255% 0.1));
+  color: var(--admin-sidebar-text, hsl(0 0% 98%));
+}
+
+/* Admin Input Styles */
+.admin-theme .admin-input {
+  background: var(--admin-input-background, hsla(255 255% 255% 0.05));
+  border: 1px solid var(--admin-input-border, hsla(255 255% 255% 0.1));
+  color: var(--admin-input-text, hsl(0 0% 98%));
+}
+
+.admin-theme .admin-input::placeholder {
+  color: var(--admin-input-placeholder, hsla(255 255% 255% 0.5));
+}
+
+/* Admin Dropdown Styles */
+.admin-theme .admin-dropdown {
+  background: var(--admin-dropdown-background, hsla(255 255% 255% 0.1));
+  border: 1px solid var(--admin-dropdown-border, hsla(255 255% 255% 0.2));
+  box-shadow: var(--admin-dropdown-shadow, 0 8px 32px hsla(0 0% 0% 0.3));
+  backdrop-filter: blur(20px);
+}
+
+/* Admin Light Theme Specific Dropdown Styles */
+.admin-theme[data-theme="adminLight"] .admin-dropdown {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Additional specificity for dropdowns in admin light theme */
+.admin-theme[data-theme="adminLight"] .admin-dropdown,
+.admin-theme[data-theme="adminLight"] .absolute.admin-dropdown,
+.admin-theme[data-theme="adminLight"] .relative .admin-dropdown {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Force override for any dropdown in admin light theme */
+.admin-theme[data-theme="adminLight"] [class*="dropdown"],
+.admin-theme[data-theme="adminLight"] [class*="admin-dropdown"] {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Specific override for all dropdown elements in admin light theme */
+.admin-theme[data-theme="adminLight"] .absolute,
+.admin-theme[data-theme="adminLight"] .relative {
+  background: hsla(0 0% 100% 0.95) !important;
+}
+
+/* Override for any element with dropdown-like styling in admin light */
+.admin-theme[data-theme="adminLight"] .bg-gradient-to-br.from-white\/95.via-purple-50\/95.to-white\/95 {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+}
+
+/* Specific override for theme selector dropdown in admin light */
+.admin-theme[data-theme="adminLight"] .w-72.admin-dropdown,
+.admin-theme[data-theme="adminLight"] .w-56.admin-dropdown,
+.admin-theme[data-theme="adminLight"] .w-80.admin-dropdown {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Override for any motion.div that acts as dropdown in admin light */
+.admin-theme[data-theme="adminLight"] .motion-div[class*="dropdown"],
+.admin-theme[data-theme="adminLight"] .motion-div.admin-dropdown {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Universal override for any dropdown-like element in admin light theme */
+.admin-theme[data-theme="adminLight"] div[class*="dropdown"],
+.admin-theme[data-theme="adminLight"] div[class*="admin-dropdown"],
+.admin-theme[data-theme="adminLight"] div.absolute[class*="dropdown"],
+.admin-theme[data-theme="adminLight"] div.absolute.admin-dropdown {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Force background for any element that might be a dropdown in admin light */
+.admin-theme[data-theme="adminLight"] .absolute.right-0.mt-2,
+.admin-theme[data-theme="adminLight"] .absolute.right-0.mt-2 > div {
+  background: hsla(0 0% 100% 0.95) !important;
+  border: 1px solid hsla(270 100% 50% 0.2) !important;
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Admin Gradient Theme Styles */
+.admin-theme[data-theme="adminGradient"] {
+  background: var(--admin-gradient-background);
+}
+
+.admin-theme[data-theme="adminGradient"] .bg-gradient-to-br {
+  background: var(--admin-gradient-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: var(--admin-card-shadow);
+}
+
+.admin-theme[data-theme="adminGradient"] .bg-gray-100\/50 {
+  background: var(--admin-gradient-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--admin-card-border);
+}
+
+/* Admin Light Theme Styles */
+.admin-theme[data-theme="adminLight"] .bg-gradient-to-br {
+  background: var(--admin-gradient-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: var(--admin-card-shadow);
+}
+
+.admin-theme[data-theme="adminLight"] .bg-gray-100\/50 {
+  background: var(--admin-gradient-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--admin-card-border);
+}
+
+/* Enhanced Admin Card Styles */
+.admin-theme .admin-card {
+  background: var(--admin-card-background, hsla(255 255% 255% 0.05));
+  border: 1px solid var(--admin-card-border, hsla(255 255% 255% 0.1));
+  box-shadow: var(--admin-card-shadow, 0 8px 32px hsla(0 0% 0% 0.2));
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-theme .admin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.02) 0%, hsla(270 100% 50% 0.01) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.admin-theme .admin-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px hsla(0 0% 0% 0.15);
+  border-color: hsla(270 100% 50% 0.3);
+}
+
+.admin-theme .admin-card:hover::before {
+  opacity: 1;
+}
+
+/* Admin Light Theme Specific Card Styles */
+.admin-theme[data-theme="adminLight"] .admin-card {
+  background: hsla(270 100% 50% 0.03);
+  border: 1px solid hsla(270 100% 50% 0.08);
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.admin-theme[data-theme="adminLight"] .admin-card:hover {
+  background: hsla(270 100% 50% 0.05);
+  border-color: hsla(270 100% 50% 0.2);
+  box-shadow: 0 12px 30px hsla(270 100% 50% 0.1);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.admin-theme[data-theme="adminLight"] .admin-card::before {
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.05) 0%, hsla(270 100% 50% 0.02) 100%);
+}
+
+/* Admin Button Styles */
+.admin-theme .admin-button {
+  background: var(--admin-gradient-primary, linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%));
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-theme .admin-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsla(255 255% 255% 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.admin-theme .admin-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 30px hsla(270 100% 50% 0.4);
+}
+
+.admin-theme .admin-button:hover::before {
+  left: 100%;
+}
+
+.admin-theme .admin-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Admin Light Theme Button Styles */
+.admin-theme[data-theme="adminLight"] .admin-button {
+  background: linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%);
+  box-shadow: 0 4px 15px hsla(270 100% 50% 0.2);
+}
+
+.admin-theme[data-theme="adminLight"] .admin-button:hover {
+  background: linear-gradient(135deg, hsl(270 100% 45%) 0%, hsl(280 100% 55%) 100%);
+  box-shadow: 0 8px 25px hsla(270 100% 50% 0.3);
+}
+
+/* Enhanced Input Styles for Admin Light */
+.admin-theme[data-theme="adminLight"] .admin-input {
+  background: hsla(270 100% 50% 0.03);
+  border: 1px solid hsla(270 100% 50% 0.1);
+  color: hsl(240 10% 3.9%);
+  transition: all 0.3s ease;
+}
+
+.admin-theme[data-theme="adminLight"] .admin-input:focus {
+  background: hsla(270 100% 50% 0.05);
+  border-color: hsla(270 100% 50% 0.3);
+  box-shadow: 0 0 0 3px hsla(270 100% 50% 0.1);
+  outline: none;
+}
+
+.admin-theme[data-theme="adminLight"] .admin-input::placeholder {
+  color: hsla(240 10% 3.9% 0.5);
+}
+
+/* Enhanced Navbar for Admin Light */
+.admin-theme[data-theme="adminLight"] .admin-navbar {
+  background: hsla(270 100% 50% 0.03);
+  border-bottom: 1px solid hsla(270 100% 50% 0.1);
+  color: hsl(240 10% 3.9%);
+  backdrop-filter: blur(15px);
+}
+
+/* Enhanced Sidebar for Admin Light */
+.admin-theme[data-theme="adminLight"] .admin-sidebar {
+  background: hsl(240 4.8% 95.9%);
+  border-right: 1px solid hsla(270 100% 50% 0.1);
+  color: hsl(240 10% 3.9%);
+}
+
+/* Override text colors for better readability in admin interface */
+.admin-theme .text-gray-300 {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+.admin-theme .text-gray-400 {
+  color: hsl(var(--admin-text-subtle)) !important;
+}
+
+.admin-theme .text-gray-500 {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+.admin-theme .text-gray-600 {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+.admin-theme .text-gray-700 {
+  color: hsl(var(--admin-text-primary)) !important;
+}
+
+.admin-theme .text-gray-800 {
+  color: hsl(var(--admin-text-primary)) !important;
+}
+
+.admin-theme .text-gray-900 {
+  color: hsl(var(--admin-text-primary)) !important;
+}
+
+/* Ensure dropdown text is readable */
+.admin-theme .bg-gradient-to-br.from-white\/95.via-purple-50\/95.to-white\/95 .text-gray-300,
+.admin-theme .bg-gradient-to-br.from-white\/95.via-purple-50\/95.to-white\/95 .text-gray-400 {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+/* Ensure sidebar and navbar text is readable */
+.admin-theme .bg-gray-100\/50 .text-gray-300,
+.admin-theme .bg-gray-100\/50 .text-gray-400 {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+/* Additional admin-specific text utilities */
+.admin-theme .admin-text-primary {
+  color: hsl(var(--admin-text-primary)) !important;
+}
+
+.admin-theme .admin-text-secondary {
+  color: hsl(var(--admin-text-secondary)) !important;
+}
+
+.admin-theme .admin-text-muted {
+  color: hsl(var(--admin-text-muted)) !important;
+}
+
+.admin-theme .admin-text-subtle {
+  color: hsl(var(--admin-text-subtle)) !important;
+}
+
+/* Enhanced Admin Theme Animations */
+.admin-theme .admin-fade-in {
+  animation: adminFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-theme .admin-slide-up {
+  animation: adminSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-theme .admin-scale-in {
+  animation: adminScaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-theme .admin-bounce-in {
+  animation: adminBounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes adminFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminSlideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes adminScaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes adminBounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Admin Theme Responsive Design */
+@media (max-width: 768px) {
+  .admin-theme .admin-card {
+    margin: 8px;
+    border-radius: 8px;
+  }
+  
+  .admin-theme .admin-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Admin Theme Dark Mode Overrides */
+.admin-theme.dark {
+  --admin-text-primary: 0 0% 98%;
+  --admin-text-secondary: 220 9% 75%;
+  --admin-text-muted: 220 9% 60%;
+  --admin-text-subtle: 220 9% 50%;
+}
+
+.admin-theme.dark .admin-card {
+  background: hsla(255 255% 255% 0.08);
+  border: hsla(255 255% 255% 0.15);
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.25);
+}
+
+.admin-theme.dark .admin-sidebar {
+  background: hsl(220 13% 22%);
+  border-right: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 98%);
+}
+
+/* Admin Theme CSS Variables Support */
+.admin-theme .admin-sidebar {
+  background: var(--admin-sidebar-background, hsl(240 4.8% 95.9%));
+  border-right: 1px solid var(--admin-sidebar-border, hsla(270 100% 50% 0.1));
+  color: var(--admin-sidebar-text, hsl(240 10% 3.9%));
+}
+
+.admin-theme .admin-navbar {
+  background: var(--admin-navbar-background, hsla(270 100% 50% 0.03));
+  border-bottom: 1px solid var(--admin-navbar-border, hsla(270 100% 50% 0.1));
+  color: var(--admin-navbar-text, hsl(240 10% 3.9%));
+}
+
+.admin-theme .admin-dropdown {
+  background: var(--admin-dropdown-background, hsla(0 0% 100% 0.95));
+  border: 1px solid var(--admin-dropdown-border, hsla(270 100% 50% 0.2));
+  box-shadow: var(--admin-dropdown-shadow, 0 8px 32px hsla(0 0% 0% 0.1));
+}
+
+.admin-theme .admin-card {
+  background: var(--admin-card-background, hsla(270 100% 50% 0.03));
+  border: 1px solid var(--admin-card-border, hsla(270 100% 50% 0.08));
+  box-shadow: var(--admin-card-shadow, 0 4px 20px hsla(0 0% 0% 0.05));
+}
+
+.admin-theme .admin-input {
+  background: var(--admin-input-background, hsla(270 100% 50% 0.03));
+  border: 1px solid var(--admin-input-border, hsla(270 100% 50% 0.1));
+  color: var(--admin-input-text, hsl(240 10% 3.9%));
+}
+
+.admin-theme .admin-input::placeholder {
+  color: var(--admin-input-placeholder, hsla(240 10% 3.9% 0.5));
+}
+
+/* Enhanced Dark Theme Styles for Better Contrast */
+.admin-theme[data-theme="adminDark"] {
+  background: linear-gradient(135deg, hsl(220 13% 18%) 0%, hsl(220 13% 22%) 100%);
+}
+
+/* Dark theme specific overrides for admin accent classes */
+.admin-theme[data-theme="adminDark"] .admin-accent {
+  color: hsl(270 100% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-accent-secondary {
+  background-color: hsla(255 255% 255% 0.08) !important;
+  border: 1px solid hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-text-secondary {
+  color: hsl(220 9% 75%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-text-primary {
+  color: hsl(0 0% 98%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-card {
+  background: hsla(255 255% 255% 0.08);
+  border: 1px solid hsla(255 255% 255% 0.15);
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.25);
+  backdrop-filter: blur(20px);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-card:hover {
+  background: hsla(255 255% 255% 0.12);
+  border-color: hsla(255 255% 255% 0.25);
+  box-shadow: 0 12px 40px hsla(0 0% 0% 0.3);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-sidebar {
+  background: hsl(220 13% 22%);
+  border-right: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 98%);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-navbar {
+  background: hsla(255 255% 255% 0.08);
+  border-bottom: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 98%);
+  backdrop-filter: blur(15px);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-dropdown {
+  background: hsla(255 255% 255% 0.15);
+  border: 1px solid hsla(255 255% 255% 0.25);
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.25);
+  backdrop-filter: blur(20px);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-input {
+  background: hsla(255 255% 255% 0.08);
+  border: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 98%);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-input:focus {
+  background: hsla(255 255% 255% 0.12);
+  border-color: hsla(270 100% 50% 0.5);
+  box-shadow: 0 0 0 3px hsla(270 100% 50% 0.2);
+  outline: none;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-input::placeholder {
+  color: hsla(255 255% 255% 0.6);
+}
+
+/* Enhanced text contrast for dark theme */
+.admin-theme[data-theme="adminDark"] .text-gray-300 {
+  color: hsl(220 9% 75%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-400 {
+  color: hsl(220 9% 60%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-500 {
+  color: hsl(220 9% 60%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-600 {
+  color: hsl(220 9% 75%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-700 {
+  color: hsl(0 0% 98%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-800 {
+  color: hsl(0 0% 98%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-gray-900 {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Enhanced button styles for dark theme */
+.admin-theme[data-theme="adminDark"] .admin-button {
+  background: linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%);
+  box-shadow: 0 4px 15px hsla(270 100% 50% 0.3);
+}
+
+.admin-theme[data-theme="adminDark"] .admin-button:hover {
+  background: linear-gradient(135deg, hsl(270 100% 45%) 0%, hsl(280 100% 55%) 100%);
+  box-shadow: 0 8px 25px hsla(270 100% 50% 0.4);
+}
+
+/* Enhanced glass effects for dark theme */
+.admin-theme[data-theme="adminDark"] .glass {
+  background: hsla(255 255% 255% 0.15);
+  border: 1px solid hsla(255 255% 255% 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.admin-theme[data-theme="adminDark"] .glass-dark {
+  background: hsla(0 0% 0% 0.3);
+  border: 1px solid hsla(255 255% 255% 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Enhanced component styles for dark theme */
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-white\/95 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:border-purple-200\/30 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-purple-50\/50 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-purple-100\/20 {
+  background: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-purple-100\/50 {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:hover\:bg-purple-100\/20:hover {
+  background: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:hover\:bg-purple-100\/50:hover {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:border-purple-200\/30 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:focus\:ring-purple-500\/20:focus {
+  box-shadow: 0 0 0 3px hsla(270 100% 50% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:focus\:border-purple-500\/50:focus {
+  border-color: hsla(270 100% 50% 0.5) !important;
+}
+
+/* Enhanced button styles for dark theme */
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-purple-600 {
+  background: hsl(270 100% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:hover\:bg-purple-700:hover {
+  background: hsl(270 100% 45%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:bg-red-600 {
+  background: hsl(0 84.2% 60.2%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:hover\:bg-red-700:hover {
+  background: hsl(0 84.2% 65%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:text-purple-400 {
+  color: hsl(270 100% 60%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .admin-theme\:hover\:text-purple-500:hover {
+  color: hsl(270 100% 70%) !important;
+}
+
+/* Enhanced table styles for dark theme */
+.admin-theme[data-theme="adminDark"] .border-gray-200 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-gray-50 {
+  background: hsla(255 255% 255% 0.05) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-gray-100 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-gray-200 {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+/* Enhanced badge styles for dark theme */
+.admin-theme[data-theme="adminDark"] .bg-green-100 {
+  background: hsla(142 76% 36% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-yellow-100 {
+  background: hsla(38 92% 50% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-red-100 {
+  background: hsla(0 84.2% 60.2% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-blue-100 {
+  background: hsla(221 83% 53% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-green-800 {
+  color: hsl(142 76% 36%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-yellow-800 {
+  color: hsl(38 92% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-red-800 {
+  color: hsl(0 84.2% 60.2%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .text-blue-800 {
+  color: hsl(221 83% 53%) !important;
+}
+
+/* Additional dark theme enhancements */
+.admin-theme[data-theme="adminDark"] .bg-white {
+  background: hsl(220 13% 22%) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-gray-50\/50 {
+  background: hsla(255 255% 255% 0.05) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .bg-gray-100\/50 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .border-gray-100 {
+  border-color: hsla(255 255% 255% 0.1) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .border-gray-300 {
+  border-color: hsla(255 255% 255% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .divide-gray-200 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .shadow-gray-500\/20 {
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDark"] .shadow-purple-500\/20 {
+  box-shadow: 0 4px 20px hsla(270 100% 50% 0.2) !important;
+}
+
+/* Enhanced scrollbar for dark theme */
+.admin-theme[data-theme="adminDark"] .custom-scrollbar::-webkit-scrollbar-track {
+  background: hsla(255 255% 255% 0.05);
+}
+
+.admin-theme[data-theme="adminDark"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.6), hsla(280 100% 60% 0.6));
+}
+
+.admin-theme[data-theme="adminDark"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.8), hsla(280 100% 60% 0.8));
+}
+
+/* Enhanced focus states for dark theme */
+.admin-theme[data-theme="adminDark"] *:focus-visible {
+  outline: 2px solid hsla(270 100% 50% 0.5);
+  outline-offset: 2px;
+}
+
+/* Admin theme TabsTrigger styles */
+.admin-theme .tabs-trigger {
+  background: transparent;
+  border: none;
+  color: hsl(var(--admin-text-secondary));
+  transition: all 0.3s ease;
+}
+
+.admin-theme .tabs-trigger:hover {
+  background: hsla(var(--admin-accent-secondary));
+  color: hsl(var(--admin-text-primary));
+}
+
+.admin-theme .tabs-trigger[data-state="active"] {
+  background: hsl(var(--admin-accent));
+  color: white;
+}
+
+/* Admin theme Card styles */
+.admin-theme .card {
+  background: hsla(var(--admin-bg-glass));
+  border: 1px solid hsla(var(--admin-border-primary));
+  backdrop-filter: blur(20px);
+}
+
+.admin-theme .card-header {
+  border-bottom: 1px solid hsla(var(--admin-border-secondary));
+}
+
+.admin-theme .card-title {
+  color: hsl(var(--admin-text-primary));
+}
+
+.admin-theme .card-description {
+  color: hsl(var(--admin-text-secondary));
+}
+
+/* Admin theme Button styles */
+.admin-theme .btn {
+  background: hsl(var(--admin-accent));
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.admin-theme .btn:hover {
+  background: hsl(var(--admin-accent));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px hsla(var(--admin-accent) 0.3);
+}
+
+.admin-theme .btn-outline {
+  background: transparent;
+  border: 1px solid hsla(var(--admin-border-primary));
+  color: hsl(var(--admin-text-primary));
+}
+
+.admin-theme .btn-outline:hover {
+  background: hsla(var(--admin-accent-secondary));
+  border-color: hsl(var(--admin-accent));
+}
+
+/* Enhanced selection for dark theme */
+.admin-theme[data-theme="adminDark"] ::selection {
+  background: hsla(270 100% 50% 0.3);
+  color: hsl(0 0% 98%);
+}
+
+.admin-theme[data-theme="adminDark"] ::-moz-selection {
+  background: hsla(270 100% 50% 0.3);
+  color: hsl(0 0% 98%);
+}
+
+/* ===== ENHANCED DARK THEME STYLES ===== */
+.admin-theme[data-theme="adminDarkEnhanced"] {
+  background: linear-gradient(135deg, hsl(0 0% 6%) 0%, hsl(0 0% 8%) 100%);
+}
+
+/* Enhanced dark theme specific overrides for admin accent classes */
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-accent {
+  color: hsl(270 100% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-accent-secondary {
+  background-color: hsla(255 255% 255% 0.08) !important;
+  border: 1px solid hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-text-secondary {
+  color: hsl(0 0% 90%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-text-primary {
+  color: hsl(0 0% 100%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-card {
+  background: hsla(255 255% 255% 0.08);
+  border: 1px solid hsla(255 255% 255% 0.15);
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-card:hover {
+  background: hsla(255 255% 255% 0.12);
+  border-color: hsla(255 255% 255% 0.25);
+  box-shadow: 0 12px 40px hsla(0 0% 0% 0.4);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-sidebar {
+  background: hsl(0 0% 8%);
+  border-right: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 100%);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-navbar {
+  background: hsla(255 255% 255% 0.08);
+  border-bottom: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 100%);
+  backdrop-filter: blur(15px);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-dropdown {
+  background: hsla(255 255% 255% 0.15);
+  border: 1px solid hsla(255 255% 255% 0.25);
+  box-shadow: 0 8px 32px hsla(0 0% 0% 0.4);
+  backdrop-filter: blur(20px);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-input {
+  background: hsla(255 255% 255% 0.08);
+  border: 1px solid hsla(255 255% 255% 0.15);
+  color: hsl(0 0% 100%);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-input:focus {
+  background: hsla(255 255% 255% 0.12);
+  border-color: hsla(270 100% 50% 0.5);
+  box-shadow: 0 0 0 3px hsla(270 100% 50% 0.2);
+  outline: none;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-input::placeholder {
+  color: hsla(255 255% 255% 0.7);
+}
+
+/* Enhanced text contrast for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-300 {
+  color: hsl(0 0% 90%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-400 {
+  color: hsl(0 0% 75%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-500 {
+  color: hsl(0 0% 75%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-600 {
+  color: hsl(0 0% 90%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-700 {
+  color: hsl(0 0% 100%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-800 {
+  color: hsl(0 0% 100%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-gray-900 {
+  color: hsl(0 0% 100%) !important;
+}
+
+/* Enhanced button styles for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-button {
+  background: linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%);
+  box-shadow: 0 4px 15px hsla(270 100% 50% 0.3);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-button:hover {
+  background: linear-gradient(135deg, hsl(270 100% 45%) 0%, hsl(280 100% 55%) 100%);
+  box-shadow: 0 8px 25px hsla(270 100% 50% 0.4);
+}
+
+/* Enhanced glass effects for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .glass {
+  background: hsla(255 255% 255% 0.15);
+  border: 1px solid hsla(255 255% 255% 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .glass-dark {
+  background: hsla(0 0% 0% 0.4);
+  border: 1px solid hsla(255 255% 255% 0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* Enhanced component styles for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-white\/95 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:border-purple-200\/30 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-purple-50\/50 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-purple-100\/20 {
+  background: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-purple-100\/50 {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:hover\:bg-purple-100\/20:hover {
+  background: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:hover\:bg-purple-100\/50:hover {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:focus\:ring-purple-500\/20:focus {
+  box-shadow: 0 0 0 3px hsla(270 100% 50% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:focus\:border-purple-500\/50:focus {
+  border-color: hsla(270 100% 50% 0.5) !important;
+}
+
+/* Enhanced button styles for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-purple-600 {
+  background: hsl(270 100% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:hover\:bg-purple-700:hover {
+  background: hsl(270 100% 45%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:bg-red-600 {
+  background: hsl(0 84.2% 60.2%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:hover\:bg-red-700:hover {
+  background: hsl(0 84.2% 65%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:text-purple-400 {
+  color: hsl(270 100% 60%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .admin-theme\:hover\:text-purple-500:hover {
+  color: hsl(270 100% 70%) !important;
+}
+
+/* Enhanced table styles for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .border-gray-200 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-gray-50 {
+  background: hsla(255 255% 255% 0.05) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-gray-100 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-gray-200 {
+  background: hsla(255 255% 255% 0.12) !important;
+}
+
+/* Enhanced badge styles for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-green-100 {
+  background: hsla(142 76% 36% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-yellow-100 {
+  background: hsla(38 92% 50% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-red-100 {
+  background: hsla(0 84.2% 60.2% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-blue-100 {
+  background: hsla(221 83% 53% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-green-800 {
+  color: hsl(142 76% 36%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-yellow-800 {
+  color: hsl(38 92% 50%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-red-800 {
+  color: hsl(0 84.2% 60.2%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .text-blue-800 {
+  color: hsl(221 83% 53%) !important;
+}
+
+/* Additional adminDarkEnhanced theme enhancements */
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-white {
+  background: hsl(0 0% 8%) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-gray-50\/50 {
+  background: hsla(255 255% 255% 0.05) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .bg-gray-100\/50 {
+  background: hsla(255 255% 255% 0.08) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .border-gray-100 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .border-gray-300 {
+  border-color: hsla(255 255% 255% 0.2) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .divide-gray-200 {
+  border-color: hsla(255 255% 255% 0.15) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .shadow-gray-500\/20 {
+  box-shadow: 0 4px 20px hsla(0 0% 0% 0.3) !important;
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .shadow-purple-500\/20 {
+  box-shadow: 0 4px 20px hsla(270 100% 50% 0.2) !important;
+}
+
+/* Enhanced scrollbar for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] .custom-scrollbar::-webkit-scrollbar-track {
+  background: hsla(255 255% 255% 0.05);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.6), hsla(280 100% 60% 0.6));
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, hsla(270 100% 50% 0.8), hsla(280 100% 60% 0.8));
+}
+
+/* Enhanced focus states for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] *:focus-visible {
+  outline: 2px solid hsla(270 100% 50% 0.5);
+  outline-offset: 2px;
+}
+
+/* Enhanced selection for adminDarkEnhanced theme */
+.admin-theme[data-theme="adminDarkEnhanced"] ::selection {
+  background: hsla(270 100% 50% 0.3);
+  color: hsl(0 0% 100%);
+}
+
+.admin-theme[data-theme="adminDarkEnhanced"] ::-moz-selection {
+  background: hsla(270 100% 50% 0.3);
+  color: hsl(0 0% 100%);
 }

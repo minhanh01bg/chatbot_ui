@@ -73,8 +73,8 @@ export default function PlansPage() {
         } else {
           // Session is authenticated but no token yet, try to fetch session again
           try {
-            const response = await fetch('/api/auth/session');
-            const sessionData = await response.json();
+            const { getSession } = await import('@/lib/session-cache');
+            const sessionData = await getSession();
 
             if (sessionData?.accessToken) {
               localStorage.setItem('access_token', sessionData.accessToken);

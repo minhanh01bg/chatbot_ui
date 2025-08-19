@@ -104,10 +104,10 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
       setLoading(true);
       setError(null);
       
-             // Find the selected site to get its chat_token
-       const selectedSiteData = sites.find(site => getSiteKey(site) === selectedSite);
+      // Find the selected site to get its chat_token
+      const selectedSiteData = sites.find(site => getSiteKey(site) === selectedSite);
       console.log('Selected site data:', selectedSiteData);
-             console.log('Available sites:', sites.map(site => ({
+      console.log('Available sites:', sites.map(site => ({
          key: getSiteKey(site),
          name: site.name,
          hasToken: !!site.chat_token,
@@ -205,11 +205,11 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
   const getDirectionColor = (direction: string) => {
     switch (direction) {
       case 'increase':
-        return 'text-green-600 bg-green-50 border-green-200';
+        return 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30';
       case 'decrease':
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-red-400 bg-red-500/20 border-red-500/30';
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
     }
   };
 
@@ -243,13 +243,13 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
 
   if (sites.length === 0) {
     return (
-      <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl shadow-xl border border-gray-200 p-8">
+      <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-2xl shadow-2xl p-8">
         <div className="text-center">
           <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Globe className="w-10 h-10 text-white" />
+            <Globe className="w-10 h-10 text-gray-900" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">No Sites Available</h3>
-          <p className="text-gray-600">Create your first site to start tracking analytics</p>
+                          <p className="text-gray-600">Create your first site to start tracking analytics</p>
         </div>
       </div>
     );
@@ -258,12 +258,12 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
   // Show loading state while fetching sites or stats
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-purple-50 via-white to-blue-50 rounded-2xl shadow-xl border border-gray-200">
-        <div className="p-8 border-b border-gray-100">
+      <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-2xl shadow-2xl">
+        <div className="p-8 border-b border-purple-500/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
+                <BarChart3 className="w-6 h-6 text-gray-900" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Dashboard Analytics</h2>
@@ -310,7 +310,7 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <RefreshCw className="h-8 w-8 animate-spin text-white" />
+                <RefreshCw className="h-8 w-8 animate-spin text-gray-900" />
               </div>
               <p className="text-gray-600 font-medium">Loading analytics...</p>
             </div>
@@ -327,11 +327,11 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-white" />
+                <BarChart3 className="w-6 h-6 text-gray-900" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Dashboard Analytics</h2>
-                <p className="text-gray-600">Real-time performance insights</p>
+                <h2 className="text-2xl font-bold admin-text-primary">Dashboard Analytics</h2>
+                <p className="admin-text-secondary">Real-time performance insights</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -339,7 +339,7 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
                 console.log('Selected site changed from', selectedSite, 'to', value);
                 setSelectedSite(value);
               }}>
-                <SelectTrigger className="w-48 bg-white border-gray-200">
+                <SelectTrigger className="w-48 admin-bg-glass border admin-border-primary">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -350,7 +350,7 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="ghost" size="sm" onClick={fetchStats} className="bg-white">
+              <Button variant="ghost" size="sm" onClick={fetchStats} className="admin-bg-glass">
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
@@ -359,10 +359,10 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         <div className="p-8">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-r from-red-400 to-pink-400 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-white" />
+              <Shield className="h-8 w-8 text-gray-900" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Analytics</h3>
-            <p className="text-gray-600">{error}</p>
+            <h3 className="text-xl font-semibold admin-text-primary mb-2">Error Loading Analytics</h3>
+            <p className="admin-text-secondary">{error}</p>
           </div>
         </div>
       </div>
@@ -376,52 +376,52 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <BarChart3 className="w-6 h-6 text-white" />
+              <BarChart3 className="w-6 h-6 text-gray-900" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Dashboard Analytics</h2>
-              <p className="text-gray-600">Real-time performance insights</p>
+              <h2 className="text-2xl font-bold admin-text-primary">Dashboard Analytics</h2>
+              <p className="admin-text-secondary">Real-time performance insights</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Select value={selectedSite} onValueChange={(value) => {
-              console.log('Selected site changed from', selectedSite, 'to', value);
-              setSelectedSite(value);
-            }}>
-              <SelectTrigger className="w-48 bg-white border-gray-200 shadow-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {sites.map((site) => (
-                  <SelectItem key={getSiteKey(site)} value={getSiteKey(site)}>
-                    {getSiteDisplayName(site)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={rangeDays.toString()} onValueChange={(value) => {
-              console.log('Range days changed from', rangeDays, 'to', value);
-              setRangeDays(parseInt(value));
-            }}>
-              <SelectTrigger className="w-24 bg-white border-gray-200 shadow-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 day</SelectItem>
-                <SelectItem value="7">7 days</SelectItem>
-                <SelectItem value="30">30 days</SelectItem>
-                <SelectItem value="60">60 days</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={fetchStats}
-              className="bg-white hover:bg-gray-50 shadow-sm"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
+                      <div className="flex items-center gap-3">
+              <Select value={selectedSite} onValueChange={(value) => {
+                console.log('Selected site changed from', selectedSite, 'to', value);
+                setSelectedSite(value);
+              }}>
+                <SelectTrigger className="w-48 admin-bg-glass border admin-border-primary shadow-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sites.map((site) => (
+                    <SelectItem key={getSiteKey(site)} value={getSiteKey(site)}>
+                      {getSiteDisplayName(site)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={rangeDays.toString()} onValueChange={(value) => {
+                console.log('Range days changed from', rangeDays, 'to', value);
+                setRangeDays(parseInt(value));
+              }}>
+                <SelectTrigger className="w-24 admin-bg-glass border admin-border-primary shadow-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 day</SelectItem>
+                  <SelectItem value="7">7 days</SelectItem>
+                  <SelectItem value="30">30 days</SelectItem>
+                  <SelectItem value="60">60 days</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={fetchStats}
+                className="admin-bg-glass hover:admin-accent-secondary shadow-sm"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
         </div>
       </div>
 
@@ -430,12 +430,12 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         {/* Overall Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Questions */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+          <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl hover:shadow-purple-200/20 transition-all duration-300 group p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg flex items-center justify-center shadow-md">
-                <MessageSquare className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <MessageSquare className="h-6 w-6 text-gray-900" />
               </div>
-              <Badge className="text-xs bg-purple-50 text-purple-600 border-purple-200">
+              <Badge className="text-xs bg-purple-500/20 text-purple-300 border-purple-200/30">
                 <Sparkles className="h-3 w-3 mr-1" />
                 Total
               </Badge>
@@ -443,16 +443,16 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
             <div className="text-3xl font-bold text-gray-900 mb-1">
               {formatNumber(totals.total_questions)}
             </div>
-            <div className="text-sm text-gray-600">Total Questions</div>
+            <div className="text-sm text-gray-100">Total Questions</div>
           </div>
 
           {/* Total Sessions */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+          <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl hover:shadow-purple-200/20 transition-all duration-300 group p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-lg flex items-center justify-center shadow-md">
-                <Users className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Users className="h-6 w-6 text-gray-900" />
               </div>
-              <Badge className="text-xs bg-green-50 text-green-600 border-green-200">
+              <Badge className="text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
                 <Activity className="h-3 w-3 mr-1" />
                 Active
               </Badge>
@@ -460,39 +460,39 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
             <div className="text-3xl font-bold text-gray-900 mb-1">
               {formatNumber(totals.total_sessions)}
             </div>
-            <div className="text-sm text-gray-600">Total Sessions</div>
+            <div className="text-sm text-gray-100">Total Sessions</div>
           </div>
 
           {/* Average Satisfaction */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+          <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl hover:shadow-purple-200/20 transition-all duration-300 group p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg flex items-center justify-center shadow-md">
-                <TrendingUp className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="h-6 w-6 text-gray-900" />
               </div>
-              <Badge className="text-xs bg-yellow-50 text-yellow-600 border-yellow-200">
+              <Badge className="text-xs bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
                 Average
               </Badge>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
               {averageSatisfaction.toFixed(1)}%
             </div>
-            <div className="text-sm text-gray-600">Avg Satisfaction</div>
+            <div className="text-sm text-gray-100">Avg Satisfaction</div>
           </div>
 
           {/* Total Cost */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 group">
+          <div className="bg-gradient-to-br from-white/95 via-purple-50/95 to-white/95 backdrop-blur-xl border border-purple-200/30 rounded-xl shadow-2xl hover:shadow-purple-200/20 transition-all duration-300 group p-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-red-400 to-pink-400 rounded-lg flex items-center justify-center shadow-md">
-                <DollarSign className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-red-400 to-pink-400 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <DollarSign className="h-6 w-6 text-gray-900" />
               </div>
-              <Badge className="text-xs bg-red-50 text-red-600 border-red-200">
+              <Badge className="text-xs bg-red-500/20 text-red-300 border-red-500/30">
                 Total
               </Badge>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
               {formatCurrency(totals.total_cost)}
             </div>
-            <div className="text-sm text-gray-600">Total Cost</div>
+            <div className="text-sm text-gray-100">Total Cost</div>
           </div>
         </div>
 
@@ -500,19 +500,19 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
         <div className="space-y-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <Bot className="w-4 h-4 text-white" />
+              <Bot className="w-4 h-4 text-gray-900" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Site Performance</h3>
+            <h3 className="text-xl font-bold admin-text-primary">Site Performance</h3>
           </div>
           
           {Object.entries(stats).map(([siteKey, stat]) => (
-            <div key={siteKey} className="bg-white rounded-xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
+            <div key={siteKey} className="admin-bg-primary rounded-xl p-8 shadow-lg border admin-border-primary hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-1">
+                  <h4 className="text-2xl font-bold admin-text-primary mb-1">
                     {siteNames[siteKey] || siteKey}
                   </h4>
-                  <p className="text-gray-600">Performance Overview</p>
+                  <p className="admin-text-secondary">Performance Overview</p>
                 </div>
                 <Badge className={`text-sm px-4 py-2 ${getDirectionColor(stat.direction)}`}>
                   {getDirectionIcon(stat.direction)}
@@ -521,42 +521,42 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between mb-3">
-                    <MessageSquare className="h-5 w-5 text-purple-600" />
-                    <span className="text-xs text-purple-600 font-medium">Questions</span>
+                    <MessageSquare className="h-5 w-5 admin-accent" />
+                    <span className="text-xs admin-accent font-medium">Questions</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold admin-text-primary">
                     {formatNumber(stat.total_questions)}
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between mb-3">
-                    <Users className="h-5 w-5 text-green-600" />
-                    <span className="text-xs text-green-600 font-medium">Sessions</span>
+                    <Users className="h-5 w-5 admin-accent" />
+                    <span className="text-xs admin-accent font-medium">Sessions</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold admin-text-primary">
                     {formatNumber(stat.total_sessions)}
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-6 border border-yellow-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between mb-3">
-                    <TrendingUp className="h-5 w-5 text-yellow-600" />
-                    <span className="text-xs text-yellow-600 font-medium">Satisfaction</span>
+                    <TrendingUp className="h-5 w-5 admin-accent" />
+                    <span className="text-xs admin-accent font-medium">Satisfaction</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold admin-text-primary">
                     {stat.percent_good.toFixed(1)}%
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-6 border border-red-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between mb-3">
-                    <DollarSign className="h-5 w-5 text-red-600" />
-                    <span className="text-xs text-red-600 font-medium">Cost</span>
+                    <DollarSign className="h-5 w-5 admin-accent" />
+                    <span className="text-xs admin-accent font-medium">Cost</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold admin-text-primary">
                     {formatCurrency(stat.total_cost)}
                   </div>
                 </div>
@@ -564,19 +564,19 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
               
               {/* Additional Metrics */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border border-indigo-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Total Tokens</div>
-                      <div className="text-xl font-bold text-gray-900">
+                      <div className="text-sm admin-text-secondary mb-1">Total Tokens</div>
+                      <div className="text-xl font-bold admin-text-primary">
                         {formatNumber(stat.total_tokens)}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-gray-500 mb-1">Change</div>
+                      <div className="text-xs admin-text-muted mb-1">Change</div>
                       <div className={`text-sm font-semibold ${
-                        stat.tokens_change > 0 ? 'text-green-600' : 
-                        stat.tokens_change < 0 ? 'text-red-600' : 'text-gray-600'
+                        stat.tokens_change > 0 ? 'admin-status-success' : 
+                        stat.tokens_change < 0 ? 'admin-status-error' : 'admin-text-muted'
                       }`}>
                         {stat.tokens_change > 0 ? '+' : ''}{formatNumber(stat.tokens_change)}
                       </div>
@@ -584,18 +584,18 @@ export default function OverallDashboardStats({ siteKeys, siteNames = {} }: Over
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-6 border border-cyan-200">
+                <div className="admin-bg-secondary rounded-lg p-6 border admin-border-secondary">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Performance</div>
-                      <div className="text-xl font-bold text-gray-900">
+                      <div className="text-sm admin-text-secondary mb-1">Performance</div>
+                      <div className="text-xl font-bold admin-text-primary">
                         {stat.direction === 'increase' ? 'Improving' : 
                          stat.direction === 'decrease' ? 'Declining' : 'Stable'}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-gray-500 mb-1">Trend</div>
-                      <div className="text-sm font-semibold text-gray-600">
+                      <div className="text-xs admin-text-muted mb-1">Trend</div>
+                      <div className="text-sm font-semibold admin-text-secondary">
                         {stat.percent_change > 0 ? '+' : ''}{stat.percent_change}%
                       </div>
                     </div>

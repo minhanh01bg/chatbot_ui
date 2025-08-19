@@ -26,7 +26,7 @@ export function StatsCard({
   className 
 }: StatsCardProps) {
   const baseClasses = "group relative overflow-hidden rounded-2xl p-6 transition-all duration-300";
-  const cardClasses = "bg-white/80 border border-white/20 hover:bg-white/90 backdrop-blur-xl";
+  const cardClasses = "admin-bg-glass border admin-border-primary hover:admin-accent-secondary backdrop-blur-xl";
   
   return (
     <div
@@ -38,10 +38,10 @@ export function StatsCard({
     >
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-600">
+          <p className="text-sm font-medium admin-text-secondary">
             {title}
           </p>
-          <p className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+          <p className="text-2xl font-bold admin-text-primary group-hover:admin-accent transition-colors">
             {value}
           </p>
           {change && (
@@ -52,14 +52,14 @@ export function StatsCard({
                 {change}
               </span>
               {period && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs admin-text-muted">
                   {period}
                 </span>
               )}
             </div>
           )}
         </div>
-        <div className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
+        <div className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-xl flex items-center justify-center text-gray-900 group-hover:scale-110 transition-transform duration-300`}>
           <Icon className="w-6 h-6" />
         </div>
       </div>

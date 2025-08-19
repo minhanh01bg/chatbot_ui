@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import ProductsList from '@/components/admin/products/ProductsList';
 import { WelcomeBanner } from '@/components/welcome-banner';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 import { 
   ArrowDown, 
   ArrowUp, 
@@ -59,6 +60,7 @@ import {
 
 export default function AdminDashboard() {
   const { user } = useCurrentUser();
+  const { currentTheme, isDark } = useAdminTheme();
   const router = useRouter();
   const [sites, setSites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,27 +156,27 @@ export default function AdminDashboard() {
       title: "Site Management",
       description: "Manage your sites, configure settings, and monitor performance.",
       icon: Settings,
-      color: "text-purple-400",
-      bgColor: "bg-purple-600/10",
-      borderColor: "border-purple-500/20",
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary",
+      borderColor: "admin-border-accent",
       action: "Manage Sites"
     },
     {
       title: "Analytics",
       description: "View detailed analytics and performance metrics for your sites.",
       icon: BarChart3,
-      color: "text-green-400",
-      bgColor: "bg-green-600/10",
-      borderColor: "border-green-500/20",
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary",
+      borderColor: "admin-border-accent",
       action: "View Analytics"
     },
     {
       title: "Performance",
       description: "Monitor system performance and optimize your chatbot experience.",
       icon: Target,
-      color: "text-blue-400",
-      bgColor: "bg-blue-600/10",
-      borderColor: "border-blue-500/20",
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary",
+      borderColor: "admin-border-accent",
       action: "Performance"
     }
   ];
@@ -186,8 +188,8 @@ export default function AdminDashboard() {
       time: "2 hours ago",
       status: "success",
       icon: CheckCircle,
-      color: "text-green-400",
-      bgColor: "bg-green-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "config",
@@ -195,8 +197,8 @@ export default function AdminDashboard() {
       time: "4 hours ago",
       status: "info",
       icon: Info,
-      color: "text-blue-400",
-      bgColor: "bg-blue-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "alert",
@@ -204,8 +206,8 @@ export default function AdminDashboard() {
       time: "6 hours ago",
       status: "warning",
       icon: AlertCircle,
-      color: "text-orange-400",
-      bgColor: "bg-orange-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "user",
@@ -213,8 +215,8 @@ export default function AdminDashboard() {
       time: "8 hours ago",
       status: "success",
       icon: Users,
-      color: "text-purple-400",
-      bgColor: "bg-purple-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "payment",
@@ -222,8 +224,8 @@ export default function AdminDashboard() {
       time: "12 hours ago",
       status: "success",
       icon: DollarSign,
-      color: "text-emerald-400",
-      bgColor: "bg-emerald-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     }
   ];
 
@@ -234,8 +236,8 @@ export default function AdminDashboard() {
       message: "A new version of the platform is available for deployment.",
       time: "1 hour ago",
       icon: Info,
-      color: "text-blue-400",
-      bgColor: "bg-blue-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "warning",
@@ -243,8 +245,8 @@ export default function AdminDashboard() {
       message: "Server CPU usage is above 80%. Consider scaling up.",
       time: "3 hours ago",
       icon: AlertCircle,
-      color: "text-orange-400",
-      bgColor: "bg-orange-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     },
     {
       type: "success",
@@ -252,8 +254,8 @@ export default function AdminDashboard() {
       message: "Daily backup has been completed successfully.",
       time: "6 hours ago",
       icon: CheckCircle,
-      color: "text-green-400",
-      bgColor: "bg-green-500/10"
+      color: "admin-accent",
+      bgColor: "admin-accent-secondary"
     }
   ];
 
@@ -262,7 +264,6 @@ export default function AdminDashboard() {
       {/* Welcome Message */}
       <WelcomeMessage 
         userName={user?.name}
-        currentTime={new Date().toLocaleTimeString()}
         stats={{
           totalUsers: 2847,
           totalSites: 12,
@@ -288,8 +289,8 @@ export default function AdminDashboard() {
           </GradientButton>
         </div>
         
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <div className="flex items-center gap-2 text-sm admin-text-muted">
+          <div className="w-2 h-2 admin-bg-status-success rounded-full animate-pulse"></div>
           <span>System Online</span>
         </div>
       </motion.div>
@@ -322,16 +323,16 @@ export default function AdminDashboard() {
         transition={{ delay: 1.4, duration: 0.8 }}
       >
         <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-xl border border-white/20">
+          <TabsList className="grid w-full grid-cols-2 admin-bg-glass backdrop-blur-xl border admin-border-primary">
             <TabsTrigger 
               value="overview"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white"
+              className="tabs-trigger"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger 
               value="analytics"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white"
+              className="tabs-trigger"
             >
               Analytics
             </TabsTrigger>
@@ -370,8 +371,8 @@ export default function AdminDashboard() {
               {/* Recent Activity */}
               <GlassCard>
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold text-white flex items-center">
-                    <Activity className="h-6 w-6 mr-3 text-purple-400" />
+                  <CardTitle className="text-xl font-semibold admin-text-primary flex items-center">
+                    <Activity className="h-6 w-6 mr-3 admin-accent" />
                     Recent Activity
                   </CardTitle>
                 </CardHeader>
@@ -383,20 +384,20 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 2.4 + index * 0.1, duration: 0.6 }}
-                        className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300"
+                        className="flex items-center justify-between p-4 admin-accent-secondary rounded-xl border admin-border-secondary hover:admin-accent-muted transition-all duration-300"
                       >
                         <div className="flex items-center space-x-4">
                           <div className={`w-10 h-10 ${activity.bgColor} rounded-lg flex items-center justify-center`}>
                             <activity.icon className={`h-5 w-5 ${activity.color}`} />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">{activity.title}</p>
-                            <p className="text-xs text-gray-400">{activity.time}</p>
+                            <p className="text-sm font-medium admin-text-primary">{activity.title}</p>
+                            <p className="text-xs admin-text-muted">{activity.time}</p>
                           </div>
                         </div>
                         <Badge 
                           variant="outline" 
-                          className="text-xs border-gray-600 text-gray-300"
+                          className="text-xs admin-border-primary admin-text-secondary"
                         >
                           {activity.type}
                         </Badge>
@@ -409,8 +410,8 @@ export default function AdminDashboard() {
               {/* Notifications */}
               <GlassCard>
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold text-white flex items-center">
-                    <Bell className="h-6 w-6 mr-3 text-orange-400" />
+                  <CardTitle className="text-xl font-semibold admin-text-primary flex items-center">
+                    <Bell className="h-6 w-6 mr-3 admin-accent" />
                     Notifications
                   </CardTitle>
                 </CardHeader>
@@ -422,7 +423,7 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 2.4 + index * 0.1, duration: 0.6 }}
-                        className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300"
+                        className="p-4 admin-accent-secondary rounded-xl border admin-border-secondary hover:admin-accent-muted transition-all duration-300"
                       >
                         <div className="flex items-start space-x-4">
                           <div className={`w-10 h-10 ${notification.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
@@ -430,10 +431,10 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-sm font-medium text-white">{notification.title}</p>
-                              <p className="text-xs text-gray-400">{notification.time}</p>
+                              <p className="text-sm font-medium admin-text-primary">{notification.title}</p>
+                              <p className="text-xs admin-text-muted">{notification.time}</p>
                             </div>
-                            <p className="text-xs text-gray-300 leading-relaxed">{notification.message}</p>
+                            <p className="text-xs admin-text-secondary leading-relaxed">{notification.message}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -456,32 +457,32 @@ export default function AdminDashboard() {
                   value: "68%",
                   status: "normal",
                   icon: Cpu,
-                  color: "text-blue-400",
-                  bgColor: "bg-blue-500/10"
+                  color: "admin-accent",
+                  bgColor: "admin-accent-secondary"
                 },
                 {
                   title: "Memory Usage",
                   value: "72%",
                   status: "warning",
                   icon: Brain,
-                  color: "text-orange-400",
-                  bgColor: "bg-orange-500/10"
+                  color: "admin-accent",
+                  bgColor: "admin-accent-secondary"
                 },
                 {
                   title: "Disk Space",
                   value: "45%",
                   status: "good",
                   icon: HardDrive,
-                  color: "text-green-400",
-                  bgColor: "bg-green-500/10"
+                  color: "admin-accent",
+                  bgColor: "admin-accent-secondary"
                 },
                 {
                   title: "Network",
                   value: "1.2GB/s",
                   status: "normal",
                   icon: Wifi,
-                  color: "text-purple-400",
-                  bgColor: "bg-purple-500/10"
+                  color: "admin-accent",
+                  bgColor: "admin-accent-secondary"
                 }
               ].map((metric, index) => (
                 <motion.div
@@ -496,18 +497,18 @@ export default function AdminDashboard() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="space-y-2">
-                          <p className="text-gray-300 text-sm font-medium">{metric.title}</p>
-                          <p className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                          <p className="admin-text-secondary text-sm font-medium">{metric.title}</p>
+                          <p className="text-2xl font-bold admin-text-primary group-hover:admin-accent transition-colors">
                             {metric.value}
                           </p>
                           <div className="flex items-center space-x-1">
                             <div className={`w-2 h-2 rounded-full ${
-                              metric.status === 'good' ? 'bg-green-400' : 
-                              metric.status === 'warning' ? 'bg-orange-400' : 'bg-blue-400'
+                              metric.status === 'good' ? 'admin-bg-status-success' : 
+                              metric.status === 'warning' ? 'admin-bg-status-warning' : 'admin-bg-status-info'
                             }`} />
                             <p className={`text-xs ${
-                              metric.status === 'good' ? 'text-green-400' : 
-                              metric.status === 'warning' ? 'text-orange-400' : 'text-blue-400'
+                              metric.status === 'good' ? 'admin-status-success' : 
+                              metric.status === 'warning' ? 'admin-status-warning' : 'admin-status-info'
                             }`}>
                               {metric.status === 'good' ? 'Good' : 
                                metric.status === 'warning' ? 'Warning' : 'Normal'}

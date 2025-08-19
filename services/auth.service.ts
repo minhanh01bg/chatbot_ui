@@ -25,21 +25,11 @@ export const setAuthToken = async (token: string, expiredAt?: string) => {
   }
 };
 
-export const getSessionDebugInfo = async () => {
+import { getSession } from '@/lib/session-cache';
+
+export const getSessionDebugInfo = async (forceRefresh = false) => {
   try {
-    const response = await fetch('/api/auth/session', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Error fetching session: ${response.statusText}`);
-    }
-
-    return await response.json();
+    return await getSession(forceRefresh);
   } catch (error) {
     console.error('Failed to fetch session debug info:', error);
     throw error;

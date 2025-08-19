@@ -67,8 +67,11 @@ export default function LoginPage() {
       const syncTokenWithServer = async (): Promise<void> => {
         try {
           console.log('Client: Fetching session data after login');
-          const res = await fetch('/api/auth/session');
-          const session = await res.json();
+          const { getSession, clearSessionCache } = await import('@/lib/session-cache');
+          
+          // Clear cache and force fresh data after login
+          clearSessionCache();
+          const session = await getSession(true);
 
           console.log('Client: Session data received:', JSON.stringify({
             hasAccessToken: !!session?.accessToken,
@@ -77,21 +80,6 @@ export default function LoginPage() {
             sessionKeys: Object.keys(session || {}),
             fullSession: session
           }));
-
-          // Test direct session API call to see if role is present
-          try {
-            const directSessionResponse = await fetch('/api/auth/session', { 
-              cache: 'no-store',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-            const directSession = await directSessionResponse.json();
-            console.log('Client: Direct session API response:', directSession);
-            console.log('Client: Direct session role:', (directSession as any).role);
-          } catch (error) {
-            console.error('Client: Error fetching direct session:', error);
-          }
 
           if (session?.accessToken) {
             // Store in localStorage

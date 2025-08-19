@@ -28,7 +28,7 @@ const TypingIndicator = () => (
     styles.typingIndicator
   )}>
     <Avatar className={cn("h-8 w-8", styles.avatar)}>
-      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-gray-900">
         <Bot className="h-4 w-4" />
       </AvatarFallback>
     </Avatar>
@@ -47,7 +47,10 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`);
+  const [sessionId] = useState(() => {
+    if (typeof window === 'undefined') return 'session_placeholder';
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  });
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -109,7 +112,7 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
       const botMessage: ChatMessage = {
         role: 'assistant',
         content: '',
-        timestamp: new Date(),
+        timestamp: typeof window !== 'undefined' ? new Date() : new Date(0),
       };
       setMessages(prev => [...prev, botMessage]);
       while (true) {
@@ -138,7 +141,7 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
       const errorMessage: ChatMessage = {
         role: 'assistant',
         content: 'Sorry, an error occurred while processing your request.',
-        timestamp: new Date(),
+        timestamp: typeof window !== 'undefined' ? new Date() : new Date(0),
       };
       
       setMessages(prev => [...prev, errorMessage]);
@@ -158,7 +161,7 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 flex-shrink-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 dark:from-blue-600/20 dark:via-indigo-600/20 dark:to-purple-600/20 border-b border-blue-200/50 dark:border-blue-800/50">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
-            <MessageSquare className="h-5 w-5 text-white" />
+            <MessageSquare className="h-5 w-5 text-gray-900" />
           </div>
           <div>
             <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-100">
@@ -176,7 +179,7 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
             <span className="text-gray-700 dark:text-gray-300 font-medium">{messages.length}</span>
           </Badge>
           {site?.chat_token && (
-            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-md">
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-gray-900 border-0 shadow-md">
               Connected
             </Badge>
           )}
@@ -251,7 +254,7 @@ export default function ChatTest({ variant = 'embedded', site}: ChatTestProps) {
               size="icon"
               disabled={isLoading || !input.trim()}
               className={cn(
-                "h-12 w-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+                "h-12 w-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
                 styles.sendButton
               )}
             >

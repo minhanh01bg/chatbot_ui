@@ -39,7 +39,14 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    return NextResponse.json(responseData);
+    // Add caching headers to reduce redundant calls
+    const response = NextResponse.json(responseData);
+    
+    // Cache for 30 seconds to reduce redundant calls
+    response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
+    response.headers.set('ETag', `"${JSON.stringify(responseData).length}-${Date.now()}"`);
+    
+    return response;
   } catch (error) {
     console.error('Error getting session debug info:', error);
     return NextResponse.json(

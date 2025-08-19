@@ -30,7 +30,7 @@ export function ActionCard({
   onClick 
 }: ActionCardProps) {
   const baseClasses = "group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 cursor-pointer";
-  const cardClasses = "bg-white/80 border border-white/20 hover:bg-white/90 hover:border-purple-300 backdrop-blur-xl";
+  const cardClasses = "admin-bg-glass border admin-border-primary hover:admin-accent-secondary hover:admin-border-accent backdrop-blur-xl";
   
   return (
     <div
@@ -46,17 +46,17 @@ export function ActionCard({
           <Icon className={`w-6 h-6 ${color}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold admin-text-primary group-hover:admin-accent transition-colors mb-2">
             {title}
           </h3>
-          <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+          <p className="text-sm admin-text-secondary mb-4 leading-relaxed">
             {description}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-purple-600 group-hover:text-purple-500 transition-colors">
+            <span className="text-sm font-medium admin-accent group-hover:admin-accent transition-colors">
               {action}
             </span>
-            <div className="w-6 h-6 text-gray-400 group-hover:text-purple-600 transition-colors">
+            <div className="w-6 h-6 admin-text-muted group-hover:admin-accent transition-colors">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>

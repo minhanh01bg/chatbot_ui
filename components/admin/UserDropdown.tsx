@@ -34,12 +34,12 @@ export default function UserDropdown() {
   // Show loading state while session is loading
   if (status === 'loading') {
     return (
-      <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-gray-50" disabled>
+      <Button variant="ghost" className="h-9 px-2 gap-2 hover:admin-accent-secondary" disabled>
         <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-gray-200 text-gray-600">...</AvatarFallback>
+          <AvatarFallback className="admin-accent-secondary admin-text-secondary">...</AvatarFallback>
         </Avatar>
         <div className="flex flex-col items-start">
-          <span className="hidden md:inline font-medium text-sm text-gray-600">Loading...</span>
+          <span className="hidden md:inline font-medium text-sm admin-text-secondary">Loading...</span>
         </div>
       </Button>
     );
@@ -54,7 +54,7 @@ export default function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-9 px-2 gap-2 hover:bg-gray-50 transition-colors">
+        <Button variant="ghost" className="h-9 px-2 gap-2 hover:admin-accent-secondary transition-colors">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/avatars/01.png" alt={userName} />
             <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold">
@@ -62,44 +62,44 @@ export default function UserDropdown() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start">
-            <span className="hidden md:inline font-medium text-sm text-gray-900">{userName}</span>
-            <span className="hidden md:inline text-xs text-gray-500">{userEmail}</span>
+            <span className="hidden md:inline font-medium text-sm admin-text-primary">{userName}</span>
+            <span className="hidden md:inline text-xs admin-text-muted">{userEmail}</span>
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-md border border-gray-200 shadow-lg">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="p-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none text-gray-900">{userName}</p>
-            <p className="text-xs leading-none text-gray-500">{userEmail}</p>
+            <p className="text-sm font-medium leading-none">{userName}</p>
+            <p className="text-xs leading-none admin-text-muted">{userEmail}</p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-gray-100" />
-        <DropdownMenuItem asChild className="hover:bg-gray-50">
-          <Link href="/admin" className="cursor-pointer flex w-full items-center text-gray-700 hover:text-gray-900">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/admin" className="cursor-pointer flex w-full items-center">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="hover:bg-gray-50">
-          <Link href="/subscriptions" className="cursor-pointer flex w-full items-center text-gray-700 hover:text-gray-900">
+        <DropdownMenuItem asChild>
+          <Link href="/subscriptions" className="cursor-pointer flex w-full items-center">
             <CreditCard className="mr-2 h-4 w-4" />
             <span>My Subscription</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="hover:bg-gray-50">
-          <Link href="/admin/sites" className="cursor-pointer flex w-full items-center text-gray-700 hover:text-gray-900">
+        <DropdownMenuItem asChild>
+          <Link href="/admin/sites" className="cursor-pointer flex w-full items-center">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="hover:bg-gray-50">
-          <Link href="/help" className="cursor-pointer flex w-full items-center text-gray-700 hover:text-gray-900">
+        <DropdownMenuItem asChild>
+          <Link href="/help" className="cursor-pointer flex w-full items-center">
             <HelpCircle className="mr-2 h-4 w-4" />
             <span>Help</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-gray-100" />
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Logout</span>
