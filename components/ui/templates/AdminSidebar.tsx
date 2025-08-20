@@ -150,7 +150,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
       {/* Header */}
       <motion.div 
         className={`h-16 flex items-center justify-center border-b ${
-          isAdminTheme ? 'border-white/20 bg-white/5' : 'border-gray-200/50 bg-gray-100/50'
+          isAdminTheme ? 'border-white/20 bg-white/5' : 'border-gray-200/50 bg-gray-100/5'
         }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -167,10 +167,18 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 transition={{ duration: 0.3 }}
                 className="flex items-center space-x-3"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-gray-900" />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  isAdminTheme ? 'admin-gradient-primary' : 'bg-gradient-to-r from-purple-600 to-blue-600'
+                }`}>
+                  <Sparkles className={`w-4 h-4 ${
+                    isAdminTheme ? 'admin-text-primary' : 'text-gray-900'
+                  }`} />
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                <h1 className={`text-xl font-bold ${
+                  isAdminTheme 
+                    ? 'admin-text-primary' 
+                    : 'bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent'
+                }`}>
                   Admin Panel
                 </h1>
               </motion.div>
@@ -183,8 +191,12 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 transition={{ duration: 0.3 }}
                 className="w-full flex justify-center"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300">
-                  <Sparkles className="w-4 h-4 text-gray-900" />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transform hover:scale-110 transition-all duration-300 ${
+                  isAdminTheme ? 'admin-gradient-primary' : 'bg-gradient-to-r from-purple-600 to-blue-600'
+                }`}>
+                  <Sparkles className={`w-4 h-4 ${
+                    isAdminTheme ? 'admin-text-primary' : 'text-gray-900'
+                  }`} />
                 </div>
               </motion.div>
             )}
@@ -559,7 +571,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
                 className={`flex items-center space-x-2 text-xs ${
-                  isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                  isAdminTheme ? 'admin-text-muted' : 'text-gray-600'
                 }`}
               >
                 <Shield className="w-3 h-3" />
@@ -574,7 +586,7 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                 transition={{ duration: 0.3 }}
               >
                 <Shield className={`w-4 h-4 ${
-                  isAdminTheme ? 'text-gray-600' : 'text-gray-600'
+                  isAdminTheme ? 'admin-text-muted' : 'text-gray-600'
                 }`} />
               </motion.div>
             )}

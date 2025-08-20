@@ -168,7 +168,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-80 admin-dropdown rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute right-0 mt-2 w-80 admin-dropdown rounded-xl shadow-2xl overflow-hidden !bg-white dark:!bg-gray-900 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50"
                 >
                   <div className="p-4 border-b admin-border-secondary">
                     <h3 className="admin-text-primary font-semibold">Notifications</h3>
@@ -234,7 +234,7 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-56 admin-dropdown rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute right-0 mt-2 w-56 admin-dropdown rounded-xl shadow-2xl overflow-hidden !bg-white dark:!bg-gray-900 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50"
                 >
                   <div className="p-4 border-b admin-border-secondary">
                     <p className="admin-text-primary font-semibold">{user?.name || 'Admin'}</p>

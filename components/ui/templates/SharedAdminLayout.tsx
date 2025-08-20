@@ -117,6 +117,7 @@ function AdminLayoutContent({ children, className = '' }: SharedAdminLayoutProps
           <AdminNavbar
             onSidebarToggle={handleSidebarToggle}
             isSidebarOpen={isSidebarOpen}
+            className="admin-navbar"
           />
 
           {/* Content Area */}
