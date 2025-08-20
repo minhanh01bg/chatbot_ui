@@ -25,6 +25,28 @@ export const setAuthToken = async (token: string, expiredAt?: string) => {
   }
 };
 
+export const registerService = async (identifier: string, password: string) => {
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ identifier, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Registration failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Registration service error:', error);
+    throw error;
+  }
+};
+
 import { getSession } from '@/lib/session-cache';
 
 export const getSessionDebugInfo = async (forceRefresh = false) => {
