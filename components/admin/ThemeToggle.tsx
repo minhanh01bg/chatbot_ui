@@ -19,7 +19,7 @@ export function ThemeToggle({ className = '' }: ThemeToggleProps) {
       onClick={toggleDarkMode}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`flex items-center justify-center w-10 h-10 bg-gray-100/50 border border-gray-200/50 rounded-xl text-gray-900 hover:bg-gray-200/50 transition-all duration-300 ${className}`}
+      className={`flex items-center justify-center w-10 h-10 admin-accent-secondary border admin-border-secondary rounded-xl admin-text-primary hover:admin-accent-muted transition-all duration-300 ${className}`}
       title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
     >
       {isDark ? (
