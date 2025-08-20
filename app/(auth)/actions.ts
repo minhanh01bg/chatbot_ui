@@ -2,6 +2,7 @@
 
 import { signIn, signOut } from 'next-auth/react';
 import { z } from 'zod';
+import { registerService } from '@/services/auth.service';
 
 const authFormSchema = z.object({
   identifier: z.string().min(1, 'Username or email is required'),
@@ -46,10 +47,10 @@ export const login = async (
       
       console.log('Login successful', signInResult);
       
-      // Force session refresh and cookie sync
+      // Handle client-side storage after successful login
       if (signInResult?.ok) {
         try {
-          console.log('Login successful, setting up session cookies');
+          console.log('Login successful, setting up client-side storage');
           
           // Get session data from API
           const sessionResponse = await fetch('/api/auth/session');
@@ -64,47 +65,46 @@ export const login = async (
           }));
 
           if (sessionData?.accessToken) {
-            try {
-              const { cookies } = await import('next/headers');
-              const cookieStore = await cookies();
-
-              // Set the cookie with httpOnly: false for client-side access
-              cookieStore.set('access_token', sessionData.accessToken, {
-                httpOnly: false,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                path: '/',
-                maxAge: 60 * 60 * 24 * 7 // 1 week
-              });
-
-              // Also set a non-httpOnly cookie for client-side access
-              cookieStore.set('client_access_token', sessionData.accessToken, {
-                httpOnly: false,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                path: '/',
-                maxAge: 60 * 60 * 24 * 7 // 1 week
-              });
-
-              // Set role cookie if available
+            // Store in localStorage
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('access_token', sessionData.accessToken);
+              
               if (sessionData?.role) {
-                cookieStore.set('user_role', sessionData.role, {
-                  httpOnly: false,
-                  secure: process.env.NODE_ENV === 'production',
-                  sameSite: 'lax',
-                  path: '/',
-                  maxAge: 60 * 60 * 24 * 7 // 1 week
-                });
-                console.log('Role cookie set:', sessionData.role);
+                localStorage.setItem('user_role', sessionData.role);
               }
               
-              console.log('Access token cookie set successfully');
-            } catch (cookieError) {
-              console.error('Error setting cookies:', cookieError);
+              if (sessionData?.user?.id) {
+                localStorage.setItem('user_id', sessionData.user.id.toString());
+              }
+              
+              if (sessionData?.user?.name || sessionData?.user?.email) {
+                localStorage.setItem('user_identifier', sessionData.user.name || sessionData.user.email);
+              }
             }
+
+            // Set client-side cookies using document.cookie
+            if (typeof document !== 'undefined') {
+              const maxAge = 60 * 60 * 24 * 7; // 7 days
+              document.cookie = `client_access_token=${sessionData.accessToken}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              
+              if (sessionData?.role) {
+                document.cookie = `user_role=${sessionData.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+              
+              if (sessionData?.user?.id) {
+                document.cookie = `user_id=${sessionData.user.id}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+              
+              if (sessionData?.user?.name || sessionData?.user?.email) {
+                const identifier = sessionData.user.name || sessionData.user.email;
+                document.cookie = `user_identifier=${identifier}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+            }
+            
+            console.log('Client-side storage set successfully');
           }
         } catch (sessionError) {
-          console.error('Error getting session:', sessionError);
+          console.error('Error setting up client-side storage:', sessionError);
         }
       }
       
@@ -168,26 +168,53 @@ export const register = async (
         return { status: 'failed' };
       }
 
-      // Added manual cookie setting - get session access token and store it
+      // Handle client-side storage after successful registration
       if (signInResult?.ok) {
         try {
           const session = await fetch('/api/auth/session');
           const sessionData = await session.json();
           
           if (sessionData?.accessToken) {
-            const { cookies } = await import('next/headers');
-            const cookieStore = await cookies();
-            cookieStore.set('access_token', sessionData.accessToken, { 
-              httpOnly: false, 
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'lax',
-              path: '/',
-              maxAge: 60 * 60 * 24 * 7 // 1 week
-            });
-            console.log('Access token cookie set successfully after registration');
+            // Store in localStorage
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('access_token', sessionData.accessToken);
+              
+              if (sessionData?.role) {
+                localStorage.setItem('user_role', sessionData.role);
+              }
+              
+              if (sessionData?.user?.id) {
+                localStorage.setItem('user_id', sessionData.user.id.toString());
+              }
+              
+              if (sessionData?.user?.name || sessionData?.user?.email) {
+                localStorage.setItem('user_identifier', sessionData.user.name || sessionData.user.email);
+              }
+            }
+
+            // Set client-side cookies
+            if (typeof document !== 'undefined') {
+              const maxAge = 60 * 60 * 24 * 7; // 7 days
+              document.cookie = `client_access_token=${sessionData.accessToken}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              
+              if (sessionData?.role) {
+                document.cookie = `user_role=${sessionData.role}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+              
+              if (sessionData?.user?.id) {
+                document.cookie = `user_id=${sessionData.user.id}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+              
+              if (sessionData?.user?.name || sessionData?.user?.email) {
+                const identifier = sessionData.user.name || sessionData.user.email;
+                document.cookie = `user_identifier=${identifier}; path=/; max-age=${maxAge}; SameSite=Lax`;
+              }
+            }
+            
+            console.log('Client-side storage set successfully after registration');
           }
         } catch (e) {
-          console.error('Failed to save access token to cookie after registration:', e);
+          console.error('Failed to set client-side storage after registration:', e);
         }
       }
 
