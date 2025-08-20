@@ -13,8 +13,6 @@ export const login = async (identifier: string, password: string) => {
             : process.env.NEXTAUTH_URL || 'http://localhost:3000'; // Server-side: use absolute URL
 
         const loginUrl = `${baseUrl}/api/auth/login`;
-        console.log('Login service: Making request to:', loginUrl);
-
         const response = await fetch(loginUrl, {
             method: 'POST',
             headers: {
@@ -23,13 +21,6 @@ export const login = async (identifier: string, password: string) => {
             },
             body: JSON.stringify({ identifier, password }),
             cache: 'no-store'
-        });
-
-        console.log('Fetch response received:', {
-            status: response.status,
-            statusText: response.statusText,
-            contentType: response.headers.get('content-type'),
-            ok: response.ok
         });
 
         if (!response.ok) {
@@ -117,19 +108,7 @@ export const register = async (identifier: string, password: string) => {
             cache: 'no-store'
         });
 
-        console.log('Register response received:', {
-            status: response.status,
-            statusText: response.statusText,
-            contentType: response.headers.get('content-type'),
-            ok: response.ok
-        });
-
-        if (!response.ok) {
-            console.error('Registration API error:', {
-                status: response.status,
-                statusText: response.statusText
-            });
-            
+        if (!response.ok) { 
             // Kiểm tra response là HTML hay JSON
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('text/html')) {

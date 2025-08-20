@@ -1,16 +1,12 @@
-import { useSession } from 'next-auth/react';
+import { useCurrentUser } from './use-current-user';
 
 export function useSuperAdmin() {
-  const { data: session, status } = useSession();
-  
-  const isSuperAdmin = (session as any)?.role === 'superadmin';
-  const isLoading = status === 'loading';
-  const isAuthenticated = status === 'authenticated';
+  const { user, isLoading, isAuthenticated, isSuperAdmin } = useCurrentUser();
   
   return {
     isSuperAdmin,
     isLoading,
     isAuthenticated,
-    session
+    user
   };
 } 

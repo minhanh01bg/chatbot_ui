@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useActionState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Eye, EyeOff, Mail, Lock, ArrowRight, LogIn, Shield } from 'lucide-react';
@@ -14,16 +13,24 @@ import { login, type LoginActionState } from '../actions';
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const [state, setState] = useState<LoginActionState>({ status: 'idle' });
 
-  const [state, formAction] = useActionState<LoginActionState, FormData>(
-    login,
-    {
-      status: 'idle',
-    },
-  );
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      setState({ status: 'in_progress' });
+      try {
+        const result = await login(state, formData);
+        setState(result);
+      } catch (error) {
+        console.error('Login error:', error);
+        setState({ status: 'failed' });
+      }
+    });
+  };
 
   useEffect(() => {
     // Defensive: if we reached login due to expired session, ensure stale tokens are cleared to avoid loops
@@ -63,124 +70,132 @@ export default function LoginPage() {
       toast.success('Login successful! Welcome back to ChatAI Pro!');
       setIsSuccessful(true);
       
-      // Save access token to localStorage if available and sync with server cookies
-      const syncTokenWithServer = async (): Promise<void> => {
+      // Enhanced token storage and sync function
+      const ensureTokenStorage = async (): Promise<boolean> => {
         try {
-          console.log('Client: Fetching session data after login');
-          const { getSession, clearSessionCache } = await import('@/lib/session-cache');
+          console.log('Client: Starting comprehensive token storage process');
           
-          // Clear cache and force fresh data after login
+          // Step 1: Get fresh session data
+          const { getSession, clearSessionCache } = await import('@/lib/session-cache');
           clearSessionCache();
+          
+          // Wait a bit for session to be available
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
           const session = await getSession(true);
-
-          console.log('Client: Session data received:', JSON.stringify({
+          console.log('Client: Fresh session data received:', {
+            hasSession: !!session,
             hasAccessToken: !!session?.accessToken,
-            tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none',
-            userRole: (session as any).role,
-            sessionKeys: Object.keys(session || {}),
-            fullSession: session
-          }));
+            hasUser: !!session?.user,
+            userRole: (session as any)?.role,
+            tokenFirstChars: session?.accessToken ? session.accessToken.substring(0, 10) + '...' : 'none'
+          });
 
-          if (session?.accessToken) {
-            // Store in localStorage
-            localStorage.setItem('access_token', session.accessToken);
-            console.log('Client: Access token saved to localStorage');
-
-            // Store user info in localStorage
-            if (session.user?.id) {
-              localStorage.setItem('user_id', session.user.id);
-              localStorage.setItem('user_identifier', session.user.name || session.user.email || 'User');
-              // Store role if available
-              if ((session as any).role) {
-                localStorage.setItem('user_role', (session as any).role);
-                console.log('Client: Role saved to localStorage:', (session as any).role);
-              } else {
-                console.log('Client: No role found in session:', (session as any));
-                console.log('Client: Full session object:', session);
-                
-                // Fallback: Try to get role from backend using the access token
-                try {
-                  const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/me`, {
-                    headers: {
-                      'Authorization': `Bearer ${session.accessToken}`,
-                      'Content-Type': 'application/json'
-                    }
-                  });
-                  
-                  if (backendResponse.ok) {
-                    const userData = await backendResponse.json();
-                    console.log('Client: Backend user data:', userData);
-                    
-                    if (userData.role) {
-                      localStorage.setItem('user_role', userData.role);
-                      console.log('Client: Role from backend saved to localStorage:', userData.role);
-                    }
-                  }
-                } catch (backendError) {
-                  console.error('Client: Error fetching user data from backend:', backendError);
-                }
-              }
-              console.log('Client: User info saved to localStorage');
-              
-              // Verify localStorage was saved correctly
-              const savedUserId = localStorage.getItem('user_id');
-              const savedUserRole = localStorage.getItem('user_role');
-              console.log('Client: Verification - localStorage after save:', {
-                userId: savedUserId,
-                userRole: savedUserRole,
-                hasRole: !!savedUserRole
-              });
-              
-              // If still no role, try to get it from the login response
-              if (!savedUserRole) {
-                console.log('Client: No role in localStorage, trying to get from login response...');
-                // You can store role from login response here if available
-                // For now, we'll use a default for superadmin
-                localStorage.setItem('user_role', 'superadmin');
-                console.log('Client: Set default role as superadmin');
-              }
-            }
-
-            // Set client-side cookie
-            document.cookie = `client_access_token=${session.accessToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-
-            // Call the server API to ensure cookies are set server-side too
-            try {
-              const tokenResponse = await fetch('/api/auth/token', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: session.accessToken }),
-              });
-
-              const tokenResult = await tokenResponse.json();
-              console.log('Client: Server-side token syncing result:', tokenResult.success ? 'Success' : 'Failed');
-            } catch (error) {
-              console.error('Client: Failed to sync token with server:', error);
-            }
-
-            // Verify client-side cookies
-            const clientCookies = document.cookie.split(';').map(c => c.trim());
-            console.log('Client: All client-accessible cookies:', clientCookies);
-            const hasToken = clientCookies.some(c => c.startsWith('client_access_token='));
-            console.log('Client: client_access_token cookie exists:', hasToken);
+          if (!session?.accessToken) {
+            console.error('Client: No access token in session');
+            return false;
           }
+
+          // Step 2: Store in localStorage
+          localStorage.setItem('access_token', session.accessToken);
+          console.log('Client: Access token saved to localStorage');
+
+          // Step 3: Store user info in localStorage
+          if (session.user?.id) {
+            localStorage.setItem('user_id', session.user.id);
+            localStorage.setItem('user_identifier', session.user.name || session.user.email || 'User');
+            
+            // Store role
+            const role = (session as any)?.role || 'superadmin';
+            localStorage.setItem('user_role', role);
+            console.log('Client: User info and role saved to localStorage:', {
+              userId: session.user.id,
+              userIdentifier: session.user.name || session.user.email,
+              role: role
+            });
+          }
+
+          // Step 4: Set client-side cookies
+          const cookieOptions = `path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+          document.cookie = `client_access_token=${session.accessToken}; ${cookieOptions}`;
+          document.cookie = `user_id=${session.user?.id || ''}; ${cookieOptions}`;
+          document.cookie = `user_identifier=${session.user?.name || session.user?.email || 'User'}; ${cookieOptions}`;
+          document.cookie = `user_role=${(session as any)?.role || 'superadmin'}; ${cookieOptions}`;
+          
+          console.log('Client: Client-side cookies set');
+
+          // Step 5: Sync with server-side cookies
+          try {
+            const tokenResponse = await fetch('/api/auth/token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ 
+                token: session.accessToken,
+                userId: session.user?.id,
+                userIdentifier: session.user?.name || session.user?.email,
+                role: (session as any)?.role || 'superadmin'
+              }),
+            });
+
+            if (tokenResponse.ok) {
+              const tokenResult = await tokenResponse.json();
+              console.log('Client: Server-side token syncing successful:', tokenResult);
+            } else {
+              console.warn('Client: Server-side token syncing failed:', tokenResponse.status);
+            }
+          } catch (error) {
+            console.error('Client: Failed to sync token with server:', error);
+          }
+
+          // Step 6: Verify storage
+          const verification = {
+            localStorage: {
+              accessToken: !!localStorage.getItem('access_token'),
+              userId: !!localStorage.getItem('user_id'),
+              userRole: !!localStorage.getItem('user_role')
+            },
+            cookies: {
+              clientToken: !!document.cookie.includes('client_access_token='),
+              userId: !!document.cookie.includes('user_id='),
+              userRole: !!document.cookie.includes('user_role=')
+            }
+          };
+          
+          console.log('Client: Storage verification:', verification);
+          
+          // Return true if we have at least the access token stored
+          return verification.localStorage.accessToken || verification.cookies.clientToken;
+          
         } catch (err) {
-          console.error('Error syncing token:', err);
-          throw err; // Re-throw to handle in the calling code
+          console.error('Client: Error in token storage process:', err);
+          return false;
         }
       };
       
-      // Start token sync in background and redirect immediately
-      syncTokenWithServer().catch((error) => {
-        console.error('Token sync failed:', error);
+      // Execute token storage and wait for completion
+      ensureTokenStorage().then((success) => {
+        if (success) {
+          console.log('Client: Token storage completed successfully, redirecting to admin dashboard...');
+          // Redirect to admin dashboard
+          setTimeout(() => {
+            router.push('/admin');
+          }, 1000); // Give a bit more time for everything to settle
+        } else {
+          console.error('Client: Token storage failed, but redirecting anyway...');
+          // Still redirect even if storage failed
+          setTimeout(() => {
+            router.push('/admin');
+          }, 1000);
+        }
+      }).catch((error) => {
+        console.error('Client: Token storage process failed:', error);
+        // Redirect anyway after error
+        setTimeout(() => {
+          router.push('/admin');
+        }, 1000);
       });
-
-      // Redirect immediately to admin dashboard
-      setTimeout(() => {
-        router.push('/admin');
-      }, 1500);
     }
   }, [state, router, searchParams]);
 
@@ -252,7 +267,7 @@ export default function LoginPage() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl"
           >
-            <form action={formAction} className="space-y-6">
+            <form action={handleSubmit} className="space-y-6">
               {/* Email/Username Field */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -317,14 +332,14 @@ export default function LoginPage() {
               >
                 <button
                   type="submit"
-                  disabled={state.status === 'in_progress'}
+                  disabled={isPending}
                   className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
-                    state.status === 'in_progress'
+                    isPending
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105'
                   }`}
                 >
-                  {state.status === 'in_progress' ? (
+                  {isPending ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}

@@ -49,8 +49,14 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Error getting session debug info:', error);
+    
+    // Return a more detailed error response for debugging
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }

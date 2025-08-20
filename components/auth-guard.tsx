@@ -1,31 +1,38 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { LoadingSpinner } from './loading-spinner';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
-  const { data: session, status } = useSession();
+  const { user, isLoading, isAuthenticated } = useCurrentUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return;
+    if (isLoading) return;
     
-    if (!session) {
+    if (!isAuthenticated || !user) {
+      console.log('AuthGuard: User not authenticated, redirecting to login');
       router.push('/login');
+    } else {
+      console.log('AuthGuard: User authenticated:', {
+        userId: user.id,
+        userRole: user.role,
+        hasAccessToken: !!user.accessToken
+      });
     }
-  }, [session, status, router]);
+  }, [isAuthenticated, user, isLoading, router]);
 
-  if (status === 'loading') {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (!session) {
+  if (!isAuthenticated || !user) {
     return null;
   }
 

@@ -48,14 +48,13 @@ export function hasClientAuth(): boolean {
 }
 
 export function debugAuthState() {
-  // Debug logging disabled to prevent console spam
-  // Uncomment the lines below if you need to debug auth state
-  /*
+  // Debug logging enabled for troubleshooting
   if (typeof window === 'undefined') return;
 
   const localToken = localStorage.getItem('access_token');
   const userId = localStorage.getItem('user_id');
   const userIdentifier = localStorage.getItem('user_identifier');
+  const userRole = localStorage.getItem('user_role');
   const cookies = document.cookie;
 
   // Extract tokens from cookies
@@ -73,12 +72,13 @@ export function debugAuthState() {
   console.log('localStorage access_token:', formatTokenForDisplay(localToken));
   console.log('localStorage user_id:', userId);
   console.log('localStorage user_identifier:', userIdentifier);
+  console.log('localStorage user_role:', userRole);
   console.log('client_access_token cookie:', formatTokenForDisplay(clientToken));
   console.log('access_token cookie:', formatTokenForDisplay(serverToken));
   console.log('hasClientAuth():', hasClientAuth());
   console.log('getClientAuthToken():', formatTokenForDisplay(getClientAuthToken()));
+  console.log('All cookies:', cookies);
   console.log('================');
-  */
 }
 
 /**

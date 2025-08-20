@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
@@ -11,20 +11,14 @@ import { register, type RegisterActionState } from '../actions';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [state, formAction] = useActionState<RegisterActionState, FormData>(
-    register,
-    {
-      status: 'idle',
-    },
-  );
+  const [state, setState] = useState<RegisterActionState>({ status: 'idle' });
 
   // Password validation
   const passwordRequirements = [
@@ -85,16 +79,20 @@ export default function RegisterPage() {
       return;
     }
 
-    setIsLoading(true);
-    
     const formData = new FormData();
     formData.append('identifier', identifier);
     formData.append('password', password);
     
-    setIdentifier(identifier);
-    formAction(formData);
-    
-    setTimeout(() => setIsLoading(false), 1000);
+    startTransition(async () => {
+      setState({ status: 'in_progress' });
+      try {
+        const result = await register(state, formData);
+        setState(result);
+      } catch (error) {
+        console.error('Registration error:', error);
+        setState({ status: 'failed' });
+      }
+    });
   };
 
   return (
@@ -311,14 +309,14 @@ export default function RegisterPage() {
               >
                 <button
                   type="submit"
-                  disabled={isLoading || !isPasswordValid || !doPasswordsMatch || !identifier}
-                  className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
-                    isLoading || !isPasswordValid || !doPasswordsMatch || !identifier
+                                  disabled={isPending || !isPasswordValid || !doPasswordsMatch || !identifier}
+                className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+                  isPending || !isPasswordValid || !doPasswordsMatch || !identifier
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105'
                   }`}
                 >
-                  {isLoading ? (
+                  {isPending ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}

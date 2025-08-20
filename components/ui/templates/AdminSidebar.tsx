@@ -24,10 +24,13 @@ import {
   Bell,
   Search,
   Menu,
-  X
+  X,
+  Package,
+  Layers
 } from 'lucide-react';
 import { useSuperAdmin } from '@/hooks/use-superadmin';
 import { useAdminTheme } from '@/contexts/AdminThemeContext';
+import { syncSessionData } from '@/lib/session-utils';
 
 interface NavItem {
   name: string;
@@ -52,6 +55,11 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
 
+  // Sync session data on mount
+  useEffect(() => {
+    syncSessionData();
+  }, []);
+
   // Check if current theme is an admin theme
   const isAdminTheme = currentTheme.startsWith('admin');
 
@@ -74,6 +82,15 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
       icon: CreditCard,
       color: 'text-purple-400'
     },
+  ];
+
+  const superAdminNavigation: NavItem[] = [
+    {
+      name: 'Admin Subscriptions',
+      href: '/admin/subscriptions',
+      icon: UserPlus,
+      color: 'text-red-400'
+    },
     {
       name: 'Users Management',
       icon: Users,
@@ -83,14 +100,15 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
         { name: 'User Roles', href: '/admin/users/roles', icon: Shield },
       ]
     },
-  ];
-
-  const superAdminNavigation: NavItem[] = [
     {
-      name: 'Admin Subscriptions',
-      href: '/admin/subscriptions',
-      icon: UserPlus,
-      color: 'text-red-400'
+      name: 'Products & Plans',
+      icon: Package,
+      color: 'text-emerald-400',
+      subItems: [
+        { name: 'Products & Plans', href: '/admin/products', icon: Package },
+        { name: 'Categories', href: '/admin/products/categories', icon: Layers },
+        { name: 'Inventory', href: '/admin/products/inventory', icon: Activity },
+      ]
     },
   ];
 
@@ -101,9 +119,17 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
   };
 
   useEffect(() => {
+    // Check main navigation
     navigation.forEach((item, index) => {
       if (item.subItems?.some(subItem => pathname === subItem.href || pathname.startsWith(subItem.href))) {
         setOpenSubmenu(index);
+      }
+    });
+    
+    // Check super admin navigation
+    superAdminNavigation.forEach((item, index) => {
+      if (item.subItems?.some(subItem => pathname === subItem.href || pathname.startsWith(subItem.href))) {
+        setOpenSubmenu(navigation.length + index);
       }
     });
   }, [pathname]);
@@ -359,8 +385,11 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
               </AnimatePresence>
 
               {superAdminNavigation.map((item, index) => {
-                const isItemActive = isActive(item.href || '');
-                const isHovered = hoveredItem === navigation.length + index;
+                const actualIndex = navigation.length + index;
+                const isItemActive = item.href 
+                  ? (item.subItems ? isActive(item.href) || isActivePrefix(item.href) : isActive(item.href))
+                  : isSubmenuActive(item.subItems);
+                const isHovered = hoveredItem === actualIndex;
                 
                 return (
                   <motion.div
@@ -369,43 +398,140 @@ export function AdminSidebar({ isOpen, isHovered, onToggle, onHoverChange }: Adm
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
                   >
-                    <Link
-                      href={item.href || '#'}
-                      onMouseEnter={() => setHoveredItem(navigation.length + index)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                      className={`block p-3 rounded-xl transition-all duration-300 group
-                      ${isItemActive 
-                        ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 text-gray-900 shadow-lg' 
-                        : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
-                          <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
-                          {isItemActive && (
-                            <motion.div
-                              className="absolute -right-1 -top-1 w-2 h-2 bg-red-400 rounded-full"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ delay: 0.2, duration: 0.3 }}
-                            />
-                          )}
-                        </div>
+                    {item.subItems ? (
+                      <div className="space-y-1">
+                        <motion.button
+                          onClick={() => handleSubmenuToggle(actualIndex)}
+                          onMouseEnter={() => setHoveredItem(actualIndex)}
+                          onMouseLeave={() => setHoveredItem(null)}
+                          className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-300 group
+                          ${isItemActive 
+                            ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 text-gray-900 shadow-lg' 
+                            : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
+                              <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
+                              {isItemActive && (
+                                <motion.div
+                                  className="absolute -right-1 -top-1 w-2 h-2 bg-red-400 rounded-full"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ delay: 0.2, duration: 0.3 }}
+                                />
+                              )}
+                            </div>
+                            <AnimatePresence>
+                              {(isOpen || isHovered) && (
+                                <motion.span
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="text-sm font-medium"
+                                >
+                                  {item.name}
+                                </motion.span>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                          <AnimatePresence>
+                            {(isOpen || isHovered) && (
+                              <motion.div
+                                initial={{ opacity: 0, rotate: -90 }}
+                                animate={{ opacity: 1, rotate: 0 }}
+                                exit={{ opacity: 0, rotate: -90 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <ChevronDown 
+                                  className={`w-4 h-4 transition-transform duration-300 ${
+                                    openSubmenu === actualIndex ? 'rotate-180 text-red-400' : `${isAdminTheme ? 'text-gray-600' : 'text-gray-600'}`
+                                  }`} 
+                                />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.button>
+
                         <AnimatePresence>
-                          {(isOpen || isHovered) && (
-                            <motion.span
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: -10 }}
-                              transition={{ duration: 0.2 }}
-                              className="text-sm font-medium"
+                          {openSubmenu === actualIndex && (isOpen || isHovered) && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="ml-8 space-y-1 overflow-hidden"
                             >
-                              {item.name}
-                            </motion.span>
+                              {item.subItems?.map((subItem, subIndex) => (
+                                <motion.div
+                                  key={subItem.name}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: subIndex * 0.1, duration: 0.3 }}
+                                >
+                                  <Link
+                                    href={subItem.href}
+                                    className={`block px-3 py-2 rounded-lg text-sm transition-all duration-300 group
+                                    ${isActive(subItem.href) || pathname.startsWith(subItem.href)
+                                      ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 text-gray-900 shadow-md'
+                                      : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-sm`
+                                    }`}
+                                  >
+                                    <div className="flex items-center space-x-2">
+                                      {subItem.icon && (
+                                        <subItem.icon className="w-4 h-4" />
+                                      )}
+                                      <span className="font-medium">{subItem.name}</span>
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </motion.div>
                           )}
                         </AnimatePresence>
                       </div>
-                    </Link>
+                    ) : (
+                      <Link
+                        href={item.href || '#'}
+                        onMouseEnter={() => setHoveredItem(actualIndex)}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        className={`block p-3 rounded-xl transition-all duration-300 group
+                        ${isItemActive 
+                          ? 'bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 text-gray-900 shadow-lg' 
+                          : `${isAdminTheme ? 'text-gray-600 hover:bg-gray-100/50' : 'text-gray-600 hover:bg-gray-100/50'} hover:text-gray-900 hover:shadow-md`
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={`relative ${isHovered && !isItemActive ? 'animate-pulse' : ''}`}>
+                            <item.icon className={`w-5 h-5 ${item.color || 'text-gray-600'} group-hover:text-gray-900 transition-colors`} />
+                            {isItemActive && (
+                              <motion.div
+                                className="absolute -right-1 -top-1 w-2 h-2 bg-red-400 rounded-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.2, duration: 0.3 }}
+                              />
+                            )}
+                          </div>
+                          <AnimatePresence>
+                            {(isOpen || isHovered) && (
+                              <motion.span
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="text-sm font-medium"
+                              >
+                                {item.name}
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </Link>
+                    )}
                   </motion.div>
                 );
               })}

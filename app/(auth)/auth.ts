@@ -11,6 +11,7 @@ import { authConfig } from './auth.config';
 interface ExtendedSession extends Session {
   user: User;
   accessToken?: string;
+  role?: string;
 }
 
 // Extend User type to support additional fields we need
@@ -78,55 +79,39 @@ export const {
           // Create user object from response
           const user: CustomUser = {
             id: loginResponse.user.id,
-            username: loginResponse.user.identifier, // Use identifier from backend
-            name: loginResponse.user.identifier, // Use identifier as display name
-            email: loginResponse.user.identifier.includes('@') ? loginResponse.user.identifier : null, // Set email if identifier is email
+            name: loginResponse.user.identifier,
+            email: loginResponse.user.identifier.includes('@') ? loginResponse.user.identifier : undefined,
             accessToken: loginResponse.access_token,
             tokenType: loginResponse.token_type,
-            role: loginResponse.role // Add role from response
+            role: loginResponse.role || 'superadmin', // Default to superadmin for now
           };
 
-          console.log('Authentication successful for user ID:', user.id);
-          
-          // Set the access token in the user object that will be passed to the JWT callback
+          console.log('User object created:', {
+            id: user.id,
+            name: user.name,
+            hasAccessToken: !!user.accessToken,
+            role: user.role
+          });
+
           return user;
         } catch (error) {
           console.error('Authentication error:', error);
-          console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));
           return null;
         }
-      }
+      },
     }),
   ],
   callbacks: {
-    // Add timestamp to ensure token is always refreshed
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: CustomUser }) {
       if (user) {
-        const customUser = user as CustomUser;
-        token.id = customUser.id;
-        // Save token from API response to JWT
-        token.accessToken = customUser.accessToken;
-        token.tokenType = customUser.tokenType;
-        token.role = customUser.role; // Save role to JWT
-        // Add timestamp to mark token creation time
+        // User just signed in
+        token.id = user.id;
+        token.accessToken = user.accessToken;
+        token.tokenType = user.tokenType;
+        token.role = user.role;
         token.createdAt = Date.now();
-
-        // For debugging
-        console.log('JWT callback: User provided, access token stored in token object', {
-          userId: customUser.id,
-          hasAccessToken: !!customUser.accessToken,
-          tokenType: customUser.tokenType,
-          userRole: customUser.role
-        });
+        token.needsRefresh = false;
       }
-
-      // Check if token needs refresh
-      const shouldRefreshTime = Math.floor((Date.now() - (token.createdAt as number || 0)) / 1000);
-      // If token exists for more than 30 minutes, mark for refresh
-      if (shouldRefreshTime > 30 * 60) {
-        token.needsRefresh = true;
-      }
-
       return token;
     },
     async session({
@@ -141,7 +126,7 @@ export const {
         // Add token information to session
         (session as any).accessToken = token.accessToken;
         (session as any).tokenType = token.tokenType;
-        (session as any).role = token.role || null; // Ensure role is always present
+        (session as any).role = token.role || 'superadmin'; // Ensure role is always present
         // Add timestamp information
         (session as any).createdAt = token.createdAt;
         (session as any).needsRefresh = token.needsRefresh;

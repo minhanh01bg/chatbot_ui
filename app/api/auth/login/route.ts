@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     // Get response data
     const data = await response.json();
     console.log("Backend response received with access_token:", !!data.access_token);
+    console.log("Backend response role:", data.role);
     
     // Create response with cookies
     const res = NextResponse.json(data, { status: response.status });
@@ -103,22 +104,29 @@ export async function POST(request: NextRequest) {
           });
         }
       }
+
+      // Set role cookie (default to superadmin if not provided)
+      const userRole = data.role || 'user';
+      res.cookies.set('user_role', userRole, {
+        path: '/',
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+      });
+      console.log("Role cookie set:", userRole);
       
       // Add debugging header
       res.headers.set('X-Set-Cookies', 'true');
       
       console.log("Access token and user info cookies set successfully");
-    } else {
-      console.error("Failed to set access_token cookie - token not available in response");
-      console.error("Response data:", JSON.stringify(data));
     }
-
+    
     return res;
   } catch (error) {
-    console.error('Login proxy error', error);
-    console.error('Error details:', JSON.stringify(error instanceof Error ? { message: error.message, stack: error.stack } : error));
+    console.error('Login proxy error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: 'Login failed' },
       { status: 500 }
     );
   }

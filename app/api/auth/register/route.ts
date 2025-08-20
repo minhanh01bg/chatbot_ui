@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     formData.append('password', userData.password);
 
     // Forward request to backend
-    const response = await fetch(`${apiUrl}/api/v1/register`, {
+    const response = await fetch(`${apiUrl}/api/v1/user/register`, {
       method: 'POST',
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
