@@ -1,71 +1,157 @@
 'use client';
 
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import Link from 'next/link';
 
-interface ErrorBoundaryState {
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-  fallback?: React.ComponentType<{ error: Error }>;
-}
+export class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false
+  };
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // Check if it's a MobX error - if so, don't set error state
-    if (this.isMobXError(error)) {
-      return { hasError: false };
-    }
+  public static getDerivedStateFromError(error: Error): State {
     // Update state so the next render will show the fallback UI
     return { hasError: true, error };
   }
 
-  private static isMobXError(error: Error): boolean {
-    const message = error.message || '';
-    return message.includes('mobx-state-tree') || 
-           message.includes('AnonymousModel') ||
-           message.includes('tabStates') ||
-           message.includes('injectionLifecycle') ||
-           message.includes('sw.js') ||
-           message.includes('marks') ||
-           message.includes('You are trying to read or write to an object that is no longer part of a state tree');
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Don't log MobX errors at all
-    if (ErrorBoundary.isMobXError(error)) {
-      return;
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // Check if it's a "Client has been destroyed" error
+    if (error.message.includes('Client has been destroyed') || 
+        error.message.includes('WrappedError')) {
+      console.log('Detected client destruction error, attempting recovery...');
+      
+      // Try to recover by clearing any stale state
+      try {
+        if (typeof window !== 'undefined') {
+          // Clear any problematic state
+          localStorage.removeItem('problematic_state');
+          sessionStorage.clear();
+        }
+      } catch (e) {
+        console.error('Error during recovery attempt:', e);
+      }
     }
     
-    console.error('Error caught by boundary:', error, errorInfo);
+    this.setState({
+      error,
+      errorInfo
+    });
   }
 
-  render() {
+  private handleRetry = () => {
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+  };
+
+  private handleGoHome = () => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  };
+
+  public render() {
     if (this.state.hasError) {
-      // Check if it's a MobX error
-      if (this.state.error && ErrorBoundary.isMobXError(this.state.error)) {
-        // For MobX errors, just render children normally
-        return this.props.children;
+      // Custom fallback UI
+      if (this.props.fallback) {
+        return this.props.fallback;
       }
 
-      // For other errors, show fallback
-      if (this.props.fallback) {
-        return <this.props.fallback error={this.state.error!} />;
-      }
+      const isClientDestroyedError = this.state.error?.message.includes('Client has been destroyed') ||
+                                   this.state.error?.message.includes('WrappedError');
 
       return (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <h2 className="text-red-800 font-semibold">Something went wrong</h2>
-          <p className="text-red-600 mt-2">
-            {this.state.error?.message || 'An unexpected error occurred'}
-          </p>
+        <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md w-full"
+          >
+            <div className="glass-enhanced rounded-2xl p-8 text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="w-16 h-16 bg-gradient-error rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <AlertTriangle className="w-8 h-8 text-white" />
+              </motion.div>
+              
+              <h1 className="text-2xl font-bold text-white mb-4">
+                {isClientDestroyedError ? 'Session Error' : 'Something went wrong'}
+              </h1>
+              
+              <p className="text-gray-300 mb-6">
+                {isClientDestroyedError 
+                  ? 'Your session has expired or encountered an error. Please try again.'
+                  : 'An unexpected error occurred. Please try refreshing the page.'
+                }
+              </p>
+
+              {process.env.NODE_ENV === 'development' && this.state.error && (
+                <details className="mb-6 text-left">
+                  <summary className="text-sm text-gray-400 cursor-pointer mb-2">
+                    Error Details (Development)
+                  </summary>
+                  <div className="bg-black/20 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-auto max-h-32">
+                    <div className="mb-2">
+                      <strong>Error:</strong> {this.state.error.message}
+                    </div>
+                    {this.state.errorInfo && (
+                      <div>
+                        <strong>Stack:</strong>
+                        <pre className="whitespace-pre-wrap mt-1">
+                          {this.state.errorInfo.componentStack}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                </details>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={this.handleRetry}
+                  className="flex-1 bg-gradient-button text-white px-6 py-3 rounded-xl font-medium hover-glow transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Try Again</span>
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={this.handleGoHome}
+                  className="flex-1 glass-button text-white px-6 py-3 rounded-xl font-medium hover-glow transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <Home className="w-4 h-4" />
+                  <span>Go Home</span>
+                </motion.button>
+              </div>
+
+              {isClientDestroyedError && (
+                <div className="mt-6 p-4 bg-gradient-warning/20 rounded-lg">
+                  <p className="text-sm text-yellow-300">
+                    💡 <strong>Tip:</strong> If this error persists, try clearing your browser cache and cookies.
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.div>
         </div>
       );
     }
@@ -74,4 +160,67 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-export default ErrorBoundary; 
+// Hook for functional components
+export function useErrorHandler() {
+  const [error, setError] = React.useState<Error | null>(null);
+
+  React.useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error caught:', event.error);
+      
+      // Check if it's a client destruction error
+      if (event.error?.message?.includes('Client has been destroyed') ||
+          event.error?.message?.includes('WrappedError')) {
+        console.log('Detected client destruction error in global handler');
+        
+        // Try to recover
+        try {
+          if (typeof window !== 'undefined') {
+            // Clear problematic state
+            localStorage.removeItem('problematic_state');
+            sessionStorage.clear();
+            
+            // Reload the page after a short delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        } catch (e) {
+          console.error('Error during global recovery:', e);
+        }
+      }
+      
+      setError(event.error);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      
+      if (event.reason?.message?.includes('Client has been destroyed') ||
+          event.reason?.message?.includes('WrappedError')) {
+        console.log('Detected client destruction error in promise rejection');
+        
+        // Try to recover
+        try {
+          if (typeof window !== 'undefined') {
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        } catch (e) {
+          console.error('Error during promise rejection recovery:', e);
+        }
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
+  return error;
+} 
