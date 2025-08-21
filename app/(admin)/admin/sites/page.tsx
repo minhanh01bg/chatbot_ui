@@ -1,66 +1,10 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import { CompactDarkModeToggle } from '@/components/theme-switcher';
 import Sites from '@/components/admin/sites/Sites';
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { performLogout } from '@/lib/auth-utils';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SitesPage() {
-  const [sites, setSites] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchSites = async () => {
-      try {
-        const response = await fetch('/api/sites?skip=0&limit=50');
-        if (response.ok) {
-          const data = await response.json();
-          // Handle both array and object response formats
-          const sitesArray = Array.isArray(data) ? data : (data.sites || []);
-          setSites(sitesArray);
-        } else {
-          let message = response.statusText;
-          try {
-            const errorData = await response.json();
-            const rawDetail = (errorData?.error ?? errorData?.detail) as any;
-            if (Array.isArray(rawDetail)) {
-              const firstMsg = rawDetail.find((d) => typeof d?.msg === 'string')?.msg;
-              if (firstMsg) message = firstMsg;
-            } else if (typeof rawDetail === 'string') {
-              message = rawDetail;
-            }
-          } catch {}
-
-          if (response.status === 401 && /expired|hết hạn|signature has expired/i.test(message)) {
-            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-            await performLogout(router);
-            return;
-          }
-
-          toast.error(message || 'Failed to fetch sites');
-        }
-      } catch (error) {
-        console.error('Error fetching sites:', error);
-        setSites([]);
-        if (error instanceof Error) {
-          toast.error(error.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSites();
-  }, []);
-
-  const siteKeys = Array.isArray(sites) ? sites.map(site => site.key || site._id) : [];
-  const siteNames = Array.isArray(sites) ? sites.reduce((acc, site) => {
-    acc[site.key || site._id] = site.name || site.key || site._id;
-    return acc;
-  }, {} as Record<string, string>) : {};
 
   return (
     <motion.div 
@@ -79,6 +23,11 @@ export default function SitesPage() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-indigo-600/10 rounded-3xl blur-3xl"></div>
           <div className="relative bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-slate-700/50 p-8 shadow-2xl">
+            {/* Theme Toggle positioned at top right */}
+            <div className="absolute top-6 right-6">
+              <CompactDarkModeToggle />
+            </div>
+            
             <div className="text-center space-y-4">
               <motion.h1 
                 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent"
