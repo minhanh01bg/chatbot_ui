@@ -10,25 +10,9 @@ export const formatTokenForDisplay = (token: string | null | undefined): string 
 export function getClientAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
   
-  // Check localStorage first
-  const localToken = localStorage.getItem('access_token');
-  if (localToken) {
-    console.log('Found token in localStorage');
-    return localToken;
-  }
+  // Priority order: cookies first (most reliable), then localStorage
   
-  // Check cookies - try both naming conventions
-  const clientToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('client_access_token='))
-    ?.split('=')[1];
-    
-  if (clientToken) {
-    console.log('Found token in client_access_token cookie');
-    return clientToken;
-  }
-  
-  // Check for access_token cookie (set by server)
+  // Check for access_token cookie (set by login API)
   const serverToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('access_token='))
@@ -39,7 +23,63 @@ export function getClientAuthToken(): string | null {
     return serverToken;
   }
   
-  console.log('No token found in localStorage or cookies');
+  // Check cookies - legacy naming convention
+  const clientToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('client_access_token='))
+    ?.split('=')[1];
+    
+  if (clientToken) {
+    console.log('Found token in client_access_token cookie');
+    return clientToken;
+  }
+  
+  // Check localStorage as fallback
+  const localToken = localStorage.getItem('access_token');
+  if (localToken) {
+    console.log('Found token in localStorage');
+    return localToken;
+  }
+  
+  console.log('No token found in cookies or localStorage');
+  return null;
+}
+
+// New function to get user info from cookies
+export function getCurrentUserFromCookies(): {
+  id: string | null;
+  identifier: string | null;
+  role: string | null;
+  accessToken: string | null;
+} | null {
+  if (typeof window === 'undefined') return null;
+  
+  const userId = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('user_id='))
+    ?.split('=')[1] || null;
+  
+  const userIdentifier = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('user_identifier='))
+    ?.split('=')[1] || null;
+  
+  const userRole = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('user_role='))
+    ?.split('=')[1] || null;
+    
+  const accessToken = getClientAuthToken();
+  
+  if (userId && userIdentifier && userRole) {
+    return {
+      id: userId,
+      identifier: userIdentifier,
+      role: userRole,
+      accessToken
+    };
+  }
+  
   return null;
 }
 

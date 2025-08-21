@@ -60,28 +60,26 @@ export async function POST(request: NextRequest) {
       console.log("Setting access_token cookie, token length:", data.access_token.length);
       console.log("User data from backend:", JSON.stringify(data.user));
       
-      // Critical settings for proper cookie functioning:
-      // 1. path='/' ensures cookie is available across the entire site
-      // 2. sameSite='lax' ensures cookie is sent with most navigation requests
-      // 3. secure=false for local development (would be true in production)
-      // 4. httpOnly=true for the server-only cookie to prevent client JS access
+      // Set access token cookie for authentication
       res.cookies.set('access_token', data.access_token, {
         path: '/',
-        httpOnly: true,
+        httpOnly: false, // Allow client-side access for API calls
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7 // 1 week
       });
       
-      // Also set a non-httpOnly cookie for client-side JavaScript
-      res.cookies.set('client_access_token', data.access_token, {
-        path: '/',
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7 // 1 week
-      });
-
+      // Set HttpOnly cookie for refresh token (if available)
+      if (data.refresh_token) {
+        res.cookies.set('refresh_token', data.refresh_token, {
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30 // 30 days
+        });
+      }
+      
       // Set user information cookies for client-side access
       if (data.user) {
         if (data.user.id) {
@@ -105,7 +103,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Set role cookie (default to superadmin if not provided)
+      // Set role cookie (default to user if not provided)
       const userRole = data.role || 'user';
       res.cookies.set('user_role', userRole, {
         path: '/',

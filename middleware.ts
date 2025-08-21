@@ -1,81 +1,107 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  // Get the pathname of the request (e.g. /, /admin, /api/auth/login)
-  const path = request.nextUrl.pathname;
-
-  // Get cookies
-  const accessToken = request.cookies.get('access_token')?.value;
-  const clientAccessToken = request.cookies.get('client_access_token')?.value;
-  const userRole = request.cookies.get('user_role')?.value;
-
-  // Check if user is authenticated
-  const isAuthenticated = !!(accessToken || clientAccessToken);
-
-  // Define public paths that don't require authentication
-  const publicPaths = ['/login', '/register'];
-  const isPublicPath = publicPaths.some(publicPath => path.startsWith(publicPath));
+// Helper function to check authentication from cookies
+function isAuthenticated(request: NextRequest): boolean {
+  const userId = request.cookies.get('user_id')?.value
+  const userRole = request.cookies.get('user_role')?.value
+  const userIdentifier = request.cookies.get('user_identifier')?.value
   
-  // Define API paths that should be handled by NextAuth (not middleware)
-  const nextAuthApiPaths = ['/api/auth'];
-  const isNextAuthApiPath = nextAuthApiPaths.some(apiPath => path.startsWith(apiPath));
+  // Check if user has essential authentication cookies
+  return !!(userId && userRole && userIdentifier)
+}
 
-  // Define admin-only paths
-  const adminPaths = ['/admin'];
-  const isAdminPath = adminPaths.some(adminPath => path.startsWith(adminPath));
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  // Skip middleware for NextAuth API routes
-  if (isNextAuthApiPath) {
-    return NextResponse.next();
+  // Skip middleware for static files and API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/static') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next()
   }
 
-  // If user is not authenticated and trying to access protected route
-  if (!isAuthenticated && !isPublicPath) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('reason', 'unauthorized');
-    return NextResponse.redirect(loginUrl);
-  }
+  try {
+    // Check authentication using cookies instead of NextAuth
+    const authenticated = isAuthenticated(request)
 
-  // If user is authenticated and trying to access login/register
-  if (isAuthenticated && (path === '/login' || path === '/register')) {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
+    // Check if user is trying to access protected routes
+    const isProtectedRoute = pathname.startsWith('/admin') || 
+                           pathname.startsWith('/chat') ||
+                           pathname === '/dashboard'
 
-  // If user is trying to access admin paths, check if they have admin role
-  if (isAdminPath && isAuthenticated) {
-    const isSuperAdmin = userRole?.toLowerCase() === 'superadmin';
-    const isAdmin = userRole?.toLowerCase() === 'admin' || isSuperAdmin;
-    
-    // For now, allow access if authenticated (temporary fix)
-    if (!isAdmin && !isSuperAdmin) {
-      console.log('User role check failed:', { userRole, isAdmin, isSuperAdmin });
-      // Instead of redirecting to unauthorized, allow access for now
-      // const unauthorizedUrl = new URL('/unauthorized', request.url);
-      // return NextResponse.redirect(unauthorizedUrl);
+    // Check if user is trying to access auth routes while already authenticated
+    const isAuthRoute = pathname.startsWith('/login') || 
+                       pathname.startsWith('/register') ||
+                       pathname.startsWith('/auth')
+
+    if (isProtectedRoute) {
+      // If not authenticated and trying to access protected route, redirect to login
+      if (!authenticated) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.searchParams.set('reason', 'unauthorized')
+        return NextResponse.redirect(loginUrl)
+      }
     }
+
+    if (isAuthRoute && authenticated) {
+      // If user is authenticated and trying to access auth routes, redirect to admin
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
+
+    // Add security headers
+    const response = NextResponse.next()
+    
+    // Security headers
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
+    response.headers.set('X-XSS-Protection', '1; mode=block')
+    
+    // Content Security Policy
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "font-src 'self'",
+      "connect-src 'self' https://vercel.live https://api.vercel.com",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'"
+    ].join('; ')
+    
+    response.headers.set('Content-Security-Policy', csp)
+
+    return response
+  } catch (error) {
+    console.error('Middleware error:', error)
+    
+    // On error, allow the request to continue but log the error
+    const response = NextResponse.next()
+    
+    // Still add security headers even on error
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    
+    return response
   }
-
-  // Add headers for debugging
-  const response = NextResponse.next();
-  response.headers.set('X-Auth-Status', isAuthenticated ? 'authenticated' : 'unauthenticated');
-  response.headers.set('X-User-Role', userRole || 'none');
-  response.headers.set('X-Request-Path', path);
-
-  return response;
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * - api/auth (NextAuth API routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/|api/auth).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
-};
+}
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
+// Temporarily disabled NextAuth SessionProvider to use new authentication system
+// import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
 
 interface SessionProviderProps {
@@ -8,9 +9,12 @@ interface SessionProviderProps {
 }
 
 export default function SessionProvider({ children }: SessionProviderProps) {
-  return (
-    <NextAuthSessionProvider>
-      {children}
-    </NextAuthSessionProvider>
-  );
+  // Temporarily return children directly without NextAuth SessionProvider
+  return <>{children}</>;
+  
+  // return (
+  //   <NextAuthSessionProvider>
+  //     {children}
+  //   </NextAuthSessionProvider>
+  // );
 }
