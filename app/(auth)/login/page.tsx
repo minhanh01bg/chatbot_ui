@@ -193,6 +193,21 @@ export default function LoginPage() {
                   )}
                 </button>
               </motion.div>
+
+              {/* Forgot Password Link */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+                className="text-center"
+              >
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-gray-300 hover:text-purple-400 transition-colors"
+                >
+                  Quên mật khẩu?
+                </Link>
+              </motion.div>
             </form>
           </motion.div>
 
