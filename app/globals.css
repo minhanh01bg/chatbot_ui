@@ -110,25 +110,69 @@
   }
 
   .dark {
-    --background: 220 13% 18%;
-    --foreground: 0 0% 98%;
-    --card: 220 13% 22%;
-    --card-foreground: 0 0% 98%;
-    --popover: 220 13% 22%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 270 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 26%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 220 13% 26%;
-    --muted-foreground: 220 9% 60%;
-    --accent: 270 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 26%;
-    --input: 220 13% 26%;
-    --ring: 270 100% 50%;
+    /* Dark theme colors aligned with theme-config.ts */
+    --background: hsl(240 10% 3.9%);
+    --backgroundSecondary: hsl(240 3.7% 15.9%);
+    --backgroundTertiary: hsl(240 3.7% 20%);
+    --backgroundOverlay: hsla(0 0% 0% 0.8);
+    
+    --content: hsl(0 0% 98%);
+    --contentSecondary: hsl(240 5% 64.9%);
+    --contentTertiary: hsl(240 4.8% 83.9%);
+    --contentMuted: hsl(240 3.8% 46.1%);
+    
+    --button-primary: hsl(270 100% 50%);
+    --button-primaryHover: hsl(270 100% 45%);
+    --button-primaryText: hsl(0 0% 100%);
+    --button-secondary: hsla(255 255% 255% 0.1);
+    --button-secondaryHover: hsla(255 255% 255% 0.2);
+    --button-secondaryText: hsl(0 0% 98%);
+    --button-outline: transparent;
+    --button-outlineHover: hsla(255 255% 255% 0.1);
+    --button-outlineText: hsl(270 100% 50%);
+    --button-ghost: transparent;
+    --button-ghostHover: hsla(255 255% 255% 0.1);
+    --button-ghostText: hsl(270 100% 50%);
+    --button-destructive: hsl(0 84.2% 60.2%);
+    --button-destructiveHover: hsl(0 84.2% 65%);
+    --button-destructiveText: hsl(0 0% 100%);
+    
+    --border: hsla(255 255% 255% 0.2);
+    --borderSecondary: hsla(255 255% 255% 0.1);
+    --borderAccent: hsl(270 100% 50%);
+    
+    --accent: hsl(270 100% 50%);
+    --accentSecondary: hsl(240 3.7% 15.9%);
+    --accentMuted: hsl(240 3.8% 46.1%);
+    
+    --success: hsl(142 76% 36%);
+    --warning: hsl(38 92% 50%);
+    --error: hsl(0 84.2% 60.2%);
+    --info: hsl(221 83% 53%);
+    
+    --shadow: hsla(0 0% 0% 0.3);
+    --shadowHover: hsla(0 0% 0% 0.4);
+    
+    --glass-background: hsla(255 255% 255% 0.1);
+    --glass-border: hsla(255 255% 255% 0.2);
+    --glass-shadow: 0 8px 32px hsla(0 0% 0% 0.3);
+    
+    /* Legacy support for shadcn/ui components */
+    --foreground: hsl(0 0% 98%);
+    --card: hsl(240 3.7% 15.9%);
+    --card-foreground: hsl(0 0% 98%);
+    --popover: hsl(240 3.7% 15.9%);
+    --popover-foreground: hsl(0 0% 98%);
+    --primary: hsl(270 100% 50%);
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(240 3.7% 15.9%);
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(240 3.7% 15.9%);
+    --muted-foreground: hsl(240 5% 64.9%);
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --input: hsla(255 255% 255% 0.1);
+    --ring: hsl(270 100% 50%);
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
