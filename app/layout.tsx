@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeInitializer } from "@/components/theme-initializer";
 import SessionProvider from "@/components/providers/SessionProvider";
-import { SiteChatProvider } from "@/contexts/SiteChatContext";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { AuthErrorHandler } from "@/components/auth-error-handler";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ChatAI Pro - Next-Generation AI Chat Platform",
-  description: "Transform your digital interactions with our cutting-edge AI chatbot. Experience human-like conversations, instant responses, and intelligent context understanding.",
-  keywords: ["AI", "Chatbot", "Artificial Intelligence", "Conversation", "Machine Learning"],
+  description: "Experience the future of AI conversations with our cutting-edge chatbot platform. Transform your digital interactions with intelligent, context-aware responses.",
+  keywords: ["AI Chat", "Chatbot", "Artificial Intelligence", "Conversation AI", "AI Assistant"],
   authors: [{ name: "ChatAI Pro Team" }],
   creator: "ChatAI Pro",
   publisher: "ChatAI Pro",
@@ -17,32 +22,28 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://chataipro.com"),
-  alternates: {
-    canonical: "/",
-  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://chataipro.com",
     title: "ChatAI Pro - Next-Generation AI Chat Platform",
-    description: "Transform your digital interactions with our cutting-edge AI chatbot. Experience human-like conversations, instant responses, and intelligent context understanding.",
+    description: "Experience the future of AI conversations with our cutting-edge chatbot platform.",
+    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     siteName: "ChatAI Pro",
     images: [
       {
         url: "/images/demo-thumbnail.png",
         width: 1200,
         height: 630,
-        alt: "ChatAI Pro Platform Preview",
+        alt: "ChatAI Pro - AI Chat Platform",
       },
     ],
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "ChatAI Pro - Next-Generation AI Chat Platform",
-    description: "Transform your digital interactions with our cutting-edge AI chatbot. Experience human-like conversations, instant responses, and intelligent context understanding.",
+    description: "Experience the future of AI conversations with our cutting-edge chatbot platform.",
     images: ["/images/demo-thumbnail.png"],
-    creator: "@chataipro",
   },
   robots: {
     index: true,
@@ -56,9 +57,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
-    yahoo: "your-yahoo-verification-code",
+    google: process.env.GOOGLE_SITE_VERIFICATION,
   },
 };
 
@@ -69,18 +68,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased">
-        <SessionProvider>
-          <ThemeProvider
-            defaultTheme="system"
-            storageKey="chataipro-theme"
-          >
-            <ThemeInitializer />
-            <SiteChatProvider>
-              {children}
-            </SiteChatProvider>
-          </ThemeProvider>
-        </SessionProvider>
+      <body className={inter.className}>
+        <ErrorBoundary>
+          <SessionProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AuthProvider>
+                <AuthErrorHandler />
+                {children}
+                <Toaster />
+              </AuthProvider>
+            </ThemeProvider>
+          </SessionProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

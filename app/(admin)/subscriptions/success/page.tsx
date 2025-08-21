@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
@@ -24,7 +24,7 @@ export default function SubscriptionSuccessPage() {
   const payerId = searchParams.get('PayerID');
   const serverToken = searchParams.get('server_token');
   const baToken = searchParams.get('ba_token');
-  const { data: session } = useSession();
+  const { user, accessToken } = useAuth();
 
   useEffect(() => {
     const activateSubscription = async () => {
@@ -51,9 +51,9 @@ export default function SubscriptionSuccessPage() {
           await new Promise(resolve => setTimeout(resolve, 2000));
 
           // Check if subscription is now active by getting my subscriptions
-          if (session?.accessToken) {
+          if (accessToken) {
             try {
-                             const subscriptions = await getMySubscriptions(session.accessToken);
+                             const subscriptions = await getMySubscriptions(accessToken);
                const activeSubscription = subscriptions.find(sub => 
                  sub.id === subscriptionId
                );

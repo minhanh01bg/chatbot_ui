@@ -1,7 +1,7 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Check, 
@@ -25,7 +25,33 @@ import {
   TrendingUp,
   Award,
   Clock,
-  Target
+  Target,
+  Code,
+  Palette,
+  Smartphone,
+  Database,
+  Cloud,
+  BarChart3,
+  Lightbulb,
+  Settings,
+  Layers,
+  GitBranch,
+  Terminal,
+  Wifi,
+  ShieldCheck,
+  Zap as Lightning,
+  Globe as World,
+  Smartphone as Mobile,
+  Database as Storage,
+  Cloud as CloudIcon,
+  BarChart3 as Analytics,
+  Lightbulb as Innovation,
+  Settings as Config,
+  Layers as Stack,
+  GitBranch as Version,
+  Terminal as Console,
+  Wifi as Network,
+  ShieldCheck as Security
 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -39,6 +65,25 @@ export default function Home() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, -1000]);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const floatingElements = [
+    { icon: Sparkles, delay: 0, duration: 6 },
+    { icon: Zap, delay: 2, duration: 8 },
+    { icon: Brain, delay: 4, duration: 7 },
+    { icon: Globe, delay: 1, duration: 9 },
+    { icon: Shield, delay: 3, duration: 5 },
+  ];
 
   return (
     <div ref={containerRef} className="min-h-screen bg-background text-foreground overflow-hidden">
@@ -48,11 +93,38 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-dark">
-          <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute inset-0 bg-gradient-hero">
+          <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-gradient-accent rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-gradient-primary rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-gradient-info rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
+
+        {/* Floating Elements */}
+        {floatingElements.map((element, index) => (
+          <motion.div
+            key={index}
+            className="absolute pointer-events-none"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ 
+              opacity: [0.3, 1, 0.3], 
+              scale: [1, 1.2, 1],
+              y: [0, -20, 0],
+              x: [0, 10, 0]
+            }}
+            transition={{
+              duration: element.duration,
+              delay: element.delay,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            style={{
+              left: `${20 + index * 15}%`,
+              top: `${30 + index * 10}%`,
+            }}
+          >
+            <element.icon className="w-8 h-8 text-white/60" />
+          </motion.div>
+        ))}
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -61,9 +133,9 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2 }}
             className="mb-8"
           >
-            <div className="inline-flex items-center space-x-2 glass px-6 py-3 rounded-full mb-8">
-              <Sparkles className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-              <span className="text-purple-600 dark:text-purple-300 font-medium">Next-Generation AI Chat Platform</span>
+            <div className="inline-flex items-center space-x-2 glass-enhanced px-6 py-3 rounded-full mb-8 animate-pulse-glow">
+              <Sparkles className="w-5 h-5 text-gradient-accent animate-sparkle" />
+              <span className="text-gradient-accent font-medium">Next-Generation AI Chat Platform</span>
             </div>
           </motion.div>
 
@@ -74,7 +146,7 @@ export default function Home() {
             className="text-6xl lg:text-8xl font-bold mb-6"
           >
             Experience the Future of{" "}
-            <span className="gradient-text">
+            <span className="text-gradient animate-neon">
               AI Conversations
             </span>
           </motion.h1>
@@ -97,22 +169,22 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-1"
+              className="bg-gradient-button rounded-xl p-1 hover-glow"
             >
               <Link
                 href="/chat"
                 className="flex items-center space-x-3 text-white font-semibold text-lg px-8 py-4 bg-black/20 backdrop-blur-xl rounded-lg"
               >
-                <Rocket className="w-6 h-6" />
+                <Rocket className="w-6 h-6 animate-bounce-soft" />
                 <span>Start Your Journey</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 animate-slide-right" />
               </Link>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-xl"
+              className="glass-button rounded-xl hover-glow"
             >
               <Link
                 href="/plans"
@@ -138,7 +210,7 @@ export default function Home() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.2 + i * 0.1 }}
-                    className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-border dark:border-white/20"
+                    className="w-10 h-10 rounded-full bg-gradient-accent border-2 border-border dark:border-white/20 animate-float-gentle"
                   />
                 ))}
               </div>
@@ -152,7 +224,7 @@ export default function Home() {
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ delay: 1.5 + i * 0.1, type: "spring" }}
                 >
-                  <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star className="w-5 h-5 text-yellow-400 fill-current animate-sparkle" />
                 </motion.div>
               ))}
               <span className="text-sm ml-2">4.9/5 rating</span>
@@ -165,12 +237,12 @@ export default function Home() {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         >
-          <ChevronDown className="w-8 h-8 text-white/60" />
+          <ChevronDown className="w-8 h-8 text-white/60 animate-bounce-soft" />
         </motion.div>
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50 dark:from-black dark:via-gray-900 dark:to-black">
+      <section className="relative py-32 bg-gradient-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -179,8 +251,8 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-5xl lg:text-6xl font-bold mb-6 text-gray-900 dark:text-white">Revolutionary Features</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6 text-gradient-primary">Revolutionary Features</h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Discover the advanced capabilities that make our AI chatbot the most intelligent and responsive platform available.
             </p>
           </motion.div>
@@ -188,45 +260,45 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: <Brain className="w-8 h-8" />,
+                icon: Brain,
                 title: "Advanced AI Intelligence",
                 description: "Powered by cutting-edge machine learning models that understand context, emotions, and intent with remarkable accuracy.",
-                gradient: "from-purple-600 to-pink-600",
+                gradient: "bg-gradient-accent",
                 delay: 0.1
               },
               {
-                icon: <Zap className="w-8 h-8" />,
+                icon: Lightning,
                 title: "Lightning Fast Responses",
                 description: "Experience near-instant responses with our optimized AI infrastructure that processes requests in milliseconds.",
-                gradient: "from-yellow-500 to-orange-500",
+                gradient: "bg-gradient-warning",
                 delay: 0.2
               },
               {
-                icon: <Shield className="w-8 h-8" />,
+                icon: Security,
                 title: "Enterprise Security",
                 description: "Bank-level encryption and privacy protection ensure your conversations remain completely confidential and secure.",
-                gradient: "from-green-500 to-blue-500",
+                gradient: "bg-gradient-success",
                 delay: 0.3
               },
               {
-                icon: <Globe className="w-8 h-8" />,
+                icon: World,
                 title: "Multi-Language Support",
                 description: "Communicate seamlessly in over 50 languages with native-level understanding and culturally appropriate responses.",
-                gradient: "from-blue-500 to-cyan-500",
+                gradient: "bg-gradient-info",
                 delay: 0.4
               },
               {
-                icon: <Cpu className="w-8 h-8" />,
+                icon: Cpu,
                 title: "Custom AI Models",
                 description: "Train and deploy specialized AI models tailored to your specific business needs and industry requirements.",
-                gradient: "from-indigo-500 to-purple-500",
+                gradient: "bg-gradient-primary",
                 delay: 0.5
               },
               {
-                icon: <Users className="w-8 h-8" />,
+                icon: Users,
                 title: "Team Collaboration",
                 description: "Advanced team features including conversation sharing, collaborative training, and role-based access control.",
-                gradient: "from-red-500 to-pink-500",
+                gradient: "bg-gradient-error",
                 delay: 0.6
               }
             ].map((feature, index) => (
@@ -239,14 +311,14 @@ export default function Home() {
                 whileHover={{ y: -10 }}
                 className="group"
               >
-                <div className="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-border dark:border-white/10 rounded-2xl p-8 h-full hover:bg-white/90 dark:hover:bg-white/10 transition-all duration-300">
-                  <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    {feature.icon}
+                <div className="glass-card rounded-2xl p-8 h-full hover-lift">
+                  <div className={`w-16 h-16 ${feature.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 animate-pulse-glow`}>
+                    <feature.icon className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-gradient-accent transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                  <p className="text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">
                     {feature.description}
                   </p>
                 </div>
@@ -257,7 +329,7 @@ export default function Home() {
       </section>
 
       {/* Interactive Demo Section */}
-      <section className="relative py-32 bg-gradient-to-r from-purple-100/50 via-blue-100/50 to-purple-100/50 dark:from-purple-900/50 dark:via-blue-900/50 dark:to-purple-900/50">
+      <section className="relative py-32 bg-gradient-tertiary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -266,8 +338,8 @@ export default function Home() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">See It In Action</h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              <h2 className="text-5xl font-bold mb-6 text-gradient-primary">See It In Action</h2>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
                 Experience the power of our AI chatbot with this interactive demonstration. Watch as it understands context, provides intelligent responses, and adapts to your conversation style.
               </p>
               
@@ -286,10 +358,10 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="flex items-center space-x-3"
                   >
-                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gradient-accent rounded-full flex items-center justify-center animate-pulse-glow">
                       <Check className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                    <span className="text-foreground">{feature}</span>
                   </motion.div>
                 ))}
               </div>
@@ -305,12 +377,12 @@ export default function Home() {
               <motion.div
                 animate={{ y: [-10, 10, -10] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-3xl p-8"
+                className="glass-enhanced rounded-3xl p-8"
               >
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                 </div>
                 
                 <div className="space-y-6">
@@ -320,11 +392,11 @@ export default function Home() {
                     transition={{ delay: 1 }}
                     className="flex items-start space-x-3"
                   >
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-accent rounded-full flex items-center justify-center animate-pulse-glow">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
-                    <div className="bg-gray-100/80 dark:bg-gray-800/50 rounded-2xl p-4 max-w-xs">
-                      <p className="text-gray-800 dark:text-white">Hello! I'm your AI assistant. How can I help you today?</p>
+                    <div className="glass-card rounded-2xl p-4 max-w-xs">
+                      <p className="text-foreground">Hello! I'm your AI assistant. How can I help you today?</p>
                     </div>
                   </motion.div>
 
@@ -334,10 +406,10 @@ export default function Home() {
                     transition={{ delay: 2 }}
                     className="flex items-start space-x-3 justify-end"
                   >
-                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-4 max-w-xs">
+                    <div className="bg-gradient-accent rounded-2xl p-4 max-w-xs">
                       <p className="text-white">I need help with my project</p>
                     </div>
-                    <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                       <Users className="w-5 h-5 text-white" />
                     </div>
                   </motion.div>
@@ -348,11 +420,11 @@ export default function Home() {
                     transition={{ delay: 3 }}
                     className="flex items-start space-x-3"
                   >
-                    <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-accent rounded-full flex items-center justify-center animate-pulse-glow">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
-                    <div className="bg-gray-100/80 dark:bg-gray-800/50 rounded-2xl p-4 max-w-xs">
-                      <p className="text-gray-800 dark:text-white">I'd be happy to help! What kind of project are you working on? I can assist with coding, design, research, and much more.</p>
+                    <div className="glass-card rounded-2xl p-4 max-w-xs">
+                      <p className="text-foreground">I'd be happy to help! What kind of project are you working on? I can assist with coding, design, research, and much more.</p>
                     </div>
                   </motion.div>
                 </div>
@@ -363,14 +435,14 @@ export default function Home() {
       </section>
 
       {/* Statistics Section */}
-      <section className="relative py-32 bg-gray-50 dark:bg-black">
+      <section className="relative py-32 bg-gradient-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { number: "10M+", label: "Conversations", icon: <MessageSquare className="w-8 h-8" /> },
-              { number: "50+", label: "Languages", icon: <Globe className="w-8 h-8" /> },
-              { number: "99.9%", label: "Uptime", icon: <Clock className="w-8 h-8" /> },
-              { number: "24/7", label: "Support", icon: <Heart className="w-8 h-8" /> }
+              { number: "10M+", label: "Conversations", icon: MessageSquare },
+              { number: "50+", label: "Languages", icon: World },
+              { number: "99.9%", label: "Uptime", icon: Clock },
+              { number: "24/7", label: "Support", icon: Heart }
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -380,14 +452,14 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="text-center group"
               >
-                <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                    {stat.icon}
+                <div className="glass-card rounded-2xl p-8 hover-lift">
+                  <div className="w-16 h-16 bg-gradient-accent rounded-2xl flex items-center justify-center text-white mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 animate-pulse-glow">
+                    <stat.icon className="w-8 h-8" />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                  <div className="text-4xl font-bold text-gradient-primary mb-2 group-hover:text-gradient-accent transition-colors">
                     {stat.number}
                   </div>
-                  <div className="text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                  <div className="text-muted-foreground group-hover:text-foreground transition-colors">
                     {stat.label}
                   </div>
                 </div>
@@ -398,7 +470,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 overflow-hidden">
+      <section className="relative py-32 bg-gradient-hero overflow-hidden">
         <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
         <div className="absolute bottom-1/2 right-1/4 w-96 h-96 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
         
@@ -409,7 +481,7 @@ export default function Home() {
             transition={{ duration: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8">
+            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-8 animate-neon">
               Ready to Transform Your Conversations?
             </h2>
             
@@ -421,22 +493,22 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-purple-600 rounded-xl p-1"
+                className="bg-white text-purple-600 rounded-xl p-1 hover-glow"
               >
                 <Link
                   href="/register"
                   className="flex items-center space-x-3 font-semibold text-lg px-8 py-4 bg-black/20 backdrop-blur-xl rounded-lg"
                 >
-                  <Rocket className="w-6 h-6" />
+                  <Rocket className="w-6 h-6 animate-bounce-soft" />
                   <span>Start Free Trial</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5 animate-slide-right" />
                 </Link>
               </motion.div>
               
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white/20 backdrop-blur-xl border border-border dark:border-white/30 rounded-xl"
+                className="glass-button rounded-xl hover-glow"
               >
                 <Link
                   href="/chat"

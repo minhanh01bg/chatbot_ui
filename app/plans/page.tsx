@@ -10,7 +10,7 @@ import PlanCard from '@/components/plans/PlanCard';
 import PlanComparison from '@/components/plans/PlanComparison';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 export default function PlansPage() {
@@ -20,7 +20,7 @@ export default function PlansPage() {
   const [viewMode, setViewMode] = useState<'cards' | 'comparison'>('cards');
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: userLoading } = useCurrentUser();
-  const { data: session, status: sessionStatus } = useSession();
+  const { user: authUser, isAuthenticated: authIsAuthenticated, isLoading: authIsLoading } = useAuth();
 
   // Simple client-side auth check
   const [clientAuth, setClientAuth] = useState({ isAuthenticated: false, isLoading: true });
@@ -48,9 +48,9 @@ export default function PlansPage() {
   // Sync token from NextAuth session to localStorage/cookies
   useEffect(() => {
     const syncTokenFromSession = async () => {
-      if (sessionStatus === 'authenticated' && session) {
+      if (authIsAuthenticated && authUser) {
         // Try to get token from session
-        const token = (session as any).accessToken;
+        const token = (authUser as any).accessToken;
 
         if (token) {
           // Check if token is already synced
@@ -90,18 +90,18 @@ export default function PlansPage() {
             setClientAuth({ isAuthenticated: true, isLoading: false });
           }
         }
-      } else if (sessionStatus === 'unauthenticated') {
+      } else if (authIsLoading === 'unauthenticated') {
         // Clear auth state if session is unauthenticated
         setClientAuth({ isAuthenticated: false, isLoading: false });
       }
     };
 
     syncTokenFromSession();
-  }, [session, sessionStatus]);
+  }, [authUser, authIsAuthenticated, authIsLoading]);
 
   // Use NextAuth session as primary since it's working
-  const finalUserLoading = clientAuth.isLoading && userLoading && sessionStatus === 'loading';
-  const finalIsAuthenticated = clientAuth.isAuthenticated || isAuthenticated || sessionStatus === 'authenticated';
+  const finalUserLoading = clientAuth.isLoading && userLoading && authIsLoading === 'loading';
+  const finalIsAuthenticated = clientAuth.isAuthenticated || isAuthenticated || authIsAuthenticated;
 
   useEffect(() => {
     const fetchPlans = async () => {

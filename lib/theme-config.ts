@@ -71,6 +71,31 @@ export interface ThemeColors {
     shadow: string
   }
   
+  // New Gradient Colors for enhanced UI
+  gradient: {
+    primary: string
+    secondary: string
+    tertiary: string
+    accent: string
+    success: string
+    warning: string
+    error: string
+    info: string
+    hero: string
+    card: string
+    button: string
+    text: string
+  }
+  
+  // New Animation Colors
+  animation: {
+    glow: string
+    shimmer: string
+    pulse: string
+    sparkle: string
+    neon: string
+  }
+  
   // Admin-specific colors
   admin?: {
     gradient: {
@@ -186,6 +211,31 @@ export const themePresets: Record<string, ThemeConfig> = {
         shadow: '0 8px 32px hsla(0 0% 0% 0.1)',
       },
       
+      // New gradient colors
+      gradient: {
+        primary: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%)',
+        secondary: 'linear-gradient(135deg, hsl(240 4.8% 95.9%) 0%, hsl(240 5.9% 90%) 100%)',
+        tertiary: 'linear-gradient(135deg, hsla(270 100% 50% 0.1) 0%, hsla(270 100% 50% 0.05) 100%)',
+        accent: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 100%)',
+        success: 'linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(160 84% 39%) 100%)',
+        warning: 'linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(48 96% 53%) 100%)',
+        error: 'linear-gradient(135deg, hsl(0 84.2% 60.2%) 0%, hsl(0 72% 51%) 100%)',
+        info: 'linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(217 91% 60%) 100%)',
+        hero: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 50%, hsl(280 100% 60%) 100%)',
+        card: 'linear-gradient(135deg, hsla(270 100% 50% 0.05) 0%, hsla(270 100% 50% 0.02) 100%)',
+        button: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%)',
+        text: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 100%)',
+      },
+      
+      // New animation colors
+      animation: {
+        glow: 'hsla(270 100% 50% 0.3)',
+        shimmer: 'hsla(255 255% 255% 0.2)',
+        pulse: 'hsla(270 100% 50% 0.6)',
+        sparkle: 'hsla(270 100% 50% 0.8)',
+        neon: 'hsla(270 100% 50% 1)',
+      },
+      
       admin: {
         gradient: {
           primary: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%)',
@@ -288,6 +338,31 @@ export const themePresets: Record<string, ThemeConfig> = {
         background: 'hsla(255 255% 255% 0.1)',
         border: 'hsla(255 255% 255% 0.2)',
         shadow: '0 8px 32px hsla(0 0% 0% 0.3)',
+      },
+      
+      // New gradient colors for dark theme
+      gradient: {
+        primary: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%)',
+        secondary: 'linear-gradient(135deg, hsl(240 3.7% 15.9%) 0%, hsl(250 3.7% 17%) 100%)',
+        tertiary: 'linear-gradient(135deg, hsla(255 255% 255% 0.1) 0%, hsla(255 255% 255% 0.05) 100%)',
+        accent: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 100%)',
+        success: 'linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(160 84% 39%) 100%)',
+        warning: 'linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(48 96% 53%) 100%)',
+        error: 'linear-gradient(135deg, hsl(0 84.2% 60.2%) 0%, hsl(0 72% 51%) 100%)',
+        info: 'linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(217 91% 60%) 100%)',
+        hero: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 50%, hsl(280 100% 60%) 100%)',
+        card: 'linear-gradient(135deg, hsla(255 255% 255% 0.05) 0%, hsla(255 255% 255% 0.02) 100%)',
+        button: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(280 100% 60%) 100%)',
+        text: 'linear-gradient(135deg, hsl(270 100% 50%) 0%, hsl(221 83% 53%) 100%)',
+      },
+      
+      // New animation colors for dark theme
+      animation: {
+        glow: 'hsla(270 100% 50% 0.4)',
+        shimmer: 'hsla(255 255% 255% 0.1)',
+        pulse: 'hsla(270 100% 50% 0.7)',
+        sparkle: 'hsla(270 100% 50% 0.9)',
+        neon: 'hsla(270 100% 50% 1)',
       },
       
       admin: {

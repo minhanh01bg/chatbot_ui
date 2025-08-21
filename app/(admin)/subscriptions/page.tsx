@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, CreditCard, Sparkles, CheckCircle, AlertCircle, Clock, Users, Shield, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { getMySubscriptions } from '@/services/subscription.service';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import type { Subscription } from '@/types/plan';
 import { cancelMySubscription } from '@/services/subscription.service';
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 
 export default function SubscriptionsPage() {
-  const { data: session } = useSession();
+  const { user, accessToken } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [subscriptionToCancel, setSubscriptionToCancel] = useState<Subscription | null>(null);
@@ -29,10 +29,10 @@ export default function SubscriptionsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const loadSubscriptions = async () => {
-    if (session?.accessToken) {
+    if (accessToken) {
       setIsLoading(true);
       try {
-        const subscriptions = await getMySubscriptions(session.accessToken);
+        const subscriptions = await getMySubscriptions(accessToken);
         setSubscriptions(subscriptions);
       } catch (error) {
         console.error('Failed to load subscriptions:', error);
@@ -45,19 +45,19 @@ export default function SubscriptionsPage() {
 
   useEffect(() => {
     loadSubscriptions();
-  }, [session]);
+  }, [accessToken]);
 
   // Refresh data when page becomes visible (e.g., when returning from success page)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!document.hidden && session?.accessToken) {
+      if (!document.hidden && accessToken) {
         loadSubscriptions();
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [session]);
+  }, [accessToken]);
 
   const handleCancelSubscription = async (subscriptionId: string) => {
     if (!subscriptionToCancel) return;
