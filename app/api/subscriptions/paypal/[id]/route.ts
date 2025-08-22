@@ -37,7 +37,7 @@ export async function GET(
     }
 
     // Call the backend API to check subscription status
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
     const response = await fetch(`${backendUrl}/api/v1/subscriptions/${subscriptionId}`, {
       method: 'GET',
       headers: {
