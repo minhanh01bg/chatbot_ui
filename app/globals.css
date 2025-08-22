@@ -2162,23 +2162,21 @@ input:focus-within {
 .admin-theme [class*="admin-dropdown"],
 .admin-theme .motion-div.admin-dropdown,
 .admin-theme div[class*="admin-dropdown"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border: 1px solid #e5e7eb !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  background: var(--admin-dropdown-background) !important;
+  border: 1px solid var(--admin-dropdown-border) !important;
+  box-shadow: var(--admin-dropdown-shadow) !important;
 }
 
 /* Dark mode override for admin dropdowns - HIGH PRIORITY */
-.admin-theme[data-theme*="Dark"] .admin-dropdown,
-.admin-theme[data-theme*="Dark"] .absolute.admin-dropdown,
-.admin-theme[data-theme*="Dark"] .relative .admin-dropdown,
-.admin-theme[data-theme*="Dark"] [class*="admin-dropdown"],
-.admin-theme[data-theme*="Dark"] .motion-div.admin-dropdown,
-.admin-theme[data-theme*="Dark"] div[class*="admin-dropdown"] {
-  background-color: #111827 !important;
-  background: #111827 !important;
-  border: 1px solid #374151 !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+.admin-theme[data-theme="dark"] .admin-dropdown,
+.admin-theme[data-theme="dark"] .absolute.admin-dropdown,
+.admin-theme[data-theme="dark"] .relative .admin-dropdown,
+.admin-theme[data-theme="dark"] [class*="admin-dropdown"],
+.admin-theme[data-theme="dark"] .motion-div.admin-dropdown,
+.admin-theme[data-theme="dark"] div[class*="admin-dropdown"] {
+  background: var(--admin-dropdown-background) !important;
+  border: 1px solid var(--admin-dropdown-border) !important;
+  box-shadow: var(--admin-dropdown-shadow) !important;
 }
 
 /* Admin Light Theme Specific Dropdown Styles */
@@ -3012,24 +3010,20 @@ input:focus-within {
 
 /* ULTIMATE FIX FOR ADMIN DROPDOWN BACKGROUNDS */
 .admin-dropdown {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
+  background: var(--admin-dropdown-background, #ffffff) !important;
 }
 
-.admin-theme[data-theme*="Dark"] .admin-dropdown {
-  background-color: #111827 !important;
-  background: #111827 !important;
+.admin-theme[data-theme="dark"] .admin-dropdown {
+  background: var(--admin-dropdown-background) !important;
 }
 
 /* Force background for any element with admin-dropdown class */
 [class*="admin-dropdown"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
+  background: var(--admin-dropdown-background, #ffffff) !important;
 }
 
-.admin-theme[data-theme*="Dark"] [class*="admin-dropdown"] {
-  background-color: #111827 !important;
-  background: #111827 !important;
+.admin-theme[data-theme="dark"] [class*="admin-dropdown"] {
+  background: var(--admin-dropdown-background) !important;
 }
 
 /* ===== ENHANCED ANIMATIONS FOR ADMIN SITES PAGE ===== */
