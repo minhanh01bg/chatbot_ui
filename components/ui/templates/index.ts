@@ -1,4 +1,3 @@
-export { DashboardTemplate } from './DashboardTemplate';
 export { GlassCard } from './GlassCard';
 export { GradientButton } from './GradientButton';
 export { StatsCard } from './StatsCard';
