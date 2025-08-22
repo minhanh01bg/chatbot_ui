@@ -37,9 +37,9 @@ function applyAdminThemeCSSVariables(themeName: string) {
     root.style.setProperty('--admin-input-text', 'hsl(240 10% 3.9%)');
     root.style.setProperty('--admin-input-placeholder', 'hsla(240 10% 3.9% 0.5)');
     
-    root.style.setProperty('--admin-dropdown-background', 'hsla(0 0% 100% 0.95)');
+    root.style.setProperty('--admin-dropdown-background', 'hsl(0 0% 100%)');
     root.style.setProperty('--admin-dropdown-border', 'hsla(270 100% 50% 0.2)');
-    root.style.setProperty('--admin-dropdown-shadow', '0 8px 32px hsla(0 0% 0% 0.1)');
+    root.style.setProperty('--admin-dropdown-shadow', '0 8px 32px hsla(0 0% 0% 0.15)');
     
     // Add main content background for light mode
     root.style.setProperty('--admin-main-background', 'hsl(0 0% 100%)');
@@ -75,9 +75,9 @@ function applyAdminThemeCSSVariables(themeName: string) {
     root.style.setProperty('--admin-input-text', 'hsl(0 0% 98%)');
     root.style.setProperty('--admin-input-placeholder', 'hsla(255 255% 255% 0.6)');
     
-    root.style.setProperty('--admin-dropdown-background', 'hsla(255 255% 255% 0.15)');
-    root.style.setProperty('--admin-dropdown-border', 'hsla(255 255% 255% 0.25)');
-    root.style.setProperty('--admin-dropdown-shadow', '0 8px 32px hsla(0 0% 0% 0.25)');
+    root.style.setProperty('--admin-dropdown-background', 'hsl(220 13% 18%)');
+    root.style.setProperty('--admin-dropdown-border', 'hsla(255 255% 255% 0.15)');
+    root.style.setProperty('--admin-dropdown-shadow', '0 8px 32px hsla(0 0% 0% 0.4)');
     
     // Add main content background for dark mode
     root.style.setProperty('--admin-main-background', 'hsl(220 13% 18%)');
