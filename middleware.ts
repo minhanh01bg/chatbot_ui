@@ -30,8 +30,7 @@ export async function middleware(request: NextRequest) {
 
     // Check if user is trying to access protected routes
     const isProtectedRoute = pathname.startsWith('/admin') || 
-                           pathname.startsWith('/chat') ||
-                           pathname === '/dashboard'
+                           pathname.startsWith('/chat')
 
     // Check if user is trying to access auth routes while already authenticated
     const isAuthRoute = pathname.startsWith('/login') || 
