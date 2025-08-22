@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Menu, 
@@ -30,10 +30,10 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
   const { user } = useCurrentUser();
   const router = useRouter();
   const { currentTheme } = useAdminTheme();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+
 
   const handleLogout = async () => {
     try {
@@ -168,7 +168,12 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-80 admin-dropdown rounded-xl shadow-2xl overflow-hidden !bg-white dark:!bg-gray-900 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50"
+                  className="absolute right-0 mt-2 w-80 admin-dropdown rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl"
+                  style={{
+                    background: 'var(--admin-dropdown-background)',
+                    border: '1px solid var(--admin-dropdown-border)',
+                    boxShadow: 'var(--admin-dropdown-shadow)',
+                  }}
                 >
                   <div className="p-4 border-b admin-border-secondary">
                     <h3 className="admin-text-primary font-semibold">Notifications</h3>
@@ -233,45 +238,132 @@ export function AdminNavbar({ onSidebarToggle, isSidebarOpen, className = '' }: 
                   initial={{ opacity: 0, y: -10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-56 admin-dropdown rounded-xl shadow-2xl overflow-hidden !bg-white dark:!bg-gray-900 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50"
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="absolute right-0 mt-3 w-72 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-3xl"
+                  style={{
+                    background: 'var(--admin-dropdown-background)',
+                    border: '1px solid var(--admin-dropdown-border)',
+                    boxShadow: 'var(--admin-dropdown-shadow)',
+                    backdropFilter: 'blur(20px)',
+                  }}
                 >
-                  <div className="p-4 border-b admin-border-secondary">
-                    <p className="admin-text-primary font-semibold">{user?.name || 'Admin'}</p>
-                    <p className="admin-text-secondary text-sm">{user?.email}</p>
+                  {/* Header with User Info */}
+                  <div 
+                    className="relative p-6 border-b"
+                    style={{
+                      background: 'var(--admin-gradient-card)',
+                      borderBottomColor: 'var(--admin-dropdown-border)',
+                    }}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <User className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold admin-text-primary truncate">
+                          {user?.name || 'Admin User'}
+                        </h3>
+                        <p className="text-sm admin-text-secondary truncate">
+                          {user?.email || 'admin@example.com'}
+                        </p>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 mt-1">
+                          Administrator
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="py-2">
+
+                  {/* Menu Items */}
+                  <div className="py-3">
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
+                      whileHover={{ 
+                        scale: 1.02, 
+                        x: 4
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-4 px-6 py-3 admin-text-primary hover:admin-accent-muted transition-all duration-200 group rounded-lg"
                     >
-                      <User className="w-4 h-4" />
-                      <span>Profile</span>
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="text-sm font-medium">My Profile</span>
+                        <p className="text-xs admin-text-muted">View and edit profile</p>
+                      </div>
+                      <div className="w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </motion.button>
+
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
+                      whileHover={{ 
+                        scale: 1.02, 
+                        x: 4
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-4 px-6 py-3 admin-text-primary hover:admin-accent-muted transition-all duration-200 group rounded-lg"
                     >
-                      <Settings className="w-4 h-4" />
-                      <span>Settings</span>
+                      <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                        <Settings className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="text-sm font-medium">Account Settings</span>
+                        <p className="text-xs admin-text-muted">Manage preferences</p>
+                      </div>
+                      <div className="w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </motion.button>
+
                     <motion.button
-                      whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.2)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 admin-text-primary hover:admin-accent-muted transition-colors"
+                      whileHover={{ 
+                        scale: 1.02, 
+                        x: 4
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center space-x-4 px-6 py-3 admin-text-primary hover:admin-accent-muted transition-all duration-200 group rounded-lg"
                     >
-                      <HelpCircle className="w-4 h-4" />
-                      <span>Help</span>
+                      <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                        <HelpCircle className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="text-sm font-medium">Help & Support</span>
+                        <p className="text-xs admin-text-muted">Get assistance</p>
+                      </div>
+                      <div className="w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </motion.button>
                   </div>
-                  <div className="p-4 border-t admin-border-secondary">
+
+                  {/* Divider */}
+                  <div className="mx-6 border-t border-gray-200/50 dark:border-gray-700/50"></div>
+
+                  {/* Logout Button */}
+                  <div className="p-3">
                     <motion.button
                       onClick={handleLogout}
-                      whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                      whileHover={{ 
+                        scale: 1.02, 
+                        y: -1,
+                        background: 'linear-gradient(135deg, rgb(220, 38, 38) 0%, rgb(225, 29, 72) 100%)'
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full flex items-center justify-center space-x-3 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                     >
-                      <LogOut className="w-4 h-4" />
-                      <span>Sign out</span>
+                      <LogOut className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                      <span className="font-medium">Sign Out</span>
                     </motion.button>
+                  </div>
+
+                  {/* Footer */}
+                  <div 
+                    className="px-6 py-3 border-t"
+                    style={{
+                      background: 'var(--admin-gradient-card)',
+                      borderTopColor: 'var(--admin-dropdown-border)',
+                    }}
+                  >
+                    <p className="text-xs text-center admin-text-muted">
+                      Admin Panel v2.0
+                    </p>
                   </div>
                 </motion.div>
               )}
