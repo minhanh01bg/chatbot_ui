@@ -1,6 +1,5 @@
-'use client';
+'use client'
 
-import React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -98,10 +97,10 @@ export default function LoginPage() {
               <Shield className="w-8 h-8 text-white" />
             </motion.div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              Chào mừng trở lại
+              Welcome back
             </h1>
             <p className="text-gray-300 text-sm">
-              Đăng nhập vào tài khoản của bạn
+              Sign in to your account
             </p>
           </motion.div>
 
@@ -121,7 +120,7 @@ export default function LoginPage() {
                 className="space-y-2"
               >
                 <label className="text-sm font-medium text-white/90">
-                  Email hoặc tên đăng nhập
+                  Email or username
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -132,7 +131,7 @@ export default function LoginPage() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Nhập email hoặc tên đăng nhập"
+                    placeholder="Enter email or username"
                     required
                     disabled={isLoading}
                   />
@@ -147,7 +146,7 @@ export default function LoginPage() {
                 className="space-y-2"
               >
                 <label className="text-sm font-medium text-white/90">
-                  Mật khẩu
+                  Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -158,7 +157,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Nhập mật khẩu"
+                    placeholder="Enter your password"
                     required
                     disabled={isLoading}
                   />
@@ -191,12 +190,12 @@ export default function LoginPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Đang đăng nhập...</span>
+                      <span>Signing in...</span>
                     </>
                   ) : (
                     <>
                       <LogIn className="w-5 h-5" />
-                      <span>Đăng nhập</span>
+                      <span>Sign in</span>
                     </>
                   )}
                 </button>
@@ -213,7 +212,7 @@ export default function LoginPage() {
                   href="/forgot-password"
                   className="text-sm text-gray-300 hover:text-purple-400 transition-colors"
                 >
-                  Quên mật khẩu?
+                  Forgot password?
                 </Link>
               </motion.div>
             </form>
@@ -229,7 +228,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-white/20"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white/10 text-gray-300">hoặc</span>
+                <span className="px-2 bg-white/10 text-gray-300">or</span>
               </div>
             </motion.div>
 
@@ -267,7 +266,7 @@ export default function LoginPage() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                <span>Đăng nhập với Google</span>
+                <span>Continue with Google</span>
               </button>
             </motion.div>
           </motion.div>
@@ -280,12 +279,12 @@ export default function LoginPage() {
             className="text-center mt-6"
           >
             <p className="text-gray-300 text-sm">
-              Chưa có tài khoản?{' '}
+              Don't have an account?{' '}
               <Link
                 href="/register"
                 className="text-purple-400 hover:text-purple-300 font-medium underline transition-colors"
               >
-                Đăng ký miễn phí
+                Sign up for free
               </Link>
             </p>
           </motion.div>
