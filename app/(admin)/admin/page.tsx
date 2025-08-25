@@ -43,7 +43,7 @@ import {
   Wifi
 } from 'lucide-react';
 import OverallDashboardStats from '@/components/admin/OverallDashboardStats';
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { performLogout } from '@/lib/auth-utils';
@@ -62,10 +62,10 @@ export default function AdminDashboard() {
   const { user } = useCurrentUser();
   const { currentTheme, isDark } = useAdminTheme();
   const router = useRouter();
-  const [sites, setSites] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [sites, setSites] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchSites = async () => {
       try {
         const response = await fetch('/api/sites?skip=0&limit=50');
