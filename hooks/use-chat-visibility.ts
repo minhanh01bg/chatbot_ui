@@ -1,10 +1,21 @@
 'use client';
 
-import { updateChatVisibility } from '@/app/test/actions';
 import { VisibilityType } from '@/components/visibility-selector';
 import { Chat } from '@/lib/db/schema';
 import { useMemo } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
+
+const updateChatVisibility = async ({ chatId, visibility }: { chatId: string; visibility: VisibilityType }) => {
+  try {
+    await fetch('/api/chat/visibility', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId, visibility }),
+    });
+  } catch (e) {
+    console.warn('updateChatVisibility stub failed', e);
+  }
+};
 
 export function useChatVisibility({
   chatId,
