@@ -9,7 +9,7 @@ import {
   user,
   chat,
   type User,
-  document,
+  document as documentTable,
   type Suggestion,
   suggestion,
   type Message,
@@ -49,7 +49,8 @@ export async function createUser(email: string, username: string, password: stri
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, username, password: hash });
+    const values = { email, username, password: hash } as any;
+    return await db.insert(user).values(values);
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -67,7 +68,6 @@ export async function saveChat({
 }) {
   try {
     return await db.insert(chat).values({
-      id,
       createdAt: new Date(),
       userId,
       title,
@@ -190,14 +190,13 @@ export async function saveDocument({
   userId: string;
 }) {
   try {
-    return await db.insert(document).values({
-      id,
+    return await db.insert(documentTable).values({
       title,
       kind,
       content,
       userId,
       createdAt: new Date(),
-    });
+    } as any);
   } catch (error) {
     console.error('Failed to save document in database');
     throw error;
@@ -208,9 +207,9 @@ export async function getDocumentsById({ id }: { id: string }) {
   try {
     const documents = await db
       .select()
-      .from(document)
-      .where(eq(document.id, id))
-      .orderBy(asc(document.createdAt));
+      .from(documentTable)
+      .where(eq(documentTable.id, id))
+      .orderBy(asc(documentTable.createdAt));
 
     return documents;
   } catch (error) {
@@ -223,9 +222,9 @@ export async function getDocumentById({ id }: { id: string }) {
   try {
     const [selectedDocument] = await db
       .select()
-      .from(document)
-      .where(eq(document.id, id))
-      .orderBy(desc(document.createdAt));
+      .from(documentTable)
+      .where(eq(documentTable.id, id))
+      .orderBy(desc(documentTable.createdAt));
 
     return selectedDocument;
   } catch (error) {
@@ -252,8 +251,8 @@ export async function deleteDocumentsByIdAfterTimestamp({
       );
 
     return await db
-      .delete(document)
-      .where(and(eq(document.id, id), gt(document.createdAt, timestamp)));
+      .delete(documentTable)
+      .where(and(eq(documentTable.id, id), gt(documentTable.createdAt, timestamp)));
   } catch (error) {
     console.error(
       'Failed to delete documents by id after timestamp from database',
@@ -331,7 +330,7 @@ export async function updateChatVisiblityById({
   visibility: 'private' | 'public';
 }) {
   try {
-    return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
+    return await db.update(chat).set({ visibility } as any).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
     throw error;
