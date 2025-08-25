@@ -22,28 +22,29 @@ export async function POST(request: NextRequest) {
     // Replace localhost with 127.0.0.1 to avoid IPv6 issues
     const apiUrl = NEXT_PUBLIC_BACKEND_URL.replace('localhost', '127.0.0.1');
 
-    // Create FormData for backend request
-    const formData = new FormData();
-    // Backend expects 'username' field, but we send identifier (which can be username or email)
-    formData.append('username', userData.identifier || userData.username);
-    formData.append('password', userData.password);
+    // Prepare JSON payload to match FastAPI expectation: { email, password }
+    const payload = {
+      email: userData.identifier || userData.email,
+      password: userData.password,
+    };
 
     // Forward request to backend
     const response = await fetch(`${apiUrl}/api/v1/user/register`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0'
       },
-      body: formData,
+      body: JSON.stringify(payload),
       cache: 'no-store'
     });
 
-    // Handle existing user error
-    if (response.status === 409) {
+    // Handle existing user error (backend returns 400 in this implementation)
+    if (response.status === 409 || response.status === 400) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: 'Email already registered' },
         { status: 409 }
       );
     }
