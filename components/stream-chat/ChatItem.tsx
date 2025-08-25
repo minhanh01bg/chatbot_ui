@@ -11,7 +11,7 @@ interface ChatItemProps {
   setOpenMobile: (open: boolean) => void;
   onSelectSession: (sessionId: string) => void;
   onDeleteSession: (sessionId: string) => void;
-  setSessions: (sessions: SessionData[]) => void;
+  setSessions?: (sessions: SessionData[]) => void;
 }
 
 const ChatItem = ({ chat, isActive, setOpenMobile, onSelectSession, onDeleteSession }: ChatItemProps) => {
