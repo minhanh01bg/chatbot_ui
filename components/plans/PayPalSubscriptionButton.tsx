@@ -50,9 +50,9 @@ export default function PayPalSubscriptionButton({
         description: 'You will be redirected to PayPal to complete your payment.',
       });
 
-      // Call success callback if provided
+      // Call success callback if provided (use plan_id as a proxy id)
       if (onSuccess) {
-        onSuccess(subscriptionData.subscription_id);
+        onSuccess(subscriptionData.plan_id);
       }
 
       // Redirect to PayPal approval URL
