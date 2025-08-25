@@ -12,12 +12,7 @@ declare global {
   }
 }
 
-// Extend the CSS module to include admin theme classes
-declare module 'react' {
-  interface CSSProperties {
-    [key: string]: any;
-  }
-}
+// NOTE: Avoid augmenting the 'react' module to prevent conflicts with React's official types
 
 // Admin theme specific classes
 declare module '*.module.css' {
