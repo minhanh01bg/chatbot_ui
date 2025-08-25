@@ -71,12 +71,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <SessionProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
+            <ThemeProvider defaultTheme="system">
               <AuthProvider>
                 <AuthErrorHandler />
                 {children}

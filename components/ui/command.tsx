@@ -74,20 +74,19 @@ const CommandPrimitive = {
   ),
 }
 
-const Command = React.forwardRef<
-  React.ElementRef<typeof CommandPrimitive>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive>
->(({ className, ...props }, ref) => (
-  <CommandPrimitive
-    ref={ref}
-    className={cn(
-      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
-      className
-    )}
-    {...props}
-  />
-))
-Command.displayName = CommandPrimitive.displayName
+const Command = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <CommandPrimitive.Root
+      ref={ref}
+      className={cn(
+        "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+        className
+      )}
+      {...props}
+    />
+  ),
+)
+Command.displayName = "Command"
 
 interface CommandDialogProps extends DialogProps {}
 

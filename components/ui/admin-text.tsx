@@ -1,12 +1,13 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import React from 'react';
 
 interface AdminTextProps {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'muted' | 'subtle';
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 export function AdminText({ 

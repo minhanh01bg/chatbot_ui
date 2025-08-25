@@ -90,7 +90,7 @@ export default function PlansPage() {
             setClientAuth({ isAuthenticated: true, isLoading: false });
           }
         }
-      } else if (authIsLoading === 'unauthenticated') {
+      } else if (!authIsAuthenticated && !authIsLoading) {
         // Clear auth state if session is unauthenticated
         setClientAuth({ isAuthenticated: false, isLoading: false });
       }
@@ -100,7 +100,7 @@ export default function PlansPage() {
   }, [authUser, authIsAuthenticated, authIsLoading]);
 
   // Use NextAuth session as primary since it's working
-  const finalUserLoading = clientAuth.isLoading && userLoading && authIsLoading === 'loading';
+  const finalUserLoading = clientAuth.isLoading && userLoading && authIsLoading;
   const finalIsAuthenticated = clientAuth.isAuthenticated || isAuthenticated || authIsAuthenticated;
 
   useEffect(() => {

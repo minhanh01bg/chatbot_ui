@@ -61,12 +61,12 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative bg-gradient-hero text-white overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 dark:from-slate-900 dark:via-purple-900/30 dark:to-slate-900 text-white overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-gradient-accent/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-        <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-gradient-primary/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-gradient-info/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+        <div className="absolute top-1/3 -right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-1/4 left-1/3 w-96 h-96 bg-indigo-500/20 dark:bg-indigo-400/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,18 +87,18 @@ export function Footer() {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <motion.div 
-                  className="w-12 h-12 bg-gradient-accent rounded-2xl flex items-center justify-center shadow-lg animate-pulse-glow"
+                  className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg animate-pulse-glow"
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                 >
                   <Bot className="w-7 h-7 text-white" />
                 </motion.div>
-                <span className="text-2xl font-bold text-gradient-primary">
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                   ChatAI Pro
                 </span>
               </motion.div>
               
-              <p className="text-gray-300 mb-8 text-lg leading-relaxed">
+              <p className="text-slate-300 mb-8 text-lg leading-relaxed">
                 The next generation of AI-powered conversations for modern businesses and individuals. 
                 Experience the future of intelligent communication.
               </p>
@@ -114,7 +114,7 @@ export function Footer() {
                     transition={{ delay: index * 0.1, type: "spring" }}
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.2, y: -2 }}
-                    className="w-10 h-10 glass-enhanced rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 animate-pulse-glow"
+                    className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 animate-pulse-glow border border-white/20"
                   >
                     {social.icon}
                   </motion.a>
@@ -132,7 +132,7 @@ export function Footer() {
                 viewport={{ once: true }}
               >
                 <h3 className="text-lg font-semibold mb-6 text-white flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-gradient-accent rounded-full animate-pulse-glow"></span>
+                  <span className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse-glow"></span>
                   <span>{section.title}</span>
                 </h3>
                 <ul className="space-y-4">
@@ -146,9 +146,9 @@ export function Footer() {
                     >
                       <Link
                         href={link.href}
-                        className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 group"
+                        className="flex items-center space-x-2 text-slate-300 hover:text-white transition-all duration-200 group"
                       >
-                        <span className="text-gradient-accent group-hover:scale-110 transition-transform duration-200 animate-sparkle">
+                        <span className="text-blue-400 group-hover:scale-110 transition-transform duration-200 animate-sparkle">
                           {link.icon}
                         </span>
                         <span className="group-hover:translate-x-1 transition-transform duration-200">
@@ -175,7 +175,7 @@ export function Footer() {
             <h3 className="text-2xl font-bold mb-4 text-white animate-neon">
               Stay Updated with AI Insights
             </h3>
-            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
               Get the latest updates, tutorials, and AI chatbot news delivered to your inbox.
             </p>
             
@@ -183,12 +183,12 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-1 px-6 py-3 glass-enhanced rounded-xl text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="flex-1 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all border border-white/20"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-button text-white px-8 py-3 rounded-xl font-semibold hover-glow transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-xl font-semibold hover-glow transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Subscribe
               </motion.button>
@@ -205,7 +205,7 @@ export function Footer() {
           className="py-8 border-t border-white/10"
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-2 text-gray-400">
+            <div className="flex items-center space-x-2 text-slate-400">
               <span>&copy; {currentYear || '2024'} ChatAI Pro. All rights reserved.</span>
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
@@ -216,14 +216,14 @@ export function Footer() {
               </motion.div>
             </div>
             
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <Link href="#privacy" className="hover:text-gradient-accent transition-colors">
+            <div className="flex items-center space-x-6 text-sm text-slate-400">
+              <Link href="#privacy" className="hover:text-blue-400 transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="#terms" className="hover:text-gradient-accent transition-colors">
+              <Link href="#terms" className="hover:text-blue-400 transition-colors">
                 Terms of Service
               </Link>
-              <Link href="#cookies" className="hover:text-gradient-accent transition-colors">
+              <Link href="#cookies" className="hover:text-blue-400 transition-colors">
                 Cookie Policy
               </Link>
             </div>
@@ -236,7 +236,7 @@ export function Footer() {
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-accent rounded-full opacity-20"
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20"
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + i * 10}%`,

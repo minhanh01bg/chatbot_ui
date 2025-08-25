@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Menu, X, ChevronDown, Sparkles, Rocket, BookOpen, Zap } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { ThemeSwitcher } from '@/components/theme-switcher';
+import { CompactDarkModeToggle } from '@/components/theme-switcher';
 
 interface NavbarProps {
   variant?: 'landing' | 'blog';
@@ -46,28 +46,28 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
       href: '/chat', 
       description: 'Start chatting with AI',
       icon: <Bot className="w-5 h-5" />,
-      gradient: 'bg-gradient-accent'
+      gradient: 'from-blue-500 to-cyan-500'
     },
     { 
       name: 'Documentation', 
       href: '/docs', 
       description: 'API and guides',
       icon: <BookOpen className="w-5 h-5" />,
-      gradient: 'bg-gradient-success'
+      gradient: 'from-green-500 to-emerald-500'
     },
     { 
       name: 'API', 
       href: '/api', 
       description: 'Developer resources',
       icon: <Zap className="w-5 h-5" />,
-      gradient: 'bg-gradient-warning'
+      gradient: 'from-yellow-500 to-orange-500'
     },
     { 
       name: 'Integrations', 
       href: '/integrations', 
       description: 'Connect with your tools',
       icon: <Sparkles className="w-5 h-5" />,
-      gradient: 'bg-gradient-info'
+      gradient: 'from-indigo-500 to-purple-500'
     }
   ];
 
@@ -78,7 +78,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         scrolled 
-          ? 'glass-enhanced border-b border-border shadow-2xl' 
+          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 shadow-2xl' 
           : 'bg-transparent'
       }`}
     >
@@ -92,13 +92,13 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
           >
             <Link href="/" className="flex items-center space-x-3 group">
               <motion.div 
-                className="w-10 h-10 bg-gradient-accent rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 animate-pulse-glow"
+                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 animate-pulse-glow"
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
                 <Bot className="w-6 h-6 text-white" />
               </motion.div>
-              <span className="text-2xl font-bold text-gradient-primary group-hover:text-gradient-accent transition-colors">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent group-hover:from-blue-500 group-hover:to-purple-500 transition-all">
                 ChatAI Pro
               </span>
             </Link>
@@ -112,7 +112,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 text-foreground hover:text-gradient-accent hover:bg-muted rounded-xl transition-all duration-200"
+                className="flex items-center space-x-2 px-4 py-2 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all duration-200"
               >
                 <span>Product</span>
                 <motion.div
@@ -130,7 +130,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-96 glass-enhanced rounded-2xl shadow-2xl py-3 z-50"
+                    className="absolute top-full left-0 mt-2 w-96 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl shadow-2xl py-3 z-50 border border-slate-200/50 dark:border-slate-700/50"
                   >
                     <div className="grid grid-cols-2 gap-2 p-3">
                       {productMenuItems.map((item, index) => (
@@ -142,16 +142,16 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                         >
                           <Link
                             href={item.href}
-                            className="flex flex-col p-3 rounded-xl hover:bg-foreground/10 transition-all duration-200 group"
+                            className="flex flex-col p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 group"
                             onClick={() => setIsProductDropdownOpen(false)}
                           >
                             <div className="flex items-center space-x-2 mb-2">
-                              <div className={`w-8 h-8 ${item.gradient} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 animate-pulse-glow`}>
+                              <div className={`w-8 h-8 bg-gradient-to-r ${item.gradient} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200 animate-pulse-glow`}>
                                 {item.icon}
                               </div>
-                              <span className="font-medium text-foreground">{item.name}</span>
+                              <span className="font-medium text-slate-800 dark:text-slate-200">{item.name}</span>
                             </div>
-                            <span className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors">{item.description}</span>
+                            <span className="text-sm text-slate-600 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">{item.description}</span>
                           </Link>
                         </motion.div>
                       ))}
@@ -171,9 +171,9 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-2 px-4 py-2 text-foreground hover:text-gradient-accent hover:bg-muted rounded-xl transition-all duration-200 group"
+                  className="flex items-center space-x-2 px-4 py-2 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all duration-200 group"
                 >
-                  <span className="text-gradient-accent group-hover:scale-110 transition-transform duration-200 animate-sparkle">
+                  <span className="text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200 animate-sparkle">
                     {item.icon}
                   </span>
                   <span>{item.name}</span>
@@ -185,13 +185,13 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Theme Switcher */}
-            <ThemeSwitcher />
+            <CompactDarkModeToggle />
             
             {!isLoading && (
               <>
                 {isAuthenticated ? (
                   <>
-                    <span className="text-muted-foreground text-sm">
+                    <span className="text-slate-600 dark:text-slate-300 text-sm">
                       Welcome, {user?.name || 'User'}!
                     </span>
                     <motion.div
@@ -200,7 +200,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     >
                       <Link
                         href="/admin"
-                        className="bg-gradient-button text-white px-6 py-2 rounded-xl hover-glow transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl hover-glow transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
                       >
                         Dashboard
                       </Link>
@@ -214,7 +214,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     >
                       <Link
                         href="/login"
-                        className="text-muted-foreground hover:text-gradient-accent transition-colors px-6 py-2 rounded-xl hover:bg-muted"
+                        className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-6 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
                       >
                         Sign In
                       </Link>
@@ -225,7 +225,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     >
                       <Link
                         href="/register"
-                        className="bg-gradient-button text-white px-6 py-2 rounded-xl hover-glow transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-xl hover-glow transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
                       >
                         Get Started
                       </Link>
@@ -242,7 +242,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-xl text-foreground hover:text-gradient-accent hover:bg-muted transition-all duration-200"
+              className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </motion.button>
@@ -257,12 +257,12 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden border-t border-border glass-enhanced"
+              className="lg:hidden border-t border-slate-200/50 dark:border-slate-700/50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm"
             >
               <div className="px-2 pt-4 pb-6 space-y-3">
                 {/* Product Menu for Mobile */}
                 <div className="px-3 py-2">
-                  <div className="text-sm font-medium text-muted-foreground mb-3">Product</div>
+                  <div className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Product</div>
                   <div className="space-y-2">
                     {productMenuItems.map((item, index) => (
                       <motion.div
@@ -273,15 +273,15 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                       >
                         <Link
                           href={item.href}
-                          className="flex items-center space-x-3 p-3 text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-xl transition-all duration-200"
+                          className="flex items-center space-x-3 p-3 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all duration-200"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <div className={`w-8 h-8 ${item.gradient} rounded-lg flex items-center justify-center animate-pulse-glow`}>
+                          <div className={`w-8 h-8 bg-gradient-to-r ${item.gradient} rounded-lg flex items-center justify-center animate-pulse-glow`}>
                             {item.icon}
                           </div>
                           <div>
                             <div className="font-medium">{item.name}</div>
-                            <div className="text-sm text-white/60">{item.description}</div>
+                            <div className="text-sm text-slate-500 dark:text-slate-400">{item.description}</div>
                           </div>
                         </Link>
                       </motion.div>
@@ -299,10 +299,10 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                   >
                     <Link
                       href={item.href}
-                      className="flex items-center space-x-3 px-3 py-3 text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-xl transition-all duration-200"
+                      className="flex items-center space-x-3 px-3 py-3 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all duration-200"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <span className="text-gradient-accent animate-sparkle">{item.icon}</span>
+                      <span className="text-blue-500 dark:text-blue-400 animate-sparkle">{item.icon}</span>
                       <span>{item.name}</span>
                     </Link>
                   </motion.div>
@@ -313,10 +313,10 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="pt-4 border-t border-white/10"
+                  className="pt-4 border-t border-slate-200/50 dark:border-slate-700/50"
                 >
                   <div className="px-3 py-2">
-                    <ThemeSwitcher />
+                    <CompactDarkModeToggle />
                   </div>
                 </motion.div>
 
@@ -326,16 +326,16 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="pt-4 border-t border-border"
+                    className="pt-4 border-t border-slate-200/50 dark:border-slate-700/50"
                   >
                     {isAuthenticated ? (
                       <div className="space-y-3">
-                        <div className="px-3 py-2 text-sm text-muted-foreground">
+                        <div className="px-3 py-2 text-sm text-slate-600 dark:text-slate-300">
                           Welcome, {user?.name || 'User'}!
                         </div>
                         <Link
                           href="/admin"
-                          className="block w-full text-center bg-gradient-button text-white px-6 py-3 rounded-xl hover-glow transition-all duration-200 shadow-lg"
+                          className="block w-full text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl hover-glow transition-all duration-200 shadow-lg"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Go to Dashboard
@@ -345,14 +345,14 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
                       <div className="space-y-3">
                         <Link
                           href="/login"
-                          className="block w-full text-center text-muted-foreground hover:text-gradient-accent px-6 py-3 rounded-xl hover:bg-foreground/10 transition-all duration-200"
+                          className="block w-full text-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-6 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Sign In
                         </Link>
                         <Link
                           href="/register"
-                          className="block w-full text-center bg-gradient-button text-white px-6 py-3 rounded-xl hover-glow transition-all duration-200 shadow-lg"
+                          className="block w-full text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl hover-glow transition-all duration-200 shadow-lg"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Get Started
@@ -374,7 +374,7 @@ export function Navbar({ variant = 'landing' }: NavbarProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/50 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setIsMenuOpen(false)}
           />
         )}
