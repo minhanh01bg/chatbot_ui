@@ -1,3 +1,2 @@
-import type { Experimental_LanguageModelV1Middleware } from 'ai';
-
-export const customMiddleware: Experimental_LanguageModelV1Middleware = {};
+// Middleware placeholder. Adjust typing when the AI SDK exposes a stable type.
+export const customMiddleware = {} as const;
