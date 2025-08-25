@@ -2,8 +2,7 @@ import type {
   CoreAssistantMessage,
   CoreMessage,
   CoreToolMessage,
-  Message,
-  ToolInvocation,
+  UIMessage as Message,
 } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -59,10 +58,11 @@ function addToolMessageToChat({
   messages: Array<Message>;
 }): Array<Message> {
   return messages.map((message) => {
-    if (message.toolInvocations) {
+    const hasToolInvocations = (message as any).toolInvocations && Array.isArray((message as any).toolInvocations);
+    if (hasToolInvocations) {
       return {
         ...message,
-        toolInvocations: message.toolInvocations.map((toolInvocation) => {
+        toolInvocations: (message as any).toolInvocations.map((toolInvocation: any) => {
           const toolResult = toolMessage.content.find(
             (tool) => tool.toolCallId === toolInvocation.toolCallId,
           );
@@ -71,8 +71,9 @@ function addToolMessageToChat({
             return {
               ...toolInvocation,
               state: 'result',
-              result: toolResult.result,
-            };
+              // The AI SDK result shape may vary; fall back to the whole part
+              result: (toolResult as any).result ?? (toolResult as any),
+            } as any;
           }
 
           return toolInvocation;
@@ -96,7 +97,7 @@ export function convertToUIMessages(
     }
 
     let textContent = '';
-    const toolInvocations: Array<ToolInvocation> = [];
+    const toolInvocations: Array<any> = [];
 
     if (typeof message.content === 'string') {
       textContent = message.content;
@@ -117,10 +118,10 @@ export function convertToUIMessages(
 
     chatMessages.push({
       id: message.id,
-      role: message.role as Message['role'],
-      content: textContent,
-      toolInvocations,
-    });
+      role: message.role as any,
+      content: textContent as any,
+      toolInvocations: toolInvocations as any,
+    } as any as Message);
 
     return chatMessages;
   }, []);
@@ -169,33 +170,32 @@ export function sanitizeUIMessages(messages: Array<Message>): Array<Message> {
   const messagesBySanitizedToolInvocations = messages.map((message) => {
     if (message.role !== 'assistant') return message;
 
-    if (!message.toolInvocations) return message;
+    if (!(message as any).toolInvocations) return message;
 
     const toolResultIds: Array<string> = [];
 
-    for (const toolInvocation of message.toolInvocations) {
+    for (const toolInvocation of (message as any).toolInvocations as Array<any>) {
       if (toolInvocation.state === 'result') {
         toolResultIds.push(toolInvocation.toolCallId);
       }
     }
 
-    const sanitizedToolInvocations = message.toolInvocations.filter(
-      (toolInvocation) =>
+    const sanitizedToolInvocations = ((message as any).toolInvocations as Array<any>).filter(
+      (toolInvocation: any) =>
         toolInvocation.state === 'result' ||
         toolResultIds.includes(toolInvocation.toolCallId),
     );
 
     return {
       ...message,
-      toolInvocations: sanitizedToolInvocations,
+      toolInvocations: sanitizedToolInvocations as any,
     };
   });
 
-  return messagesBySanitizedToolInvocations.filter(
-    (message) =>
-      message.content.length > 0 ||
-      (message.toolInvocations && message.toolInvocations.length > 0),
-  );
+  return messagesBySanitizedToolInvocations.filter((message) => {
+    const tiv = (message as any).toolInvocations as Array<any> | undefined;
+    return message.content.length > 0 || (tiv && tiv.length > 0);
+  });
 }
 
 export function getMostRecentUserMessage(messages: Array<CoreMessage>) {
