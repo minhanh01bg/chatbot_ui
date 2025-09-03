@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CompactDarkModeToggle } from '@/components/theme-switcher';
 import Sites from '@/components/admin/sites/Sites';
 
 export default function SitesPage() {
@@ -23,11 +22,6 @@ export default function SitesPage() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-indigo-600/10 rounded-3xl blur-3xl"></div>
           <div className="relative bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-slate-700/50 p-8 shadow-2xl">
-            {/* Theme Toggle positioned at top right */}
-            <div className="absolute top-6 right-6">
-              <CompactDarkModeToggle />
-            </div>
-            
             <div className="text-center space-y-4">
               <motion.h1 
                 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent"

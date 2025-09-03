@@ -53,6 +53,7 @@ import LoadingSpinner from './LoadingSpinner';
 import EmptyState from './EmptyState';
 import { deleteSite } from '@/services/site.service';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 
 // Define site type - flexible to match multiple API response formats
 interface Site {
@@ -121,6 +122,7 @@ const cardVariants = {
 export default function SitesTable() {
   const router = useRouter();
   const { user, accessToken } = useAuth();
+  const { currentTheme, isDark, setTheme, toggleDarkMode } = useAdminTheme();
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -132,8 +134,60 @@ export default function SitesTable() {
   const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [themeKey, setThemeKey] = useState(0);
   
   const itemsPerPage = 12;
+
+  // Force re-render when theme changes
+  useEffect(() => {
+    console.log('Theme changed:', { currentTheme, isDark });
+    setThemeKey(prev => prev + 1);
+    
+    // Force a complete re-render by updating a dummy state
+    setTimeout(() => {
+      setThemeKey(prev => prev + 1);
+    }, 100);
+  }, [currentTheme, isDark]);
+
+  // Listen for theme changes in localStorage
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'admin-theme' && e.newValue) {
+        setThemeKey(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Force CSS update when theme changes
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('admin-theme');
+    root.setAttribute('data-theme', currentTheme);
+    
+    // Force CSS variables update
+    if (currentTheme === 'dark') {
+      root.style.setProperty('--admin-text-primary', '0 0% 98%');
+      root.style.setProperty('--admin-text-secondary', '220 9% 75%');
+      root.style.setProperty('--admin-text-muted', '220 9% 60%');
+      root.style.setProperty('--admin-text-subtle', '220 9% 50%');
+      
+      // Force dark mode classes
+      root.classList.remove('light');
+      root.classList.add('dark');
+    } else {
+      root.style.setProperty('--admin-text-primary', '240 10% 3.9%');
+      root.style.setProperty('--admin-text-secondary', '240 5% 20%');
+      root.style.setProperty('--admin-text-muted', '240 5% 45%');
+      root.style.setProperty('--admin-text-subtle', '240 5% 60%');
+      
+      // Force light mode classes
+      root.classList.remove('dark');
+      root.classList.add('light');
+    }
+  }, [currentTheme, isDark]);
 
   const fetchSites = async () => {
     try {
@@ -547,7 +601,9 @@ export default function SitesTable() {
 
   return (
     <motion.div 
-      className="space-y-8"
+      key={`${themeKey}-${currentTheme}-${isDark}`}
+      className={`space-y-8 admin-theme ${isDark ? 'dark' : 'light'}`}
+      data-theme={currentTheme}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -626,7 +682,7 @@ export default function SitesTable() {
                   placeholder="Search sites by name, domain, or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-0 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm focus:bg-white dark:focus:bg-slate-600 transition-all duration-300 shadow-lg"
+                  className="pl-10 border-0 bg-white/70 dark:bg-slate-700/70 focus:bg-white dark:focus:bg-slate-600 transition-all duration-300 shadow-lg"
                 />
               </div>
               <div className="flex items-center gap-2">

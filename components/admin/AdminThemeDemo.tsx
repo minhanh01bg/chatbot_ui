@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Sparkles, Palette, Settings, Users, BarChart3, Globe, CreditCard, Info } from 'lucide-react';
-import { useAdminTheme } from '@/hooks/use-admin-theme';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 import { AdminTextPrimary, AdminTextSecondary, AdminTextMuted } from '@/components/ui/admin-text';
 
 export function AdminThemeDemo() {

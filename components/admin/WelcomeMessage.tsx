@@ -27,6 +27,24 @@ export function WelcomeMessage({
   const [displayTime, setDisplayTime] = React.useState('');
   const [isClient, setIsClient] = React.useState(false);
 
+  // Function to safely display user name, extracting name from email if needed
+  const getDisplayName = (name: string) => {
+    if (!name) return 'Admin';
+    
+    // If it's an email, extract the part before @
+    if (name.includes('@')) {
+      const emailPart = name.split('@')[0];
+      // Capitalize first letter and replace dots/underscores with spaces
+      return emailPart
+        .replace(/[._]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+    
+    return name;
+  };
+
   React.useEffect(() => {
     setIsClient(true);
     if (!currentTime) {
@@ -105,7 +123,7 @@ export function WelcomeMessage({
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-2xl lg:text-3xl font-bold admin-text-primary"
             >
-              Hello, <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{userName}</span>! 👋
+              Hello, <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{getDisplayName(userName)}</span>! 👋
             </motion.h2>
             
             <motion.p

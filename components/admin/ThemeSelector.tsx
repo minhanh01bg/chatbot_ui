@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Palette, ChevronDown, Check, Moon, Sun } from 'lucide-react';
 import { getAvailableThemes } from '@/lib/theme-config';
-import { useAdminTheme } from '@/hooks/use-admin-theme';
+import { useAdminTheme } from '@/contexts/AdminThemeContext';
 import { AdminTextSecondary, AdminTextMuted } from '@/components/ui/admin-text';
 
 interface ThemeSelectorProps {
