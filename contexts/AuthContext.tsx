@@ -97,8 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setBrandLogos(data.brand_logos || []);
 
       toast({
-        title: "Thành công",
-        description: "Đăng nhập thành công!",
+        title: "Successfully",
+        description: "Login successfully!",
       });
       return true;
 

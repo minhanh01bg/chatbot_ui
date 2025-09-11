@@ -373,53 +373,6 @@ export default function SitesTable() {
     }
   };
 
-  // Enhanced Loading skeleton for grid view
-  const GridSkeleton = () => (
-    <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {Array.from({ length: 8 }).map((_, i) => (
-        <motion.div key={i} variants={itemVariants}>
-          <Card className="group hover:shadow-xl transition-all duration-500 hover:scale-[1.02] border-0 shadow-lg bg-gradient-to-br from-white/80 to-gray-50/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1 min-w-0">
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-                <div className="flex gap-1">
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-6 w-16 rounded-full" />
-                <Skeleton className="h-6 w-20 rounded-full" />
-              </div>
-              <Skeleton className="h-4 w-1/2" />
-              <div className="flex justify-between pt-2">
-                <Skeleton className="h-8 w-20 rounded-lg" />
-                <div className="flex gap-1">
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
 
   // Enhanced Grid view component
   const GridView = () => (

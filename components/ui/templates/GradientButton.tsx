@@ -25,9 +25,9 @@ export function GradientButton({
   };
   
   const variantClasses = {
-    primary: "bg-gradient-to-r from-purple-600 to-blue-600 text-gray-900 hover:from-purple-700 hover:to-blue-700 focus:ring-purple-500",
+    primary: "bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 focus:ring-purple-500",
     secondary: "bg-gradient-to-r from-blue-600 to-purple-600 text-gray-900 hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500",
-    outline: "bg-transparent border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-gray-900 focus:ring-purple-500"
+    outline: "bg-transparent border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white focus:ring-purple-500"
   };
   
   return (
